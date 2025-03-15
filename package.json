@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon backend-autoflow/server.js"
+    
   },
   "type": "module",
   "keywords": [],
@@ -12,7 +13,8 @@
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "mongoose": "^8.12.1"
+    "mongoose": "^8.12.1",
+    "react-scripts": "^5.0.1"
   },
   "description": "",
   "devDependencies": {

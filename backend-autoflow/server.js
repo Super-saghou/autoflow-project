@@ -4,7 +4,10 @@ import { connectDB } from './config/db.js';
 dotenv.config();
 const app = express();
 app.get("/products", (req, res) => {});
-   
+app.use((req, res) => {
+    res.send('Welcome to Autoflow');
+    console.log(req);
+  }); 
 
 
 app.listen(5000, () => {
