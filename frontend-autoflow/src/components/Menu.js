@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const MenuContainer = styled.div`
-  background-color: #ffbbcc; /* Pastel pink */
+  background-color: #C25A3D; 
   padding: 20px;
   display: flex;
   justify-content: space-between;
@@ -31,3 +31,4 @@ const Menu = () => {
 };
 
 export default Menu;
+

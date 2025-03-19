@@ -1,5 +1,4 @@
-// src/GlobalStyle.js
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyle = createGlobalStyle`
   * {
@@ -9,13 +8,8 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f3f4f6; /* Pastel background */
-    color: #333;
-  }
-
-  a {
-    text-decoration: none;
-    color: inherit;
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
   }
 `;
+
