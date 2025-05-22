@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  my-mongoose-app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=mongodb+srv://sarrabngharbia:1pA39c9rUl7I0SR8@cluster0.evbzs.mongodb.net/products?retryWrites=true&w=majority&appName=Cluster0
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:

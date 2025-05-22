@@ -1,0 +1,9 @@
+---
+- name: Test Ansible connection to the device
+  hosts: targets
+  gather_facts: no
+
+  tasks:
+    - name: Ping the remote device
+      ansible.builtin.ping:
+

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Device</title>
+</head>
+<body>
+  <h1>Add a Device</h1>
+  <form id="deviceForm">
+    <input type="text" name="name" placeholder="Device Name" required>
+    <input type="text" name="ip" placeholder="IP Address" required>
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('deviceForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        name: form.name.value,
+        ip: form.ip.value
+      };
+      const res = await fetch('/api/devices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      alert(result.message);
+    });
+  </script>
+</body>
+</html>
