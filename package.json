@@ -4,7 +4,6 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon backend-autoflow/server.js"
-    
   },
   "type": "module",
   "keywords": [],

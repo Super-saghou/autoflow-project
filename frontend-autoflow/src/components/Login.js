@@ -1,82 +1,70 @@
-// src/components/Login.js
 import React, { useState } from 'react';
-import styled from 'styled-components';
-
-const LoginContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 80vh;
-  background-color: #D8D7BF;
-  padding: 20px;
-`;
-
-const LoginForm = styled.form`
-  background-color: #FFF;
-  padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 300px;
-`;
-
-const InputField = styled.input`
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-  &:focus {
-    border-color: #C25A3D; 
-    outline: none;
-  }
-`;
-
-const SubmitButton = styled.button`
-  width: 100%;
-  padding: 10px;
-  background-color: #A3623A; 
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  &:hover {
-    background-color: #C25A3D;
-  }
-`;
+import { useNavigate } from 'react-router-dom';
+import './Login.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add login logic here
-    alert('Logged in!');
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de la connexion');
+      }
+
+      const data = await response.json();
+      console.log(data);
+      if (data.message === 'Login successful') {
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      setError(error.message || 'Erreur réseau, veuillez vérifier votre connexion');
+    }
   };
 
   return (
-    <LoginContainer>
-      <LoginForm onSubmit={handleLogin}>
-        <h2>Login</h2>
-        <InputField
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <InputField
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <SubmitButton type="submit">Login</SubmitButton>
-      </LoginForm>
-    </LoginContainer>
+    <div className="login-container">
+      <div className="login-card">
+        <div className="login-header">
+          <h2>Se connecter</h2>
+        </div>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label>Nom d'utilisateur :</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label>Mot de passe :</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="form-input"
+            />
+          </div>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          <button type="submit" className="login-btn">Se connecter</button>
+        </form>
+      </div>
+    </div>
   );
 };
 
 export default Login;
-

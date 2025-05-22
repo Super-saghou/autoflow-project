@@ -1,0 +1,28 @@
+{
+  "name": "backend-autoflow",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "autoflow-project "
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "type": "module",
+  "dependencies": {
+    "@langchain/core": "^0.3.56",
+    "@langchain/openai": "^0.5.10",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.2"
+  },
+  "description": ""
+}
