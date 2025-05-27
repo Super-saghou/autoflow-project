@@ -18,10 +18,10 @@ const __dirname = path.dirname(__filename);
 // Connect to MongoDB
 connectDB();
 
-// Middleware pour parser JSON
+// Middleware to parse JSON
 app.use(express.json());
 
-// API pour ajouter un device et lancer playbook
+// API to add a device and run playbook
 app.post("/api/devices", async (req, res) => {
   const { name, ip } = req.body;
   try {
@@ -35,14 +35,13 @@ app.post("/api/devices", async (req, res) => {
       }
       res.json({ message: "Device saved and playbook executed", output: stdout });
     });
-
   } catch (error) {
     console.error("Error saving device:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-// API pour récupérer tous les devices
+// API to fetch all devices
 app.get("/api/devices", async (req, res) => {
   try {
     const devices = await Device.find();
@@ -63,15 +62,26 @@ app.post('/api/login', (req, res) => {
   }
 });
 
-// Servir les fichiers statiques depuis le dossier public
+// API for system health (Developer Dashboard)
+app.get('/api/dev/health', async (req, res) => {
+  const db = Device.db.db; // Access the MongoDB database instance
+  const health = {
+    serverUptime: process.uptime(),
+    mongoStatus: await db.collection('devices').stats().then(() => 'Connected').catch(() => 'Disconnected'),
+    kubernetesPods: 'N/A', // Placeholder for Kubernetes API call (not implemented)
+  };
+  res.json(health);
+});
+
+// Serve static files from the public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route pour servir index.html sur la racine (frontend SPA)
+// Route to serve index.html for the frontend SPA
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Gestion des routes inconnues (404 JSON)
+// Handle unknown routes (404 JSON)
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
