@@ -10,7 +10,7 @@
 }
 
 body {
-  background: linear-gradient(135deg, #4A2C1A 0%, #8B4513 50%, #D2B48C 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #93c5fd 100%);
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -22,7 +22,7 @@ body {
   align-items: center;
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(135deg, #4A2C1A 0%, #8B4513 50%, #D2B48C 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #93c5fd 100%);
   background-size: 200% 200%;
   background-attachment: fixed;
   flex-direction: column;
@@ -37,7 +37,7 @@ body {
 
 /* Updated login-card for glassmorphism effect */
 .login-card {
-  background: rgba(245, 245, 220, 0.9);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   padding: 40px;
   border-radius: 20px;
@@ -56,8 +56,11 @@ body {
 .login-header h2 {
   font-size: 28px;
   font-weight: 600;
-  color: #4A2C1A;
+  color: #fff;
   letter-spacing: 1px;
+  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Updated login-form */
@@ -76,7 +79,7 @@ body {
 .form-group label {
   font-size: 14px;
   font-weight: 500;
-  color: #4A2C1A;
+  color: #fff;
   margin-bottom: 8px;
   display: block;
 }
@@ -86,24 +89,25 @@ body {
   width: 100%;
   height: 45px;
   padding: 10px 15px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   font-size: 16px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
   transition: all 0.3s ease;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #FFD700;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-  background: #fff;
+  border-color: #f97316; /* Dark orange accent */
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Updated login-btn with gradient and hover effect */
 .login-btn {
-  background: linear-gradient(45deg, #8B4513, #DAA520);
+  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
   color: #fff;
   padding: 12px 20px;
   border: none;
@@ -116,7 +120,7 @@ body {
 }
 
 .login-btn:hover {
-  background: linear-gradient(45deg, #DAA520, #8B4513);
+  background: linear-gradient(45deg, #3b82f6, #1e3a8a);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
@@ -125,13 +129,13 @@ body {
 .dashboard-container {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #4A2C1A 0%, #8B4513 50%, #D2B48C 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #93c5fd 100%);
   background-size: 200% 200%;
   animation: gradientShift 15s ease infinite;
 }
 
 .sidebar {
-  background: rgba(245, 245, 220, 0.7);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(12px);
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   padding: 20px;
@@ -147,7 +151,7 @@ body {
 }
 
 .sidebar-header h3 {
-  color: #4A2C1A;
+  color: #fff;
   font-size: 22px;
   font-weight: 600;
   margin: 0;
@@ -156,7 +160,7 @@ body {
 .sidebar-toggle {
   background: none;
   border: none;
-  color: #DAA520;
+  color: #f97316; /* Dark orange accent */
   font-size: 24px;
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -178,7 +182,7 @@ body {
 .nav-button {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(45deg, #D2B48C, #8B4513);
+  background: #1e3a8a; /* Dark maritime blue */
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -192,12 +196,12 @@ body {
 }
 
 .nav-button.active {
-  background: linear-gradient(45deg, #8B4513, #DAA520);
+  background: linear-gradient(45deg, #f97316, #3b82f6); /* Dark orange to blue */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .nav-button:hover {
-  background: linear-gradient(45deg, #8B4513, #DAA520);
+  background: linear-gradient(45deg, #f97316, #3b82f6);
   transform: translateX(5px);
 }
 
@@ -208,10 +212,10 @@ body {
 .main-content {
   flex: 1;
   padding: 40px;
-  background: rgba(255, 248, 220, 0.5);
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(8px);
   overflow-y: auto;
-  color: #4A2C1A;
+  color: #fff;
   animation: fadeIn 0.5s ease;
 }
 
@@ -226,7 +230,7 @@ body {
   right: 20px;
   background: none;
   border: none;
-  color: #DAA520;
+  color: #f97316; /* Dark orange accent */
   font-size: 28px;
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -240,25 +244,25 @@ body {
   position: absolute;
   top: 60px;
   right: 20px;
-  background: rgba(245, 245, 220, 0.9);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 220px;
-  zIndex: 10;
+  z-index: 10;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .account-panel h4 {
-  color: #4A2C1A;
+  color: #fff;
   margin: 0 0 15px 0;
   font-size: 18px;
   font-weight: 600;
 }
 
 .account-panel p {
-  color: #666;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 14px;
   margin-bottom: 10px;
 }
@@ -273,34 +277,39 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  zIndex: 20;
+  z-index: 20;
 }
 
 .profile-edit-card {
-  background: rgba(245, 245, 220, 0.95);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   padding: 30px;
   border-radius: 20px;
   width: 350px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
 .section-header {
-  color: #4A2C1A;
+  color: #fff;
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 30px;
   text-align: center;
+  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .config-section {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  padding: 20px;
+  border-radius: 12px;
+  padding: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  max-width: 600px;
 }
 
 .config-section:hover {
@@ -309,26 +318,26 @@ body {
 }
 
 .config-section h3 {
-  color: #4A2C1A;
-  font-size: 20px;
+  color: #fff;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .config-subsection {
-  padding-left: 20px;
-  margin-bottom: 20px;
+  padding-left: 15px;
+  margin-bottom: 15px;
 }
 
 .config-subsection h4 {
-  color: #8B4513;
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 10px;
+  color: #1e3a8a; /* Darker blue for switch types */
+  font-size: 14px;
+  font-weight: 700; /* Bold text */
+  margin-bottom: 8px;
 }
 
 .device-list {
@@ -338,13 +347,65 @@ body {
 
 .device-item {
   padding: 15px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
   transition: background 0.3s ease;
+  color: #fff;
 }
 
 .device-item:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Skeleton loading styles */
+.skeleton {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+.skeleton-text {
+  height: 20px;
+  margin-bottom: 10px;
+}
+
+.skeleton-button {
+  width: 100px;
+  height: 30px;
+}
+
+@keyframes skeleton-loading {
+  0% { background-color: rgba(255, 255, 255, 0.1); }
+  100% { background-color: rgba(255, 255, 255, 0.3); }
+}
+
+/* Form validation styles */
+.form-input.valid {
+  border-color: #2ecc71;
+}
+
+.form-input.invalid {
+  border-color: #e74c3c;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* Theme variations */
+.dashboard-container.dark .main-content {
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+}
+
+.dashboard-container.blue .main-content {
+  background: rgba(30, 58, 138, 0.1); /* Darker blue theme */
+}
+
+.dashboard-container.green .main-content {
+  background: rgba(46, 204, 113, 0.1);
 }
