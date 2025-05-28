@@ -1,10 +1,10 @@
-// Dashboard.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
-import Particles from 'react-particles';
+import Particles from '@tsparticles/react';
+import type { Engine } from 'tsparticles-engine'; // Updated to type-only import
 import { loadFull } from 'tsparticles';
-import { Tooltip } from 'react-tooltip'; // Updated import for react-tooltip v5+
+import { Tooltip } from 'react-tooltip';
 import Joyride from 'react-joyride';
 
 const Dashboard = () => {
@@ -120,7 +120,9 @@ const Dashboard = () => {
     }
   };
   const changeTheme = (newTheme) => setTheme(newTheme);
-  const particlesInit = async (main) => await loadFull(main);
+  const particlesInit = async (engine: Engine) => {
+    await loadFull(engine);
+  };
 
   const steps = [
     { target: '.sidebar', content: 'Naviguez avec cette barre latérale.' },
@@ -130,13 +132,27 @@ const Dashboard = () => {
 
   return (
     <div className={`dashboard-container ${theme}`}>
-      <Particles id="tsparticles" init={particlesInit} options={{
-        background: { color: { value: 'transparent' } }, fpsLimit: 60, particles: {
-          number: { value: 50, density: { enable: true, value_area: 800 } },
-          color: { value: '#DAA520' }, shape: { type: 'circle' }, opacity: { value: 0.5 },
-          size: { value: 3, random: true }, move: { enable: true, speed: 1, direction: 'none', random: true },
-        }, interactivity: { events: { onhover: { enable: true, mode: 'repulse' } }, modes: { repulse: { distance: 100, duration: 0.4 } } },
-      }} style={{ position: 'absolute', width: '100%', height: '100%', zIndex: -1 }} />
+      <Particles
+        id="tsparticles"
+        init={particlesInit}
+        options={{
+          background: { color: { value: 'transparent' } },
+          fpsLimit: 60,
+          particles: {
+            number: { value: 50, density: { enable: true, value_area: 800 } },
+            color: { value: '#DAA520' },
+            shape: { type: 'circle' },
+            opacity: { value: 0.5 },
+            size: { value: 3, random: true },
+            move: { enable: true, speed: 1, direction: 'none', random: true },
+          },
+          interactivity: {
+            events: { onhover: { enable: true, mode: 'repulse' } },
+            modes: { repulse: { distance: 100, duration: 0.4 } },
+          },
+        }}
+        style={{ position: 'absolute', width: '100%', height: '100%', zIndex: -1 }}
+      />
       <div className="sidebar" style={{ width: isMenuOpen ? '280px' : '80px' }}>
         <div className="sidebar-header">{isMenuOpen && <h3>Menu</h3>}<button onClick={toggleMenu} className="sidebar-toggle">{isMenuOpen ? '←' : '→'}</button></div>
         <ul className="nav-list">
