@@ -42,16 +42,16 @@ const Login = () => {
         </div>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label>Nom d'utilisateur :</label>
+            <label>Username :</label>
             <input
               type="text"
-              value={username}
+ value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="form-input"
             />
           </div>
           <div className="form-group">
-            <label>Mot de passe :</label>
+            <label>Password :</label>
             <input
               type="password"
               value={password}
