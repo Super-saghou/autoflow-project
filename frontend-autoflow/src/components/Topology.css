@@ -1,0 +1,22 @@
+/* src/components/Topology.css */
+.topology-container {
+  padding: 20px;
+}
+
+#terminal {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.profile-edit-panel {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.profile-edit-card {
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}

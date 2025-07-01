@@ -22,7 +22,9 @@
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.13.2"
+    "mongoose": "^8.13.2",
+    "node-ssh": "^13.2.1",
+    "socket.io": "^4.8.1"
   },
   "description": ""
 }

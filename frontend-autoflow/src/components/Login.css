@@ -100,7 +100,7 @@ body {
 
 .form-input:focus {
   outline: none;
-  border-color: #f97316; /* Dark orange accent */
+  border-color: #f97316;
   box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
   background: rgba(255, 255, 255, 0.2);
 }
@@ -129,15 +129,29 @@ body {
 .dashboard-container {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #93c5fd 100%);
-  background-size: 200% 200%;
-  animation: gradientShift 15s ease infinite;
+  background: #FFEA99; /* Light yellow background */
+  color: #1A2A44; /* Navy blue for white text */
+}
+
+.dashboard-container.default {
+  background: #FFEA99;
+  animation: none;
+}
+
+.dashboard-container.light .main-content {
+  background: rgba(255, 234, 153, 0.2);
+  color: #1A2A44;
+}
+
+.dashboard-container.dark .main-content {
+  background: rgba(0, 0, 0, 0.8);
+  color: #1A2A44;
 }
 
 .sidebar {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 234, 153, 0.1); /* Adjusted for new background */
   backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(26, 42, 68, 0.2); /* Adjusted border color */
   padding: 20px;
   transition: width 0.3s ease;
   box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
@@ -151,7 +165,7 @@ body {
 }
 
 .sidebar-header h3 {
-  color: #fff;
+  color: #3b82f6;
   font-size: 22px;
   font-weight: 600;
   margin: 0;
@@ -160,7 +174,7 @@ body {
 .sidebar-toggle {
   background: none;
   border: none;
-  color: #f97316; /* Dark orange accent */
+  color: #f97316;
   font-size: 24px;
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -196,7 +210,7 @@ body {
 }
 
 .nav-button.active {
-  background: linear-gradient(45deg, #f97316, #3b82f6); /* Dark orange to blue */
+  background: linear-gradient(45deg, #f97316, #3b82f6);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -212,10 +226,10 @@ body {
 .main-content {
   flex: 1;
   padding: 40px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 234, 153, 0.05); /* Adjusted for new background */
   backdrop-filter: blur(8px);
   overflow-y: auto;
-  color: #fff;
+  color: #1A2A44; /* Navy blue */
   animation: fadeIn 0.5s ease;
 }
 
@@ -230,7 +244,7 @@ body {
   right: 20px;
   background: none;
   border: none;
-  color: #f97316; /* Dark orange accent */
+  color: #f97316;
   font-size: 28px;
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -244,25 +258,25 @@ body {
   position: absolute;
   top: 60px;
   right: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 234, 153, 0.1); /* Adjusted for new background */
   backdrop-filter: blur(10px);
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 220px;
   z-index: 10;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(26, 42, 68, 0.2); /* Adjusted border color */
 }
 
 .account-panel h4 {
-  color: #fff;
+  color: #3b82f6;
   margin: 0 0 15px 0;
   font-size: 18px;
   font-weight: 600;
 }
 
 .account-panel p {
-  color: rgba(255, 255, 255, 0.8);
+  color: #1A2A44; /* Navy blue */
   font-size: 14px;
   margin-bottom: 10px;
 }
@@ -281,18 +295,18 @@ body {
 }
 
 .profile-edit-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 234, 153, 0.1); /* Adjusted for new background */
   backdrop-filter: blur(10px);
   padding: 30px;
   border-radius: 20px;
   width: 350px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+  border: 1px solid rgba(26, 42, 68, 0.2); /* Adjusted border color */
+  color: #1A2A44; /* Navy blue */
 }
 
 .section-header {
-  color: #fff;
+  color: #3b82f6;
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 30px;
@@ -304,7 +318,7 @@ body {
 
 .config-section {
   margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 234, 153, 0.1); /* Adjusted for new background */
   border-radius: 12px;
   padding: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -318,7 +332,7 @@ body {
 }
 
 .config-section h3 {
-  color: #fff;
+  color: #3b82f6;
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
@@ -336,7 +350,7 @@ body {
 .config-subsection h4 {
   color: #1e3a8a; /* Darker blue for switch types */
   font-size: 14px;
-  font-weight: 700; /* Bold text */
+  font-weight: 700;
   margin-bottom: 8px;
 }
 
@@ -347,21 +361,21 @@ body {
 
 .device-item {
   padding: 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(26, 42, 68, 0.1); /* Adjusted border color */
   display: flex;
   justify-content: space-between;
   align-items: center;
   transition: background 0.3s ease;
-  color: #fff;
+  color: #1A2A44; /* Navy blue */
 }
 
 .device-item:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 234, 153, 0.2);
 }
 
 /* Skeleton loading styles */
 .skeleton {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 234, 153, 0.1); /* Adjusted for new background */
   border-radius: 4px;
   animation: skeleton-loading 1s linear infinite alternate;
 }
@@ -377,8 +391,8 @@ body {
 }
 
 @keyframes skeleton-loading {
-  0% { background-color: rgba(255, 255, 255, 0.1); }
-  100% { background-color: rgba(255, 255, 255, 0.3); }
+  0% { background-color: rgba(255, 234, 153, 0.1); }
+  100% { background-color: rgba(255, 234, 153, 0.3); }
 }
 
 /* Form validation styles */
@@ -399,11 +413,11 @@ body {
 /* Theme variations */
 .dashboard-container.dark .main-content {
   background: rgba(0, 0, 0, 0.8);
-  color: #fff;
+  color: #1A2A44;
 }
 
 .dashboard-container.blue .main-content {
-  background: rgba(30, 58, 138, 0.1); /* Darker blue theme */
+  background: rgba(30, 58, 138, 0.1);
 }
 
 .dashboard-container.green .main-content {
