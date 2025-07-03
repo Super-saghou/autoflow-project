@@ -1,0 +1,105 @@
+.interfaces-modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30, 58, 138, 0.18);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  backdrop-filter: blur(8px);
+}
+
+.interfaces-container {
+  background: #F5F5F7;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(30, 58, 138, 0.08);
+  padding: 64px 56px;
+  margin: 0 auto;
+  max-width: 1400px;
+  width: 98vw;
+  max-height: 98vh;
+  height: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  animation: interfaces-modal-pop 0.25s cubic-bezier(0.4,0.2,0.2,1);
+}
+
+@keyframes interfaces-modal-pop {
+  0% { opacity: 0; transform: scale(0.96) translateY(40px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 36px;
+  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: left;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(30, 58, 138, 0.04);
+  font-size: 1.15rem;
+}
+
+th, td {
+  padding: 20px 22px;
+  text-align: left;
+}
+
+th {
+  background: #F5F5F7;
+  color: #1e3a8a;
+  font-size: 18px;
+  font-weight: 700;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+td {
+  background: #fff;
+  color: #1A2A44;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.up, .down {
+  color: #10b981;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.up:hover, .down:hover {
+  color: #f97316;
+}
+
+.interfaces-modal-close {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  background: none;
+  border: none;
+  font-size: 40px;
+  color: #1e3a8a;
+  cursor: pointer;
+  z-index: 1100;
+  transition: color 0.2s;
+}
+
+.interfaces-modal-close:hover {
+  color: #f97316;
+} 

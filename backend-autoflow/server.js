@@ -158,16 +158,387 @@ app.post('/api/create-vlan', async (req, res) => {
   }
 
   try {
-    exec(`python3 /home/sarra/ansible/run_vlan_playbook.py ${switchIp} ${vlanId} "${vlanName}"`, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
-      if (error) {
-        console.error("Playbook execution error:", error.message);
-        return res.status(500).json({ error: 'Failed to create VLAN', details: stderr });
-      }
-      console.log("Playbook output:", stdout);
-      res.json({ message: `VLAN ${vlanId} created successfully` });
+    // Use the new playbook generation system
+    const playbookData = {
+      action: 'vlan',
+      target_ip: switchIp,
+      vlan_id: vlanId,
+      vlan_name: vlanName,
+      interfaces: [] // Can be extended to include specific interfaces
+    };
+
+    // Call the playbook generation API
+    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playbookData)
     });
+
+    const result = await generateResponse.json();
+    
+    if (result.success) {
+      console.log("Playbook executed successfully:", result);
+      res.json({ message: `VLAN ${vlanId} created successfully`, details: result });
+    } else {
+      console.error("Playbook execution failed:", result);
+      res.status(500).json({ error: 'Failed to create VLAN', details: result });
+    }
   } catch (err) {
     console.error('Execution error:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// New API endpoint for SSH configuration
+app.post('/api/configure-ssh', async (req, res) => {
+  const { switchIp, sshEnabled, sshPort, allowedIps } = req.body;
+  
+  if (!switchIp) {
+    return res.status(400).json({ error: 'Switch IP is required' });
+  }
+
+  try {
+    const playbookData = {
+      action: 'ssh',
+      target_ip: switchIp,
+      ssh_enabled: sshEnabled !== undefined ? sshEnabled : true,
+      ssh_port: sshPort || 22,
+      allowed_ips: allowedIps || []
+    };
+
+    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playbookData)
+    });
+
+    const result = await generateResponse.json();
+    
+    if (result.success) {
+      console.log("SSH configuration successful:", result);
+      res.json({ message: 'SSH configuration applied successfully', details: result });
+    } else {
+      console.error("SSH configuration failed:", result);
+      res.status(500).json({ error: 'Failed to configure SSH', details: result });
+    }
+  } catch (err) {
+    console.error('SSH configuration error:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// New API endpoint for port security configuration
+app.post('/api/configure-port-security', async (req, res) => {
+  const { switchIp, portConfigs } = req.body;
+  
+  if (!switchIp || !portConfigs) {
+    return res.status(400).json({ error: 'Switch IP and port configurations are required' });
+  }
+
+  try {
+    const playbookData = {
+      action: 'port_security',
+      target_ip: switchIp,
+      port_configs: portConfigs
+    };
+
+    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playbookData)
+    });
+
+    const result = await generateResponse.json();
+    
+    if (result.success) {
+      console.log("Port security configuration successful:", result);
+      res.json({ message: 'Port security configuration applied successfully', details: result });
+    } else {
+      console.error("Port security configuration failed:", result);
+      res.status(500).json({ error: 'Failed to configure port security', details: result });
+    }
+  } catch (err) {
+    console.error('Port security configuration error:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// New API endpoint for DHCP snooping configuration
+app.post('/api/configure-dhcp-snooping', async (req, res) => {
+  const { switchIp, enabled, trustedPorts } = req.body;
+  
+  if (!switchIp) {
+    return res.status(400).json({ error: 'Switch IP is required' });
+  }
+
+  try {
+    const playbookData = {
+      action: 'dhcp_snooping',
+      target_ip: switchIp,
+      enabled: enabled !== undefined ? enabled : true,
+      trusted_ports: trustedPorts || []
+    };
+
+    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playbookData)
+    });
+
+    const result = await generateResponse.json();
+    
+    if (result.success) {
+      console.log("DHCP snooping configuration successful:", result);
+      res.json({ message: 'DHCP snooping configuration applied successfully', details: result });
+    } else {
+      console.error("DHCP snooping configuration failed:", result);
+      res.status(500).json({ error: 'Failed to configure DHCP snooping', details: result });
+    }
+  } catch (err) {
+    console.error('DHCP snooping configuration error:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// New API endpoint for hostname and management IP configuration
+app.post('/api/configure-hostname', async (req, res) => {
+  const { switchIp, hostname, managementIp } = req.body;
+  
+  if (!switchIp || !hostname) {
+    return res.status(400).json({ error: 'Switch IP and hostname are required' });
+  }
+
+  try {
+    const playbookData = {
+      action: 'hostname',
+      target_ip: switchIp,
+      hostname: hostname,
+      management_ip: managementIp
+    };
+
+    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playbookData)
+    });
+
+    const result = await generateResponse.json();
+    
+    if (result.success) {
+      console.log("Hostname configuration successful:", result);
+      res.json({ message: 'Hostname and management IP configured successfully', details: result });
+    } else {
+      console.error("Hostname configuration failed:", result);
+      res.status(500).json({ error: 'Failed to configure hostname', details: result });
+    }
+  } catch (err) {
+    console.error('Hostname configuration error:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// New API endpoint for routing configuration
+app.post('/api/configure-routing', async (req, res) => {
+  const { switchIp, staticRoutes, dynamicRouting } = req.body;
+  
+  if (!switchIp) {
+    return res.status(400).json({ error: 'Switch IP is required' });
+  }
+
+  try {
+    const playbookData = {
+      action: 'routing',
+      target_ip: switchIp,
+      static_routes: staticRoutes || [],
+      dynamic_routing: dynamicRouting || false
+    };
+
+    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playbookData)
+    });
+
+    const result = await generateResponse.json();
+    
+    if (result.success) {
+      console.log("Routing configuration successful:", result);
+      res.json({ message: 'Routing configuration applied successfully', details: result });
+    } else {
+      console.error("Routing configuration failed:", result);
+      res.status(500).json({ error: 'Failed to configure routing', details: result });
+    }
+  } catch (err) {
+    console.error('Routing configuration error:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// New API endpoint for NAT configuration
+app.post('/api/configure-nat', async (req, res) => {
+  const { switchIp, natRules, enabled } = req.body;
+  
+  if (!switchIp) {
+    return res.status(400).json({ error: 'Switch IP is required' });
+  }
+
+  try {
+    const playbookData = {
+      action: 'nat',
+      target_ip: switchIp,
+      nat_rules: natRules || [],
+      enabled: enabled !== undefined ? enabled : true
+    };
+
+    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playbookData)
+    });
+
+    const result = await generateResponse.json();
+    
+    if (result.success) {
+      console.log("NAT configuration successful:", result);
+      res.json({ message: 'NAT configuration applied successfully', details: result });
+    } else {
+      console.error("NAT configuration failed:", result);
+      res.status(500).json({ error: 'Failed to configure NAT', details: result });
+    }
+  } catch (err) {
+    console.error('NAT configuration error:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// New API endpoint for DHCP configuration
+app.post('/api/configure-dhcp', async (req, res) => {
+  const { switchIp, dhcpPools, enabled } = req.body;
+  
+  if (!switchIp) {
+    return res.status(400).json({ error: 'Switch IP is required' });
+  }
+
+  try {
+    const playbookData = {
+      action: 'dhcp',
+      target_ip: switchIp,
+      dhcp_pools: dhcpPools || [],
+      enabled: enabled !== undefined ? enabled : true
+    };
+
+    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playbookData)
+    });
+
+    const result = await generateResponse.json();
+    
+    if (result.success) {
+      console.log("DHCP configuration successful:", result);
+      res.json({ message: 'DHCP configuration applied successfully', details: result });
+    } else {
+      console.error("DHCP configuration failed:", result);
+      res.status(500).json({ error: 'Failed to configure DHCP', details: result });
+    }
+  } catch (err) {
+    console.error('DHCP configuration error:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// New API endpoint for STP configuration
+app.post('/api/configure-stp', async (req, res) => {
+  const { switchIp, enabled, mode, portConfigs } = req.body;
+  
+  if (!switchIp) {
+    return res.status(400).json({ error: 'Switch IP is required' });
+  }
+
+  try {
+    const playbookData = {
+      action: 'stp',
+      target_ip: switchIp,
+      enabled: enabled !== undefined ? enabled : true,
+      mode: mode || 'pvst',
+      port_configs: portConfigs || []
+    };
+
+    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playbookData)
+    });
+
+    const result = await generateResponse.json();
+    
+    if (result.success) {
+      console.log("STP configuration successful:", result);
+      res.json({ message: 'STP configuration applied successfully', details: result });
+    } else {
+      console.error("STP configuration failed:", result);
+      res.status(500).json({ error: 'Failed to configure STP', details: result });
+    }
+  } catch (err) {
+    console.error('STP configuration error:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// New API endpoint for EtherChannel configuration
+app.post('/api/configure-etherchannel', async (req, res) => {
+  const { switchIp, enabled, groups } = req.body;
+  
+  if (!switchIp) {
+    return res.status(400).json({ error: 'Switch IP is required' });
+  }
+
+  try {
+    const playbookData = {
+      action: 'etherchannel',
+      target_ip: switchIp,
+      enabled: enabled !== undefined ? enabled : true,
+      groups: groups || []
+    };
+
+    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playbookData)
+    });
+
+    const result = await generateResponse.json();
+    
+    if (result.success) {
+      console.log("EtherChannel configuration successful:", result);
+      res.json({ message: 'EtherChannel configuration applied successfully', details: result });
+    } else {
+      console.error("EtherChannel configuration failed:", result);
+      res.status(500).json({ error: 'Failed to configure EtherChannel', details: result });
+    }
+  } catch (err) {
+    console.error('EtherChannel configuration error:', err);
     res.status(500).json({ error: 'Server error', details: err.message });
   }
 });

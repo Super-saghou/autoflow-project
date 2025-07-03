@@ -4,55 +4,60 @@ import CytoscapeComponent from 'react-cytoscapejs';
 import { Terminal } from 'xterm';
 import 'xterm/css/xterm.css';
 import io from 'socket.io-client';
-import { Tooltip } from 'react-tooltip';
 import './Topology.css';
 
 const Topology = ({ devices, theme, API_URL, setError, setMessage }) => {
-  const [elements, setElements] = useState([]);
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState(null);
+  const [hoveredNode, setHoveredNode] = useState(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const terminalRef = useRef(null);
   const socketRef = useRef(null);
 
-  // Initialize Socket.IO and fetch topology data
+  // Fetch devices and topology, validate data
   useEffect(() => {
     socketRef.current = io(API_URL);
-
     const fetchTopology = async () => {
       try {
         const response = await fetch(`${API_URL}/api/topology`);
         if (!response.ok) throw new Error('Error fetching topology');
         const data = await response.json();
-        const nodes = devices.map(device => ({
-          data: { id: device.name, label: device.name, ip: device.ip, status: 'online' }
+        // Build node set from devices, label with name and IP, add type if available, and add title for browser tooltip
+        const nodeList = devices.map(device => ({
+          data: {
+            id: device.name,
+            label: `${device.name}\n${device.ip}`,
+            ip: device.ip,
+            status: 'online',
+            type: device.type || 'Device',
+            title: `${device.type || 'Device'}\n${device.name}\n${device.ip}`
+          }
         }));
-        setElements([...nodes, ...data.edges]);
+        // Validate edges: only keep those whose source and target exist in nodeList
+        const nodeIds = new Set(nodeList.map(n => n.data.id));
+        const validEdges = (data.edges || []).filter(
+          edge => nodeIds.has(edge.data.source) && nodeIds.has(edge.data.target)
+        );
+        setNodes(nodeList);
+        setEdges(validEdges);
       } catch (err) {
         setError(err.message);
       }
     };
     fetchTopology();
-
     socketRef.current.on('terminal-output', (data) => {
       if (terminalRef.current) {
         terminalRef.current.write(data.output);
       }
     });
-
-    socketRef.current.on('device-status-update', (updatedDevice) => {
-      setElements((prev) =>
-        prev.map((el) =>
-          el.data.id === updatedDevice.id ? { ...el, data: { ...el.data, status: updatedDevice.status } } : el
-        )
-      );
-    });
-
     return () => {
       socketRef.current.disconnect();
     };
   }, [devices, API_URL, setError]);
 
-  // Initialize terminal only when terminalOpen is true
+  // Terminal logic
   useEffect(() => {
     if (terminalOpen) {
       const terminalElement = document.getElementById('terminal');
@@ -62,7 +67,11 @@ const Topology = ({ devices, theme, API_URL, setError, setMessage }) => {
         });
         terminalRef.current = term;
         term.open(terminalElement);
-
+        // Ensure terminal is focusable and interactive
+        setTimeout(() => {
+          terminalElement.focus();
+          term.focus();
+        }, 100);
         term.onData((data) => {
           if (selectedDevice) {
             socketRef.current.emit('terminal-input', { deviceId: selectedDevice, command: data });
@@ -70,7 +79,6 @@ const Topology = ({ devices, theme, API_URL, setError, setMessage }) => {
         });
       }
     }
-
     return () => {
       if (terminalRef.current) {
         terminalRef.current.dispose();
@@ -84,22 +92,30 @@ const Topology = ({ devices, theme, API_URL, setError, setMessage }) => {
     setSelectedDevice(device.id);
     setTerminalOpen(true);
     socketRef.current.emit('start-ssh', { deviceId: device.id });
-    setMessage(`Connected to ${device.label}`);
+    setMessage && setMessage(`Connected to ${device.label}`);
+  };
+
+  // Tooltip handlers
+  const handleCyInit = (cy) => {
+    cy.on('tap', 'node', handleNodeClick);
+    cy.on('mouseover', 'node', (evt) => {
+      const node = evt.target.data();
+      setHoveredNode(node);
+    });
+    cy.on('mouseout', 'node', () => {
+      setHoveredNode(null);
+    });
+    cy.on('mousemove', (evt) => {
+      setMousePos({ x: evt.originalEvent.clientX, y: evt.originalEvent.clientY });
+    });
   };
 
   return (
     <div className="topology-container">
       <h2 className="section-header">Network Topology</h2>
-      <div
-        style={{
-          background: 'rgba(255, 255, 255, 0.1)',
-          borderRadius: '15px',
-          padding: '20px',
-          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-        }}
-      >
+      <div className="topology-canvas-wrapper">
         <CytoscapeComponent
-          elements={elements}
+          elements={[...nodes, ...edges]}
           style={{ width: '100%', height: '600px' }}
           layout={{ name: 'cose' }}
           stylesheet={[
@@ -107,12 +123,16 @@ const Topology = ({ devices, theme, API_URL, setError, setMessage }) => {
               selector: 'node',
               style: {
                 label: 'data(label)',
+                'text-wrap': 'wrap',
+                'text-max-width': 80,
                 backgroundColor: (node) => (node.data('status') === 'online' ? '#2ecc71' : '#e74c3c'),
                 color: theme === 'light' ? '#4A2C1A' : '#DAA520',
                 'text-outline-color': theme === 'light' ? '#F3E5AB' : '#1C2526',
                 'text-outline-width': 2,
-                width: 40,
-                height: 40,
+                width: 50,
+                height: 50,
+                'font-size': 14,
+                'z-index': 10,
               },
             },
             {
@@ -124,33 +144,37 @@ const Topology = ({ devices, theme, API_URL, setError, setMessage }) => {
               },
             },
           ]}
-          cy={(cy) => {
-            cy.on('tap', 'node', handleNodeClick);
-            cy.nodes().forEach((node) => {
-              node.data('tooltip', `IP: ${node.data('ip')}\nStatus: ${node.data('status')}`);
-            });
-          }}
+          cy={handleCyInit}
         />
-        {terminalOpen && (
+        {hoveredNode && (
           <div
-            className="profile-edit-panel"
             style={{
               position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              zIndex: 1000,
+              left: mousePos.x + 10,
+              top: mousePos.y + 10,
+              background: 'rgba(30, 30, 40, 0.95)',
+              color: '#fff',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+              zIndex: 2000,
+              pointerEvents: 'none',
+              fontSize: 15,
+              minWidth: 180,
+              maxWidth: 260,
+              whiteSpace: 'pre-line',
             }}
           >
-            <div
-              className="profile-edit-card"
-              style={{
-                background: theme === 'light' ? '#F3E5AB' : '#1C2526',
-                color: theme === 'light' ? '#4A2C1A' : '#DAA520',
-              }}
-            >
+            <b>{hoveredNode.type}</b> <br />
+            <span>Name: {hoveredNode.id}</span> <br />
+            <span>IP: {hoveredNode.ip}</span>
+          </div>
+        )}
+        {terminalOpen && (
+          <div className="terminal-modal">
+            <div className="terminal-card">
               <h3>SSH Terminal - {selectedDevice}</h3>
-              <div id="terminal" style={{ width: '600px', height: '400px' }} />
+              <div id="terminal" style={{ width: '600px', height: '400px' }} tabIndex={0} />
               <button
                 className="login-btn"
                 style={{ background: 'linear-gradient(45deg, #DAA520, #8B4513)', marginTop: '10px' }}
@@ -166,7 +190,7 @@ const Topology = ({ devices, theme, API_URL, setError, setMessage }) => {
           </div>
         )}
       </div>
-      <Tooltip id="topology-tooltip" place="top" effect="solid" />
+      {/* For backend SSH relay, see checklist below */}
     </div>
   );
 };
