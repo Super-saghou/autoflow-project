@@ -8,6 +8,8 @@ import Joyride from 'react-joyride';
 import Topology from './Topology';
 import VlanModal from './VlanModal';
 import InterfacesModal from './InterfacesModal';
+import CreateVlanModal from './CreateVlanModal';
+import DhcpModal from './DhcpModal';
 
 const Dashboard = () => {
   const [devices, setDevices] = useState([]);
@@ -31,7 +33,10 @@ const Dashboard = () => {
   const [interfacesModalOpen, setInterfacesModalOpen] = useState(false);
   const [modalInterfaceName, setModalInterfaceName] = useState('');
   const [modalSwitchType, setModalSwitchType] = useState('');
+  const [createVlanModalOpen, setCreateVlanModalOpen] = useState(false);
   const [modalInterfaces, setModalInterfaces] = useState([]);
+  const [isLoadingInterfaces, setIsLoadingInterfaces] = useState(false);
+  const [dhcpModalOpen, setDhcpModalOpen] = useState(false);
   const [activeSwitchSubsection, setActiveSwitchSubsection] = useState(null);
   const [hostname, setHostname] = useState('');
   const [mgmtIp, setMgmtIp] = useState('');
@@ -543,14 +548,149 @@ const Dashboard = () => {
     setVlanModalOpen(true);
   };
 
-  const openInterfacesModal = (switchType = 'Cisco 3725', interfaces = [
-    { name: 'Fa0/1', status: 'Up' },
-    { name: 'Fa0/2', status: 'Down' },
-    { name: 'Fa0/3', status: 'Up' },
-    { name: 'Fa0/4', status: 'Down' },
-  ]) => {
+  const openCreateVlanModal = async (switchType = 'Cisco 3725') => {
     setModalSwitchType(switchType);
-    setModalInterfaces(interfaces);
+    setCreateVlanModalOpen(true);
+    
+    // Pre-fetch interfaces in the background for faster transition
+    try {
+      console.log('Pre-fetching interfaces for faster transition...');
+      const response = await fetch(`${API_URL}/api/interfaces/${encodeURIComponent(switchType)}`);
+      if (response.ok) {
+        const interfacesData = await response.json();
+        const formattedInterfaces = interfacesData.map(([name, status]) => ({
+          name: name,
+          status: status
+        }));
+        setModalInterfaces(formattedInterfaces);
+        console.log('Interfaces pre-fetched successfully');
+      }
+    } catch (error) {
+      console.log('Pre-fetch failed, will fetch when needed:', error.message);
+    }
+  };
+
+  const handleAssignToInterface = async () => {
+    console.log('handleAssignToInterface called');
+    setCreateVlanModalOpen(false);
+    
+    // If we already have interfaces from pre-fetch, use them immediately
+    if (modalInterfaces.length > 0) {
+      console.log('Using pre-fetched interfaces:', modalInterfaces);
+      setInterfacesModalOpen(true);
+      return;
+    }
+    
+    // Otherwise, fetch them now
+    setIsLoadingInterfaces(true);
+    
+    try {
+      console.log('Fetching real interfaces for assignment...');
+      const response = await fetch(`${API_URL}/api/interfaces/Cisco%203725`);
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const interfacesData = await response.json();
+      console.log('Real interfaces data:', interfacesData);
+      
+      // Convert the data format to match what InterfacesModal expects
+      const formattedInterfaces = interfacesData.map(([name, status]) => ({
+        name: name,
+        status: status
+      }));
+      
+      console.log('Formatted interfaces:', formattedInterfaces);
+      setModalInterfaces(formattedInterfaces);
+      console.log('Setting interfaces modal open...');
+      setInterfacesModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching interfaces:', error);
+      // Fallback to default interfaces if API fails
+      const fallbackInterfaces = [
+        { name: 'Fa0/1', status: 'Down' },
+        { name: 'Fa0/2', status: 'Down' },
+        { name: 'Fa0/3', status: 'Down' },
+        { name: 'Fa0/4', status: 'Down' },
+      ];
+      console.log('Using fallback interfaces:', fallbackInterfaces);
+      setModalInterfaces(fallbackInterfaces);
+      console.log('Setting interfaces modal open (fallback)...');
+      setInterfacesModalOpen(true);
+    } finally {
+      setIsLoadingInterfaces(false);
+      console.log('Loading finished, interfacesModalOpen should be:', true);
+    }
+  };
+
+  const openDhcpModal = (switchType = 'Cisco 3725') => {
+    setModalSwitchType(switchType);
+    setDhcpModalOpen(true);
+  };
+
+  const handleDhcpAssignToInterface = async () => {
+    setDhcpModalOpen(false);
+    setIsLoadingInterfaces(true);
+    
+    try {
+      console.log('Fetching real interfaces for DHCP assignment...');
+      const response = await fetch(`${API_URL}/api/interfaces/Cisco%203725`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const interfacesData = await response.json();
+      const formattedInterfaces = interfacesData.map(([name, status]) => ({
+        name: name,
+        status: status
+      }));
+      
+      setModalInterfaces(formattedInterfaces);
+      setInterfacesModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching interfaces:', error);
+      setModalInterfaces([
+        { name: 'Fa0/1', status: 'Down' },
+        { name: 'Fa0/2', status: 'Down' },
+        { name: 'Fa0/3', status: 'Down' },
+        { name: 'Fa0/4', status: 'Down' },
+      ]);
+      setInterfacesModalOpen(true);
+    } finally {
+      setIsLoadingInterfaces(false);
+    }
+  };
+
+  const openInterfacesModal = async (switchType = 'Cisco 3725') => {
+    setModalSwitchType(switchType);
+    setIsLoadingInterfaces(true);
+    
+    try {
+      console.log(`Fetching real interfaces for ${switchType}...`);
+      const response = await fetch(`${API_URL}/api/interfaces/${encodeURIComponent(switchType)}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const interfacesData = await response.json();
+      console.log('Real interfaces data:', interfacesData);
+      
+      // Convert the data format to match what InterfacesModal expects
+      const formattedInterfaces = interfacesData.map(([name, status]) => ({
+        name: name,
+        status: status
+      }));
+      
+      setModalInterfaces(formattedInterfaces);
+    } catch (error) {
+      console.error('Error fetching interfaces:', error);
+      // Fallback to default interfaces if API fails
+      setModalInterfaces([
+        { name: 'Fa0/1', status: 'Down' },
+        { name: 'Fa0/2', status: 'Down' },
+        { name: 'Fa0/3', status: 'Down' },
+        { name: 'Fa0/4', status: 'Down' },
+      ]);
+    } finally {
+      setIsLoadingInterfaces(false);
+    }
+    
     setInterfacesModalOpen(true);
   };
 
@@ -560,8 +700,32 @@ const Dashboard = () => {
   };
 
   const handleVlanCreate = async ({ vlanId, vlanName, switchType }) => {
-    // TODO: call API to create VLAN
-    alert(`Created VLAN ${vlanId} (${vlanName}) on ${switchType}`);
+    try {
+      const response = await fetch('http://localhost:5000/api/create-vlan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vlanId: parseInt(vlanId),
+          vlanName: vlanName,
+          switchIp: '192.168.111.198' // Your GNS3 switch IP
+        })
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        alert(`✅ VLAN ${vlanId} (${vlanName}) created successfully on ${switchType}!`);
+        console.log('VLAN creation result:', result);
+      } else {
+        alert(`❌ Error creating VLAN: ${result.error || 'Unknown error'}`);
+        console.error('VLAN creation error:', result);
+      }
+    } catch (error) {
+      alert(`❌ Network error: ${error.message}`);
+      console.error('VLAN creation network error:', error);
+    }
   };
 
   const handleInterfaceEdit = (interfaceName) => {
@@ -1038,7 +1202,7 @@ const Dashboard = () => {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 18 }}>
                   <div style={{ fontSize: 54, color: '#3b82f6', marginRight: 12 }}>🔀</div>
-                  <div>
+            <div>
                     <h2 style={{ fontSize: 34, fontWeight: 800, margin: 0, color: '#3b82f6', letterSpacing: 1 }}>VLANs - Switch Types</h2>
                     <p style={{ color: '#ea580c', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
                       Select a switch type to view or configure VLAN settings. Each switch may have unique VLAN features and configuration options.
@@ -1060,7 +1224,7 @@ const Dashboard = () => {
                     alignItems: 'center',
                     cursor: 'pointer',
                     transition: 'box-shadow 0.2s',
-                  }} onClick={() => openInterfacesModal('Cisco 3725')}>
+                  }} onClick={() => openCreateVlanModal('Cisco 3725')}>
                     <div style={{ fontSize: 40, marginBottom: 10, color: '#1e3a8a' }}>🖧</div>
                     <h3 style={{ color: '#1e3a8a', fontWeight: 700, fontSize: 22, margin: 0 }}>Cisco 3725</h3>
                     <p style={{ color: '#ea580c', fontSize: 15, margin: '10px 0 0 0', textAlign: 'center' }}>
@@ -1152,7 +1316,7 @@ const Dashboard = () => {
                           </p>
                         </div>
                       )}
-                    </li>
+                  </li>
                   ))}
                 </ul>
               </div>
@@ -1646,6 +1810,25 @@ const Dashboard = () => {
                     }}
                   >
                     Add Pool
+                  </button>
+                  <button
+                    onClick={() => openDhcpModal('Cisco 3725')}
+                    style={{
+                      background: 'linear-gradient(90deg, #059669 0%, #10b981 100%)',
+                      color: '#fff',
+                      padding: '10px 24px',
+                      border: 'none',
+                      borderRadius: 14,
+                      cursor: 'pointer',
+                      fontSize: 16,
+                      fontWeight: 700,
+                      boxShadow: '0 4px 15px rgba(5, 150, 105, 0.10)',
+                      transition: 'all 0.2s',
+                      letterSpacing: 1,
+                      marginLeft: '12px',
+                    }}
+                  >
+                    🚀 Create DHCP Pool
                   </button>
                 </div>
                 {dhcpStatusMsg && <p style={{ color: '#2563eb', marginTop: 18, fontWeight: 700, fontSize: 16 }}>{dhcpStatusMsg}</p>}
@@ -2659,6 +2842,17 @@ const Dashboard = () => {
         switchType={modalSwitchType}
         interfaces={modalInterfaces}
         onEdit={handleInterfaceEdit}
+        isLoading={isLoadingInterfaces}
+      />
+      <CreateVlanModal
+        open={createVlanModalOpen}
+        onClose={() => setCreateVlanModalOpen(false)}
+        onAssignToInterface={handleAssignToInterface}
+      />
+      <DhcpModal
+        open={dhcpModalOpen}
+        onClose={() => setDhcpModalOpen(false)}
+        onAssignToInterface={handleDhcpAssignToInterface}
       />
     </div>
   );

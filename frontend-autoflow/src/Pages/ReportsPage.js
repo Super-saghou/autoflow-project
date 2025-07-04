@@ -33,7 +33,7 @@ const ReportsPage = () => {
     <ReportsPageContainer>
       <ReportsPageTitle>Reports</ReportsPageTitle>
       <ReportsCard>
-        <p>This is where you can view reports related to network device management and activities.</p>
+      <p>This is where you can view reports related to network device management and activities.</p>
       </ReportsCard>
     </ReportsPageContainer>
   );
