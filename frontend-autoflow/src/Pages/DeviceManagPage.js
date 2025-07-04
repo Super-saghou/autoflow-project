@@ -53,21 +53,21 @@ const DeviceManagementPage = () => {
           <DeviceImage src="https://img.icons8.com/ios-filled/100/1e3a8a/network-switch.png" alt="Switch" />
           <h3>Cisco Switches</h3>
         </DeviceCard>
-        <DeviceCard>
+    <DeviceCard>
           <DeviceImage src="https://img.icons8.com/ios-filled/100/1e3a8a/router.png" alt="Router" />
-          <h3>Routers</h3>
-        </DeviceCard>
-        <DeviceCard>
+      <h3>Routers</h3>
+    </DeviceCard>
+    <DeviceCard>
           <DeviceImage src="https://img.icons8.com/ios-filled/100/1e3a8a/firewall.png" alt="Firewall" />
-          <h3>Firewalls</h3>
-        </DeviceCard>
-        <DeviceCard>
+      <h3>Firewalls</h3>
+    </DeviceCard>
+    <DeviceCard>
           <DeviceImage src="https://img.icons8.com/ios-filled/100/1e3a8a/server.png" alt="Server" />
-          <h3>Servers</h3>
-        </DeviceCard>
-      </DeviceGrid>
-    </PageContainer>
-  );
+      <h3>Servers</h3>
+    </DeviceCard>
+  </DeviceGrid>
+</PageContainer>
+);
 };
 
 export default DeviceManagementPage;

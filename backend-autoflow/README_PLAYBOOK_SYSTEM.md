@@ -1,173 +1,406 @@
-# AutoFlow Ansible Playbook Generation System
+# AutoFlow Network Management Platform - Ansible Integration
 
-This system automatically generates and executes Ansible playbooks based on user inputs from the web application. It provides a seamless integration between your frontend interface and network device configuration.
+This document describes the complete Ansible playbook integration system for the AutoFlow Network Management Platform.
 
-## Overview
+## System Architecture
 
-The system consists of two main components:
+```
+Frontend (React) → Node.js Server (Port 5000) → Python Flask API (Port 5001) → Ansible Playbooks → Network Devices
+```
 
-1. **Python Playbook Generator** (`playbook_generator.py`) - Generates Ansible playbooks dynamically
-2. **Flask API** (`playbook_api.py`) - REST API for playbook generation and execution
-3. **Enhanced Node.js Server** (`server.js`) - Integrates with the Python API
+## Prerequisites
 
-## Features
-
-### Supported Network Configurations
-
-- **VLAN Management**: Create VLANs and configure interfaces
-- **SSH Configuration**: Enable/disable SSH, configure ports and allowed IPs
-- **Port Security**: Configure port security settings per interface
-- **DHCP Snooping**: Enable/disable DHCP snooping and manage trusted ports
-- **Routing**: Configure static routes and dynamic routing
-- **NAT**: Configure Network Address Translation rules
-- **DHCP**: Configure DHCP pools and settings
-- **Spanning Tree Protocol (STP)**: Configure STP modes and port settings
-- **EtherChannel**: Configure link aggregation groups
-- **Hostname & Management IP**: Set device hostname and management IP
-
-## Installation
-
-### Prerequisites
-
-- Python 3.7+
-- Node.js 14+
-- Ansible 2.9+
-- Network devices (Cisco IOS, etc.)
-
-### Setup
-
-1. **Install Python dependencies:**
-   ```bash
-   pip3 install -r requirements.txt
-   ```
-
-2. **Install Node.js dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Create the Ansible directory:**
-   ```bash
-   mkdir -p /home/sarra/ansible/generated_playbooks
-   ```
-
-## Usage
-
-### Starting the Services
-
-Use the provided startup script to run both services:
-
+### 1. Install Ansible and Network Modules
 ```bash
+# Install Ansible
+pip3 install ansible
+
+# Install network modules
+pip3 install ansible[network]
+
+# Install additional dependencies
+pip3 install netmiko paramiko
+```
+
+### 2. Install Python Dependencies
+```bash
+pip3 install -r requirements.txt
+```
+
+### 3. Install Node.js Dependencies
+```bash
+npm install
+```
+
+## Quick Start
+
+### 1. Test Connection to Your GNS3 Switch
+```bash
+# Test connectivity to your switch
+python3 test_connection.py 192.168.111.198
+```
+
+### 2. Start All Services
+```bash
+# Make the startup script executable
+chmod +x start_services.sh
+
+# Start all services
 ./start_services.sh
 ```
 
-This will start:
-- Python API on port 5001
-- Node.js server on port 5000
+### 3. Verify Services
+```bash
+# Check Flask API health
+curl http://localhost:5001/api/health
 
-## API Endpoints
-
-### Node.js API (Port 5000)
-
-#### VLAN Configuration
-```http
-POST /api/create-vlan
-Content-Type: application/json
-
-{
-  "vlanId": "10",
-  "vlanName": "Management",
-  "switchIp": "192.168.1.1"
-}
+# Check Node.js server
+curl http://localhost:5000/api/test
 ```
 
-#### SSH Configuration
-```http
-POST /api/configure-ssh
-Content-Type: application/json
+## Supported Configuration Types
 
-{
-  "switchIp": "192.168.1.1",
-  "sshEnabled": true,
-  "sshPort": 22,
-  "allowedIps": ["192.168.1.100", "192.168.1.101"]
-}
-```
+### 1. VLAN Configuration
+Creates VLANs and optionally assigns interfaces to them.
 
-## Frontend Integration
-
-The frontend can now call these API endpoints when users fill out configuration forms. For example:
-
-### VLAN Creation Example
-
+**Frontend API Call:**
 ```javascript
-// When user submits VLAN creation form
-const createVlan = async (vlanData) => {
-  try {
-    const response = await fetch('/api/create-vlan', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        vlanId: vlanData.id,
-        vlanName: vlanData.name,
-        switchIp: vlanData.switchIp
-      })
-    });
-    
-    const result = await response.json();
-    
-    if (result.message) {
-      // Show success message
-      showNotification('VLAN created successfully!', 'success');
-    } else {
-      // Show error message
-      showNotification('Failed to create VLAN', 'error');
-    }
-  } catch (error) {
-    console.error('Error creating VLAN:', error);
-    showNotification('Network error occurred', 'error');
-  }
-};
+const response = await fetch('http://localhost:5000/api/create-vlan', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    vlanId: 10,
+    vlanName: 'Engineering',
+    switchIp: '192.168.111.198',
+    interfaces: ['Fa1/0', 'Fa1/1'] // Optional
+  })
+});
 ```
 
-## Generated Playbooks
+**Direct API Call:**
+```bash
+curl -X POST http://localhost:5001/api/generate-and-execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "vlan",
+    "target_ip": "192.168.111.198",
+    "vlan_id": 10,
+    "vlan_name": "Engineering",
+    "interfaces": ["Fa1/0", "Fa1/1"]
+  }'
+```
 
-Playbooks are automatically generated and saved to `/home/sarra/ansible/generated_playbooks/` with timestamps. Each playbook includes:
+### 2. SSH Configuration
+Configures SSH access with custom port and allowed IPs.
 
-- Proper Ansible syntax and structure
-- Network device-specific configurations
-- Error handling and validation
-- Inventory file generation
+**Frontend API Call:**
+```javascript
+const response = await fetch('http://localhost:5000/api/configure-ssh', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    switchIp: '192.168.111.198',
+    sshEnabled: true,
+    sshPort: 22,
+    allowedIps: ['192.168.1.0/24']
+  })
+});
+```
+
+### 3. DHCP Configuration
+Configures DHCP pools for IP address assignment.
+
+**Frontend API Call:**
+```javascript
+const response = await fetch('http://localhost:5000/api/configure-dhcp', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    switchIp: '192.168.111.198',
+    enabled: true,
+    dhcpPools: [{
+      name: 'LAN_Pool',
+      network: '192.168.1.0',
+      subnet: '255.255.255.0',
+      default_router: '192.168.1.1',
+      dns_server: '8.8.8.8'
+    }]
+  })
+});
+```
+
+### 4. NAT Configuration
+Configures Network Address Translation rules.
+
+**Frontend API Call:**
+```javascript
+const response = await fetch('http://localhost:5000/api/configure-nat', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    switchIp: '192.168.111.198',
+    enabled: true,
+    natRules: [{
+      name: 'Internet_Access',
+      acl: '1',
+      outside_interface: 'GigabitEthernet0/0'
+    }]
+  })
+});
+```
+
+### 5. STP Configuration
+Configures Spanning Tree Protocol settings.
+
+**Frontend API Call:**
+```javascript
+const response = await fetch('http://localhost:5000/api/configure-stp', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    switchIp: '192.168.111.198',
+    enabled: true,
+    mode: 'pvst',
+    portConfigs: [{
+      interface: 'Fa1/0',
+      portfast: 'enable',
+      cost: 100
+    }]
+  })
+});
+```
+
+### 6. EtherChannel Configuration
+Configures link aggregation groups.
+
+**Frontend API Call:**
+```javascript
+const response = await fetch('http://localhost:5000/api/configure-etherchannel', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    switchIp: '192.168.111.198',
+    enabled: true,
+    groups: [{
+      group_id: 1,
+      protocol: 'lacp',
+      mode: 'active',
+      interfaces: ['Fa1/0', 'Fa1/1']
+    }]
+  })
+});
+```
+
+### 7. Routing Configuration
+Configures static routes and dynamic routing.
+
+**Frontend API Call:**
+```javascript
+const response = await fetch('http://localhost:5000/api/configure-routing', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    switchIp: '192.168.111.198',
+    staticRoutes: [{
+      network: '192.168.2.0',
+      subnet: '255.255.255.0',
+      next_hop: '192.168.1.254'
+    }],
+    dynamicRouting: true
+  })
+});
+```
+
+### 8. Port Security Configuration
+Configures port security settings.
+
+**Frontend API Call:**
+```javascript
+const response = await fetch('http://localhost:5000/api/configure-port-security', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    switchIp: '192.168.111.198',
+    portConfigs: [{
+      interface: 'Fa1/0',
+      max_mac: 1,
+      violation: 'shutdown'
+    }]
+  })
+});
+```
+
+### 9. DHCP Snooping Configuration
+Configures DHCP snooping for security.
+
+**Frontend API Call:**
+```javascript
+const response = await fetch('http://localhost:5000/api/configure-dhcp-snooping', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    switchIp: '192.168.111.198',
+    enabled: true,
+    trustedPorts: ['Fa1/24']
+  })
+});
+```
+
+### 10. Hostname Configuration
+Configures device hostname and management IP.
+
+**Frontend API Call:**
+```javascript
+const response = await fetch('http://localhost:5000/api/configure-hostname', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    switchIp: '192.168.111.198',
+    hostname: 'SW-CORE-01',
+    managementIp: '192.168.111.198'
+  })
+});
+```
+
+## Testing Examples
+
+### Test VLAN Creation
+```bash
+# Create VLAN 10 for Engineering
+curl -X POST http://localhost:5001/api/generate-and-execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "vlan",
+    "target_ip": "192.168.111.198",
+    "vlan_id": 10,
+    "vlan_name": "Engineering"
+  }'
+```
+
+### Test SSH Configuration
+```bash
+# Configure SSH with custom port
+curl -X POST http://localhost:5001/api/generate-and-execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "ssh",
+    "target_ip": "192.168.111.198",
+    "ssh_enabled": true,
+    "ssh_port": 22
+  }'
+```
+
+### Test DHCP Configuration
+```bash
+# Configure DHCP pool
+curl -X POST http://localhost:5001/api/generate-and-execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "dhcp",
+    "target_ip": "192.168.111.198",
+    "enabled": true,
+    "dhcp_pools": [{
+      "name": "LAN_Pool",
+      "network": "192.168.1.0",
+      "subnet": "255.255.255.0",
+      "default_router": "192.168.1.1",
+      "dns_server": "8.8.8.8"
+    }]
+  }'
+```
+
+## File Structure
+
+```
+backend-autoflow/
+├── server.js                 # Node.js backend server
+├── playbook_api.py           # Python Flask API
+├── playbook_generator.py     # Ansible playbook generator
+├── test_connection.py        # Connection test script
+├── start_services.sh         # Service startup script
+├── inventory.ini             # Ansible inventory file
+├── requirements.txt          # Python dependencies
+├── package.json              # Node.js dependencies
+└── generated_playbooks/      # Generated playbook files
+```
 
 ## Troubleshooting
 
-### Common Issues
-
-1. **Python API not starting:**
-   - Check if port 5001 is available
-   - Verify Python dependencies are installed
-   - Check logs for specific error messages
-
-2. **Playbook execution fails:**
-   - Verify network connectivity to target devices
-   - Check device credentials
-   - Ensure Ansible is properly configured
-
-### Testing
-
-Test the system with:
-
+### 1. Connection Issues
 ```bash
-# Test Python API
-curl -X POST http://localhost:5001/api/health
+# Test basic connectivity
+ping 192.168.111.198
 
-# Test Node.js server
-curl -X GET http://localhost:5000/api/test
+# Test SSH connection
+ssh cisco@192.168.111.198
 
-# Test VLAN creation
-curl -X POST http://localhost:5000/api/create-vlan \
-  -H "Content-Type: application/json" \
-  -d '{"vlanId":"10","vlanName":"Test","switchIp":"192.168.1.1"}'
+# Run comprehensive test
+python3 test_connection.py 192.168.111.198
 ```
+
+### 2. Ansible Issues
+```bash
+# Check Ansible installation
+ansible --version
+
+# Test Ansible connectivity
+ansible targets -i inventory.ini -m ping
+
+# Check generated playbooks
+ls -la /home/sarra/ansible/generated_playbooks/
+```
+
+### 3. API Issues
+```bash
+# Check Flask API health
+curl http://localhost:5001/api/health
+
+# Check Node.js server
+curl http://localhost:5000/api/test
+
+# Check service logs
+ps aux | grep python3
+ps aux | grep node
+```
+
+### 4. Common Error Solutions
+
+**SSH Connection Refused:**
+- Verify SSH is enabled on the device
+- Check username/password (cisco/cisco)
+- Verify network connectivity
+
+**Ansible Module Not Found:**
+```bash
+pip3 install ansible[network]
+pip3 install netmiko paramiko
+```
+
+**Permission Denied:**
+```bash
+chmod +x start_services.sh
+chmod 755 /home/sarra/ansible/generated_playbooks/
+```
+
+## Security Considerations
+
+1. **Credentials**: Default credentials (cisco/cisco) should be changed in production
+2. **Network Access**: Ensure proper firewall rules for management access
+3. **SSH Keys**: Consider using SSH keys instead of passwords
+4. **Inventory Security**: Keep inventory files secure and restrict access
+
+## Production Deployment
+
+1. **Environment Variables**: Use environment variables for sensitive data
+2. **SSL/TLS**: Enable HTTPS for API endpoints
+3. **Authentication**: Implement proper authentication for API access
+4. **Logging**: Configure comprehensive logging for audit trails
+5. **Backup**: Regular backup of configuration and generated playbooks
+
+## Support
+
+For issues and questions:
+1. Check the troubleshooting section above
+2. Review generated playbook files for syntax errors
+3. Check Ansible logs for detailed error messages
+4. Verify device compatibility with Cisco IOS modules
