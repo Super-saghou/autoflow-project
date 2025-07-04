@@ -10,6 +10,7 @@ import VlanModal from './VlanModal';
 import InterfacesModal from './InterfacesModal';
 import CreateVlanModal from './CreateVlanModal';
 import DhcpModal from './DhcpModal';
+import ReportsPage from '../Pages/ReportsPage';
 
 const Dashboard = () => {
   const [devices, setDevices] = useState([]);
@@ -1731,7 +1732,7 @@ const Dashboard = () => {
             <div><h2 className="section-header">Settings</h2><p style={{ color: '#1A2A44', fontSize: '16px' }}>Content for settings configuration.</p></div>
           )}
           {activeSection === 'audit' && userProfile.role === 'Admin' && (
-            <div><h2 className="section-header">Audit Logs</h2><ul className="device-list">{[1, 2, 3].map((i) => <li key={i} className="device-item">Log Entry {i}</li>)}</ul></div>
+            <ReportsPage />
           )}
           {activeSection === 'help' && (
             <div><h2 className="section-header">Help</h2><div className="config-section"><h3>Tutorials</h3><p style={{ color: '#1A2A44', fontSize: '16px' }}>Learn how to use the dashboard.</p></div></div>

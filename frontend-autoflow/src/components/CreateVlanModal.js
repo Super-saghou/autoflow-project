@@ -38,14 +38,13 @@ const CreateVlanModal = ({ open, onClose, onCreateVlan, onAssignToInterface }) =
       if (response.ok) {
         setResponse(`✅ VLAN ${vlanId} (${vlanName}) created successfully!`);
         setShowAssignOption(true);
-        console.log('VLAN creation result:', result);
       } else {
         setResponse(`❌ Error: ${result.error || 'Unknown error'}`);
-        console.error('VLAN creation error:', result);
+        setShowAssignOption(false);
       }
     } catch (error) {
       setResponse(`❌ Network error: ${error.message}`);
-      console.error('VLAN creation network error:', error);
+      setShowAssignOption(false);
     } finally {
       setIsCreating(false);
     }
@@ -53,8 +52,11 @@ const CreateVlanModal = ({ open, onClose, onCreateVlan, onAssignToInterface }) =
 
   const handleAssignToInterface = () => {
     setResponse('🔄 Transitioning to interface selection...');
-    onAssignToInterface();
-    onClose();
+    setShowAssignOption(false);
+    setTimeout(() => {
+      onAssignToInterface();
+      handleClose();
+    }, 200);
   };
 
   const handleClose = () => {

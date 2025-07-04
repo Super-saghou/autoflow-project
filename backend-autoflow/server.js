@@ -8,6 +8,7 @@ import { exec } from 'child_process';
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
+import fs from 'fs';
 
 // Load environment variables
 config();
@@ -582,9 +583,50 @@ io.on('connection', (socket) => {
   });
 });
 
+// Basic API endpoint to get audit logs
+app.get('/api/logs', (req, res) => {
+  const logPath = path.join(__dirname, 'audit.log');
+  if (!fs.existsSync(logPath)) {
+    return res.json([]);
+  }
+  fs.readFile(logPath, 'utf8', (err, data) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to read log file' });
+    }
+    const lines = data.trim().split('\n');
+    const last100 = lines.slice(-100);
+    res.json(last100);
+  });
+});
+
 // Handle unknown routes (404 JSON)
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
+});
+
+function appendAuditLog(entry) {
+  const logPath = path.join(__dirname, 'audit.log');
+  const timestamp = new Date().toISOString();
+  fs.appendFile(logPath, `[${timestamp}] ${entry}\n`, err => {
+    if (err) console.error('Failed to write audit log:', err);
+  });
+}
+
+// In each relevant endpoint, add logging:
+
+app.post('/api/generate-playbook', (req, res, next) => {
+  appendAuditLog(`/api/generate-playbook called by ${req.ip}`);
+  next();
+});
+
+app.post('/api/execute-playbook', (req, res, next) => {
+  appendAuditLog(`/api/execute-playbook called by ${req.ip}`);
+  next();
+});
+
+app.post('/api/generate-and-execute', (req, res, next) => {
+  appendAuditLog(`/api/generate-and-execute called by ${req.ip}`);
+  next();
 });
 
 const PORT = process.env.PORT || 5000;
