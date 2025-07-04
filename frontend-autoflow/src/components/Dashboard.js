@@ -14,8 +14,6 @@ import DhcpModal from './DhcpModal';
 const Dashboard = () => {
   const [devices, setDevices] = useState([]);
   const [newDevice, setNewDevice] = useState({ name: '', ip: '' });
-  const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
   const [activeSection, setActiveSection] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
@@ -24,13 +22,6 @@ const Dashboard = () => {
   const [expandedSection, setExpandedSection] = useState(null);
   const [theme, setTheme] = useState('default');
   const [runTour, setRunTour] = useState(true);
-  const [versions, setVersions] = useState([]);
-  const [selectedSwitch, setSelectedSwitch] = useState(null);
-  const [formErrors, setFormErrors] = useState({ name: '', ip: '' });
-  const [isLoading, setIsLoading] = useState(false);
-  const [health, setHealth] = useState(null);
-  const [vlanModalOpen, setVlanModalOpen] = useState(false);
-  const [interfacesModalOpen, setInterfacesModalOpen] = useState(false);
   const [modalInterfaceName, setModalInterfaceName] = useState('');
   const [modalSwitchType, setModalSwitchType] = useState('');
   const [createVlanModalOpen, setCreateVlanModalOpen] = useState(false);
@@ -92,8 +83,10 @@ const Dashboard = () => {
     { id: 2, name: 'Po2', mode: 'PAgP', ports: ['Fa0/3', 'Fa0/4'], status: 'Down' },
   ]);
   const [newEtherChannel, setNewEtherChannel] = useState({ name: '', mode: 'LACP', ports: [] });
-  const [availablePorts, setAvailablePorts] = useState(['Fa0/5', 'Fa0/6', 'Fa0/7', 'Fa0/8']);
   const [etherChannelStatusMsg, setEtherChannelStatusMsg] = useState('');
+  const [vlanModalOpen, setVlanModalOpen] = useState(false);
+  const [interfacesModalOpen, setInterfacesModalOpen] = useState(false);
+  const [availablePorts, setAvailablePorts] = useState(['Fa0/5', 'Fa0/6', 'Fa0/7', 'Fa0/8']);
   const deviceSubsections = [
     { key: 'vlans', title: 'VLANs (Virtual LANs)' },
     { key: 'ports', title: 'Access and Trunk Ports' },
@@ -110,10 +103,13 @@ const Dashboard = () => {
   ];
   const navigate = useNavigate();
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const [error, setError] = useState(null);
+  const [health, setHealth] = useState(null);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     const fetchDevices = async () => {
-      setIsLoading(true);
+      setIsLoadingInterfaces(true);
       try {
         const response = await fetch(`${API_URL}/api/devices`);
         if (!response.ok) throw new Error('Error fetching devices');
@@ -122,7 +118,7 @@ const Dashboard = () => {
       } catch (err) {
         setError(err.message);
       } finally {
-        setIsLoading(false);
+        setIsLoadingInterfaces(false);
       }
     };
 
@@ -144,25 +140,6 @@ const Dashboard = () => {
     }
   }, [activeSection, API_URL]);
 
-  const handleAddDevice = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    try {
-      const response = await fetch(`${API_URL}/api/devices`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newDevice),
-      });
-      if (!response.ok) throw new Error((await response.json()).message || 'Error adding device');
-      const data = await response.json();
-      setMessage(data.message);
-      setDevices([...devices, newDevice]);
-      setNewDevice({ name: '', ip: '' });
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
   const handleLogout = () => navigate('/login');
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAccount = () => setIsAccountOpen(!isAccountOpen);
@@ -175,42 +152,9 @@ const Dashboard = () => {
     setMessage('Profile updated successfully!');
   };
   const toggleSection = (section) => setExpandedSection(expandedSection === section ? null : section);
-  const validateForm = () => {
-    const errors = { name: '', ip: '' };
-    let isValid = true;
-    if (!newDevice.name) { errors.name = 'Name is required'; isValid = false; }
-    const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
-    if (!newDevice.ip || !ipRegex.test(newDevice.ip)) { errors.ip = 'Invalid IP address'; isValid = false; }
-    setFormErrors(errors);
-    return isValid;
-  };
-  const fetchVersions = async (deviceName) => {
-    try {
-      const response = await fetch(`${API_URL}/api/devices/versions/${deviceName}`);
-      if (!response.ok) throw new Error('Error fetching versions');
-      const data = await response.json();
-      setVersions(data);
-      setSelectedSwitch(deviceName);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-  const testApi = async (endpoint) => {
-    try {
-      const response = await fetch(`${API_URL}${endpoint}`);
-      const data = await response.json();
-    } catch (err) {
-    }
-  };
   const changeTheme = (newTheme) => setTheme(newTheme);
   const particlesInit = async (engine) => {
     await loadFull(engine);
-  };
-
-  window.saveConfig = function(interfaceName, switchType) {
-    const mode = document.getElementById('vlanMode').value;
-    const vlanId = mode === 'access' ? document.getElementById('accessVlan').value : document.getElementById('trunkVlan').value;
-    alert(`Configuration Saved for ${interfaceName} on ${switchType}: Mode=${mode}, VLAN=${vlanId}`);
   };
 
   const openSwitchDetails = async (switchType) => {
@@ -542,34 +486,6 @@ const Dashboard = () => {
     { target: '.nav-button:nth-child(4)', content: 'View and configure network topology here.' },
   ];
 
-  const openVlanModal = (interfaceName = 'Fa0/1', switchType = 'Cisco 3725') => {
-    setModalInterfaceName(interfaceName);
-    setModalSwitchType(switchType);
-    setVlanModalOpen(true);
-  };
-
-  const openCreateVlanModal = async (switchType = 'Cisco 3725') => {
-    setModalSwitchType(switchType);
-    setCreateVlanModalOpen(true);
-    
-    // Pre-fetch interfaces in the background for faster transition
-    try {
-      console.log('Pre-fetching interfaces for faster transition...');
-      const response = await fetch(`${API_URL}/api/interfaces/${encodeURIComponent(switchType)}`);
-      if (response.ok) {
-        const interfacesData = await response.json();
-        const formattedInterfaces = interfacesData.map(([name, status]) => ({
-          name: name,
-          status: status
-        }));
-        setModalInterfaces(formattedInterfaces);
-        console.log('Interfaces pre-fetched successfully');
-      }
-    } catch (error) {
-      console.log('Pre-fetch failed, will fetch when needed:', error.message);
-    }
-  };
-
   const handleAssignToInterface = async () => {
     console.log('handleAssignToInterface called');
     setCreateVlanModalOpen(false);
@@ -623,11 +539,6 @@ const Dashboard = () => {
     }
   };
 
-  const openDhcpModal = (switchType = 'Cisco 3725') => {
-    setModalSwitchType(switchType);
-    setDhcpModalOpen(true);
-  };
-
   const handleDhcpAssignToInterface = async () => {
     setDhcpModalOpen(false);
     setIsLoadingInterfaces(true);
@@ -657,41 +568,6 @@ const Dashboard = () => {
     } finally {
       setIsLoadingInterfaces(false);
     }
-  };
-
-  const openInterfacesModal = async (switchType = 'Cisco 3725') => {
-    setModalSwitchType(switchType);
-    setIsLoadingInterfaces(true);
-    
-    try {
-      console.log(`Fetching real interfaces for ${switchType}...`);
-      const response = await fetch(`${API_URL}/api/interfaces/${encodeURIComponent(switchType)}`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
-      const interfacesData = await response.json();
-      console.log('Real interfaces data:', interfacesData);
-      
-      // Convert the data format to match what InterfacesModal expects
-      const formattedInterfaces = interfacesData.map(([name, status]) => ({
-        name: name,
-        status: status
-      }));
-      
-      setModalInterfaces(formattedInterfaces);
-    } catch (error) {
-      console.error('Error fetching interfaces:', error);
-      // Fallback to default interfaces if API fails
-      setModalInterfaces([
-        { name: 'Fa0/1', status: 'Down' },
-        { name: 'Fa0/2', status: 'Down' },
-        { name: 'Fa0/3', status: 'Down' },
-        { name: 'Fa0/4', status: 'Down' },
-      ]);
-    } finally {
-      setIsLoadingInterfaces(false);
-    }
-    
-    setInterfacesModalOpen(true);
   };
 
   const handleVlanSave = (data) => {
@@ -732,6 +608,13 @@ const Dashboard = () => {
     setModalInterfaceName(interfaceName);
     setVlanModalOpen(true);
   };
+
+  const openCreateVlanModal = (switchType = 'Cisco 3725') => {
+    setModalSwitchType(switchType);
+    setCreateVlanModalOpen(true);
+  };
+
+  const openDhcpModal = () => setDhcpModalOpen(true);
 
   return (
     <div
