@@ -1,7 +1,7 @@
-const express = require('express');
-const User = require('../models/User');
-const Role = require('../models/Role');
-const { authenticateToken, requireRole, requirePermission, generateToken } = require('../middleware/auth');
+import express from 'express';
+import User from '../models/User.js';
+import Role from '../models/Role.js';
+import { authenticateToken, requireRole, requirePermission, generateToken } from '../middleware/auth.js';
 const router = express.Router();
 
 // Login endpoint
@@ -307,4 +307,4 @@ router.post('/roles/initialize', authenticateToken, requireRole('Admin'), async 
   }
 });
 
-module.exports = router; 
+export default router; 

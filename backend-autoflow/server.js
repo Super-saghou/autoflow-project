@@ -1,19 +1,24 @@
-const express = require("express");
-const { config } = require("dotenv");
-const path = require("path");
-const { connectDB } = require('./config/db');
-const Device = require('./models/Device');
-const User = require('./models/User');
-const Role = require('./models/Role');
-const { exec } = require('child_process');
-const cors = require('cors');
-const http = require('http');
-const { Server } = require('socket.io');
-const fs = require('fs');
-const BackupService = require('./backup_service');
-const MonitoringService = require('./monitoring_service');
-const authRoutes = require('./routes/auth');
-const { authenticateToken, requireRole, requirePermission } = require('./middleware/auth');
+import express from "express";
+import { config } from "dotenv";
+import path from "path";
+import { connectDB } from './config/db.js';
+import Device from './models/Device.js';
+import User from './models/User.js';
+import Role from './models/Role.js';
+import { exec } from 'child_process';
+import cors from "cors";
+import http from "http";
+import { Server } from "socket.io";
+import fs from "fs";
+import BackupService from './backup_service.js';
+import MonitoringService from './monitoring_service.js';
+import authRoutes from './routes/auth.js';
+import { authenticateToken, requireRole, requirePermission } from './middleware/auth.js';
+import { fileURLToPath } from 'url';
+
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables
 config();
@@ -34,8 +39,6 @@ app.use(cors({
   origin: ['http://192.168.111.201:31508', 'http://localhost:3000'],
   credentials: true,
 }));
-
-
 
 // Connect to MongoDB
 connectDB();
@@ -111,7 +114,7 @@ app.post('/api/login', async (req, res) => {
       // Use new authentication system
       const isPasswordValid = await user.comparePassword(password);
       if (isPasswordValid) {
-        const { generateToken } = require('./middleware/auth');
+        const { generateToken } = await import('./middleware/auth.js');
         const token = generateToken(user._id);
         
         const role = await Role.findOne({ name: user.role });

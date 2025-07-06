@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const Role = require('../models/Role');
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+import Role from '../models/Role.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
@@ -110,7 +110,7 @@ const verifyToken = (token) => {
   }
 };
 
-module.exports = {
+export {
   authenticateToken,
   requireRole,
   requirePermission,
