@@ -11,6 +11,7 @@ import InterfacesModal from './InterfacesModal';
 import CreateVlanModal from './CreateVlanModal';
 import DhcpModal from './DhcpModal';
 import ReportsPage from '../Pages/ReportsPage';
+import MonitoringPage from './MonitoringPage';
 
 const Dashboard = () => {
   const [devices, setDevices] = useState([]);
@@ -35,6 +36,12 @@ const Dashboard = () => {
   const [hostnameStatus, setHostnameStatus] = useState('');
   const [dhcpSnoopingEnabled, setDhcpSnoopingEnabled] = useState(false);
   const [trustedPorts, setTrustedPorts] = useState(['Fa0/1']);
+  
+  // Backup system state
+  const [backupStats, setBackupStats] = useState(null);
+  const [backupList, setBackupList] = useState([]);
+  const [backupLoading, setBackupLoading] = useState(false);
+  const [backupMessage, setBackupMessage] = useState('');
   const [newTrustedPort, setNewTrustedPort] = useState('');
   const [dhcpSnoopStatus, setDhcpSnoopStatus] = useState('');
   const [sshEnabled, setSshEnabled] = useState(true);
@@ -617,6 +624,144 @@ const Dashboard = () => {
 
   const openDhcpModal = () => setDhcpModalOpen(true);
 
+  // Backup system functions
+  const fetchBackupStats = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/backup/stats`);
+      const data = await response.json();
+      if (data.success) {
+        setBackupStats(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch backup stats:', error);
+    }
+  };
+
+  const fetchBackupList = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/backup/list`);
+      const data = await response.json();
+      if (data.success) {
+        setBackupList(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch backup list:', error);
+    }
+  };
+
+  const createBackup = async (type = 'full') => {
+    setBackupLoading(true);
+    setBackupMessage('');
+    try {
+      const response = await fetch(`${API_URL}/api/backup/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ type })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setBackupMessage(`✅ ${type} backup created successfully!`);
+        fetchBackupStats();
+        fetchBackupList();
+      } else {
+        setBackupMessage(`❌ Backup failed: ${data.error || data.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      setBackupMessage(`❌ Backup failed: ${error.message}`);
+    } finally {
+      setBackupLoading(false);
+    }
+  };
+
+  const restoreBackup = async (filename) => {
+    if (!window.confirm(`Are you sure you want to restore from ${filename}? This will overwrite current data.`)) {
+      return;
+    }
+    setBackupLoading(true);
+    setBackupMessage('');
+    try {
+      const response = await fetch(`${API_URL}/api/backup/restore`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ filename })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setBackupMessage(`✅ Backup restored successfully!`);
+        fetchBackupStats();
+        fetchBackupList();
+      } else {
+        setBackupMessage(`❌ Restore failed: ${data.error}`);
+      }
+    } catch (error) {
+      setBackupMessage(`❌ Restore failed: ${error.message}`);
+    } finally {
+      setBackupLoading(false);
+    }
+  };
+
+  const deleteBackup = async (filename) => {
+    if (!window.confirm(`Are you sure you want to delete ${filename}?`)) {
+      return;
+    }
+    try {
+      const response = await fetch(`${API_URL}/api/backup/delete/${filename}`, {
+        method: 'DELETE'
+      });
+      const data = await response.json();
+      if (data.success) {
+        setBackupMessage(`✅ Backup deleted successfully!`);
+        fetchBackupStats();
+        fetchBackupList();
+      } else {
+        setBackupMessage(`❌ Delete failed: ${data.error}`);
+      }
+    } catch (error) {
+      setBackupMessage(`❌ Delete failed: ${error.message}`);
+    }
+  };
+
+  const cleanupBackups = async (retentionDays = 30) => {
+    if (!window.confirm(`Are you sure you want to delete backups older than ${retentionDays} days?`)) {
+      return;
+    }
+    setBackupLoading(true);
+    setBackupMessage('');
+    try {
+      const response = await fetch(`${API_URL}/api/backup/cleanup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ retentionDays })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setBackupMessage(`✅ Cleanup completed: ${data.data.deletedCount} files deleted`);
+        fetchBackupStats();
+        fetchBackupList();
+      } else {
+        setBackupMessage(`❌ Cleanup failed: ${data.error}`);
+      }
+    } catch (error) {
+      setBackupMessage(`❌ Cleanup failed: ${error.message}`);
+    } finally {
+      setBackupLoading(false);
+    }
+  };
+
+  // Load backup data when settings section is active
+  useEffect(() => {
+    if (activeSection === 'settings') {
+      fetchBackupStats();
+      fetchBackupList();
+    }
+  }, [activeSection]);
+
   return (
     <div
       className={`dashboard-container ${theme}`}
@@ -718,7 +863,8 @@ const Dashboard = () => {
             </li>
             <li className="nav-item"><button onClick={() => setActiveSection('topology')} className={`nav-button ${activeSection === 'topology' ? 'active' : ''}`}><span className="nav-icon">🌐</span>{isMenuOpen && 'Topology'}</button></li>
             <li className="nav-item"><button onClick={() => setActiveSection('settings')} className={`nav-button ${activeSection === 'settings' ? 'active' : ''}`}><span className="nav-icon">⚙️</span>{isMenuOpen && 'Settings'}</button></li>
-            {userProfile.role === 'Admin' && <li className="nav-item"><button onClick={() => setActiveSection('audit')} className={`nav-button ${activeSection === 'audit' ? 'active' : ''}`}><span className="nav-icon">📋</span>{isMenuOpen && 'Audit Logs'}</button></li>}
+                            {userProfile.role === 'Admin' && <li className="nav-item"><button onClick={() => setActiveSection('audit')} className={`nav-button ${activeSection === 'audit' ? 'active' : ''}`}><span className="nav-icon">📋</span>{isMenuOpen && 'Audit Logs'}</button></li>}
+                {userProfile.role === 'Admin' && <li className="nav-item"><button onClick={() => setActiveSection('monitoring')} className={`nav-button ${activeSection === 'monitoring' ? 'active' : ''}`}><span className="nav-icon">📊</span>{isMenuOpen && 'Monitoring'}</button></li>}
             <li className="nav-item"><button onClick={() => setActiveSection('help')} className={`nav-button ${activeSection === 'help' ? 'active' : ''}`}><span className="nav-icon">❓</span>{isMenuOpen && 'Help'}</button></li>
             {userProfile.role === 'Developer' && <li className="nav-item"><button onClick={() => setActiveSection('developer')} className={`nav-button ${activeSection === 'developer' ? 'active' : ''}`}><span className="nav-icon">👨‍💻</span>{isMenuOpen && 'Developer Dashboard'}</button></li>}
             <li className="nav-item"><button onClick={handleLogout} className="nav-button"><span className="nav-icon">🚪</span>{isMenuOpen && 'Logout'}</button></li>
@@ -1729,10 +1875,462 @@ const Dashboard = () => {
             />
           )}
           {activeSection === 'settings' && (
-            <div><h2 className="section-header">Settings</h2><p style={{ color: '#1A2A44', fontSize: '16px' }}>Content for settings configuration.</p></div>
+            <div style={{ width: '100%', minHeight: '80vh', background: '#f7fafc', padding: '0 0 48px 0' }}>
+              <div style={{
+                background: 'linear-gradient(120deg, #f0f9ff 0%, #fef9c3 100%)',
+                borderRadius: 36,
+                boxShadow: '0 8px 32px rgba(59, 130, 246, 0.08)',
+                padding: '48px 64px',
+                maxWidth: '1400px',
+                margin: '48px auto 0 auto',
+                color: '#1e40af',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'stretch',
+                gap: 32,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 18 }}>
+                  <div style={{ fontSize: 54, color: '#fbbf24', marginRight: 12 }}>⚙️</div>
+                  <div>
+                    <h2 style={{ fontSize: 34, fontWeight: 800, margin: 0, color: '#1e40af', letterSpacing: 1 }}>System Settings</h2>
+                    <p style={{ color: '#ea580c', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
+                      Configure your AutoFlow platform settings, network preferences, security policies, and system behavior to match your infrastructure requirements.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Settings Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 24 }}>
+                  
+                  {/* Network Configuration */}
+                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                    <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      🌐 Network Configuration
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Default VLAN ID</label>
+                        <input 
+                          type="number" 
+                          defaultValue="1" 
+                          min="1" 
+                          max="4094"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Management Network</label>
+                        <input 
+                          type="text" 
+                          defaultValue="192.168.1.0/24"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>SNMP Community</label>
+                        <input 
+                          type="text" 
+                          defaultValue="public"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>NTP Server</label>
+                        <input 
+                          type="text" 
+                          defaultValue="pool.ntp.org"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Security Settings */}
+                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                    <h3 style={{ color: '#dc2626', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      🔒 Security Settings
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Session Timeout (minutes)</label>
+                        <input 
+                          type="number" 
+                          defaultValue="30" 
+                          min="5" 
+                          max="480"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Max Login Attempts</label>
+                        <input 
+                          type="number" 
+                          defaultValue="3" 
+                          min="1" 
+                          max="10"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Password Policy</label>
+                        <select style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}>
+                          <option value="strict">Strict (8+ chars, special chars)</option>
+                          <option value="medium">Medium (6+ chars)</option>
+                          <option value="basic">Basic (4+ chars)</option>
+                        </select>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <input type="checkbox" id="enable2fa" defaultChecked />
+                        <label htmlFor="enable2fa" style={{ fontWeight: 600, color: '#374151' }}>Enable Two-Factor Authentication</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Backup & Recovery */}
+                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                    <h3 style={{ color: '#059669', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      💾 Backup & Recovery
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      {/* Backup Stats */}
+                      {backupStats && (
+                        <div style={{ background: '#f0fdf4', padding: '12px', borderRadius: 8, border: '1px solid #10b981' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                            <span style={{ fontWeight: 600, color: '#047857' }}>Total Backups:</span>
+                            <span style={{ color: '#059669' }}>{backupStats.totalBackups}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                            <span style={{ fontWeight: 600, color: '#047857' }}>Total Size:</span>
+                            <span style={{ color: '#059669' }}>{backupStats.totalSizeMB} MB</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span style={{ fontWeight: 600, color: '#047857' }}>Latest Backup:</span>
+                            <span style={{ color: '#059669' }}>
+                              {backupStats.newestBackup ? new Date(backupStats.newestBackup).toLocaleDateString() : 'None'}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Backup Type Selection */}
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Backup Type</label>
+                        <select 
+                          id="backupType"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        >
+                          <option value="full">Full Backup (Database + Config)</option>
+                          <option value="database">Database Only</option>
+                          <option value="configuration">Configuration Only</option>
+                        </select>
+                      </div>
+
+                      {/* Backup Actions */}
+                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <button 
+                          onClick={() => createBackup(document.getElementById('backupType')?.value || 'full')}
+                          disabled={backupLoading}
+                          style={{
+                            background: 'linear-gradient(90deg, #059669 0%, #10b981 100%)',
+                            color: '#fff',
+                            padding: '10px 16px',
+                            border: 'none',
+                            borderRadius: 8,
+                            cursor: backupLoading ? 'not-allowed' : 'pointer',
+                            fontSize: 14,
+                            fontWeight: 600,
+                            opacity: backupLoading ? 0.6 : 1
+                          }}
+                        >
+                          {backupLoading ? '🔄 Creating...' : '💾 Create Backup'}
+                        </button>
+                        <button 
+                          onClick={() => cleanupBackups(30)}
+                          disabled={backupLoading}
+                          style={{
+                            background: 'linear-gradient(90deg, #dc2626 0%, #ef4444 100%)',
+                            color: '#fff',
+                            padding: '10px 16px',
+                            border: 'none',
+                            borderRadius: 8,
+                            cursor: backupLoading ? 'not-allowed' : 'pointer',
+                            fontSize: 14,
+                            fontWeight: 600,
+                            opacity: backupLoading ? 0.6 : 1
+                          }}
+                        >
+                          🗑️ Cleanup Old
+                        </button>
+                      </div>
+
+                      {/* Backup Message */}
+                      {backupMessage && (
+                        <div style={{ 
+                          padding: '8px 12px', 
+                          borderRadius: 6, 
+                          fontSize: 14,
+                          background: backupMessage.includes('✅') ? '#f0fdf4' : '#fef2f2',
+                          color: backupMessage.includes('✅') ? '#047857' : '#dc2626',
+                          border: `1px solid ${backupMessage.includes('✅') ? '#10b981' : '#f87171'}`
+                        }}>
+                          {backupMessage}
+                        </div>
+                      )}
+
+                      {/* Recent Backups List */}
+                      {backupList.length > 0 && (
+                        <div>
+                          <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Recent Backups</label>
+                          <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #e5e7eb', borderRadius: 8 }}>
+                            {backupList.slice(0, 5).map((backup, index) => (
+                              <div key={index} style={{ 
+                                padding: '8px 12px', 
+                                borderBottom: index < backupList.slice(0, 5).length - 1 ? '1px solid #e5e7eb' : 'none',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                              }}>
+                                <div>
+                                  <div style={{ fontWeight: 600, fontSize: 12, color: '#374151' }}>
+                                    {backup.filename}
+                                  </div>
+                                  <div style={{ fontSize: 11, color: '#6b7280' }}>
+                                    {new Date(backup.created).toLocaleString()} • {(backup.size / 1024).toFixed(1)} KB
+                                  </div>
+                                </div>
+                                <div style={{ display: 'flex', gap: 4 }}>
+                                  <button 
+                                    onClick={() => restoreBackup(backup.filename)}
+                                    disabled={backupLoading}
+                                    style={{
+                                      background: '#3b82f6',
+                                      color: '#fff',
+                                      border: 'none',
+                                      borderRadius: 4,
+                                      padding: '4px 8px',
+                                      fontSize: 11,
+                                      cursor: backupLoading ? 'not-allowed' : 'pointer'
+                                    }}
+                                  >
+                                    Restore
+                                  </button>
+                                  <button 
+                                    onClick={() => deleteBackup(backup.filename)}
+                                    disabled={backupLoading}
+                                    style={{
+                                      background: '#ef4444',
+                                      color: '#fff',
+                                      border: 'none',
+                                      borderRadius: 4,
+                                      padding: '4px 8px',
+                                      fontSize: 11,
+                                      cursor: backupLoading ? 'not-allowed' : 'pointer'
+                                    }}
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Monitoring & Alerts */}
+                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                    <h3 style={{ color: '#7c3aed', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      📊 Monitoring & Alerts
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>CPU Threshold (%)</label>
+                        <input 
+                          type="number" 
+                          defaultValue="80" 
+                          min="50" 
+                          max="100"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Memory Threshold (%)</label>
+                        <input 
+                          type="number" 
+                          defaultValue="85" 
+                          min="50" 
+                          max="100"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Alert Email</label>
+                        <input 
+                          type="email" 
+                          defaultValue="admin@company.com"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <input type="checkbox" id="enableAlerts" defaultChecked />
+                        <label htmlFor="enableAlerts" style={{ fontWeight: 600, color: '#374151' }}>Enable Email Alerts</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Interface Preferences */}
+                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                    <h3 style={{ color: '#ea580c', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      🎨 Interface Preferences
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Language</label>
+                        <select style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}>
+                          <option value="en">English</option>
+                          <option value="es">Español</option>
+                          <option value="fr">Français</option>
+                          <option value="de">Deutsch</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Time Zone</label>
+                        <select style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}>
+                          <option value="UTC">UTC</option>
+                          <option value="EST">Eastern Time</option>
+                          <option value="PST">Pacific Time</option>
+                          <option value="CET">Central European Time</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Date Format</label>
+                        <select style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}>
+                          <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                          <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                          <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                        </select>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <input type="checkbox" id="autoRefresh" defaultChecked />
+                        <label htmlFor="autoRefresh" style={{ fontWeight: 600, color: '#374151' }}>Auto-refresh Dashboard</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Advanced Settings */}
+                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                    <h3 style={{ color: '#6b7280', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      🔧 Advanced Settings
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Log Level</label>
+                        <select style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}>
+                          <option value="error">Error Only</option>
+                          <option value="warn">Warning</option>
+                          <option value="info">Info</option>
+                          <option value="debug">Debug</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>API Rate Limit (req/min)</label>
+                        <input 
+                          type="number" 
+                          defaultValue="100" 
+                          min="10" 
+                          max="1000"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Database Connection Pool</label>
+                        <input 
+                          type="number" 
+                          defaultValue="10" 
+                          min="1" 
+                          max="50"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <input type="checkbox" id="enableDebug" />
+                        <label htmlFor="enableDebug" style={{ fontWeight: 600, color: '#374151' }}>Enable Debug Mode</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 32 }}>
+                  <button style={{
+                    background: 'linear-gradient(90deg, #1e40af 0%, #3b82f6 100%)',
+                    color: '#fff',
+                    padding: '16px 32px',
+                    border: 'none',
+                    borderRadius: 12,
+                    cursor: 'pointer',
+                    fontSize: 16,
+                    fontWeight: 700,
+                    boxShadow: '0 4px 15px rgba(30, 64, 175, 0.2)',
+                    transition: 'all 0.2s'
+                  }}>
+                    💾 Save All Settings
+                  </button>
+                  <button style={{
+                    background: 'linear-gradient(90deg, #6b7280 0%, #9ca3af 100%)',
+                    color: '#fff',
+                    padding: '16px 32px',
+                    border: 'none',
+                    borderRadius: 12,
+                    cursor: 'pointer',
+                    fontSize: 16,
+                    fontWeight: 700,
+                    boxShadow: '0 4px 15px rgba(107, 114, 128, 0.2)',
+                    transition: 'all 0.2s'
+                  }}>
+                    🔄 Reset to Defaults
+                  </button>
+                  <button style={{
+                    background: 'linear-gradient(90deg, #dc2626 0%, #ef4444 100%)',
+                    color: '#fff',
+                    padding: '16px 32px',
+                    border: 'none',
+                    borderRadius: 12,
+                    cursor: 'pointer',
+                    fontSize: 16,
+                    fontWeight: 700,
+                    boxShadow: '0 4px 15px rgba(220, 38, 38, 0.2)',
+                    transition: 'all 0.2s'
+                  }}>
+                    🗑️ Clear All Data
+                  </button>
+                </div>
+
+                {/* Settings Status */}
+                <div style={{ 
+                  background: 'linear-gradient(90deg, #f0fdf4 0%, #ecfdf5 100%)', 
+                  borderRadius: 16, 
+                  padding: '20px', 
+                  marginTop: 24,
+                  border: '2px solid #10b981'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ fontSize: 24 }}>✅</div>
+                    <div>
+                      <h4 style={{ margin: 0, color: '#047857', fontWeight: 700 }}>Settings Status</h4>
+                      <p style={{ margin: 0, color: '#065f46', fontSize: 14 }}>All settings are up to date. Last saved: {new Date().toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
           {activeSection === 'audit' && userProfile.role === 'Admin' && (
             <ReportsPage />
+          )}
+          {activeSection === 'monitoring' && userProfile.role === 'Admin' && (
+            <MonitoringPage API_URL={API_URL} />
           )}
           {activeSection === 'help' && (
             <div><h2 className="section-header">Help</h2><div className="config-section"><h3>Tutorials</h3><p style={{ color: '#1A2A44', fontSize: '16px' }}>Learn how to use the dashboard.</p></div></div>

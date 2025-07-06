@@ -1,17 +1,25 @@
-import express from "express";
-import { config } from "dotenv";
-import path from "path";
-import { fileURLToPath } from 'url';
-import { connectDB } from './config/db.js';
-import Device from './models/Device.js';
-import { exec } from 'child_process';
-import cors from 'cors';
-import http from 'http';
-import { Server } from 'socket.io';
-import fs from 'fs';
+const express = require("express");
+const { config } = require("dotenv");
+const path = require("path");
+const { connectDB } = require('./config/db');
+const Device = require('./models/Device');
+const User = require('./models/User');
+const Role = require('./models/Role');
+const { exec } = require('child_process');
+const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
+const fs = require('fs');
+const BackupService = require('./backup_service');
+const MonitoringService = require('./monitoring_service');
+const authRoutes = require('./routes/auth');
+const { authenticateToken, requireRole, requirePermission } = require('./middleware/auth');
 
 // Load environment variables
 config();
+
+// Get Flask API URL from environment variable, default to localhost:5001
+const FLASK_API_URL = process.env.FLASK_API_URL || 'http://localhost:5001';
 
 const app = express();
 const server = http.createServer(app);
@@ -27,14 +35,35 @@ app.use(cors({
   credentials: true,
 }));
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
 
 // Connect to MongoDB
 connectDB();
 
+// Initialize backup service
+const backupService = new BackupService();
+
+// Initialize monitoring service
+const monitoringService = new MonitoringService();
+
 // Middleware to parse JSON
 app.use(express.json());
+
+// Initialize roles on startup
+async function initializeRoles() {
+  try {
+    await Role.initializeRoles();
+    console.log('Roles initialized successfully');
+  } catch (error) {
+    console.error('Error initializing roles:', error);
+  }
+}
+
+// Initialize roles
+initializeRoles();
+
+// Auth routes
+app.use('/api/auth', authRoutes);
 
 // Test route to verify server is running
 app.get('/api/test', (req, res) => {
@@ -43,7 +72,7 @@ app.get('/api/test', (req, res) => {
 });
 
 // API to add a device and run playbook
-app.post("/api/devices", async (req, res) => {
+app.post("/api/devices", authenticateToken, requirePermission('write_devices'), async (req, res) => {
   const { name, ip } = req.body;
   try {
     const device = new Device({ name, ip });
@@ -62,7 +91,7 @@ app.post("/api/devices", async (req, res) => {
 });
 
 // API to fetch all devices
-app.get("/api/devices", async (req, res) => {
+app.get("/api/devices", authenticateToken, requirePermission('read_devices'), async (req, res) => {
   try {
     const devices = await Device.find();
     res.json(devices);
@@ -71,19 +100,52 @@ app.get("/api/devices", async (req, res) => {
   }
 });
 
-// API login
-app.post('/api/login', (req, res) => {
-  console.log('Login request received:', req.body);
-  const { username, password } = req.body;
-  if (username === "sarra" && password === "sarra") {
-    return res.json({ message: "Login successful" });
-  } else {
-    return res.status(401).json({ message: "Invalid credentials" });
+// Legacy login endpoint (for backward compatibility)
+app.post('/api/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    
+    // Check if user exists in new system
+    const user = await User.findOne({ username });
+    if (user) {
+      // Use new authentication system
+      const isPasswordValid = await user.comparePassword(password);
+      if (isPasswordValid) {
+        const { generateToken } = require('./middleware/auth');
+        const token = generateToken(user._id);
+        
+        const role = await Role.findOne({ name: user.role });
+        const rolePermissions = role ? role.permissions : [];
+        
+        return res.json({
+          message: "Login successful",
+          token,
+          user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            permissions: user.permissions,
+            rolePermissions
+          }
+        });
+      }
+    }
+    
+    // Fallback to legacy authentication
+    if (username === "sarra" && password === "sarra") {
+      return res.json({ message: "Login successful" });
+    } else {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
 // API for system health (Developer Dashboard)
-app.get('/api/dev/health', async (req, res) => {
+app.get('/api/dev/health', authenticateToken, requireRole(['Admin', 'Developer']), async (req, res) => {
   const db = Device.db.db;
   const health = {
     serverUptime: process.uptime(),
@@ -149,7 +211,7 @@ app.get('/api/interfaces/:switchName', (req, res) => {
 });
 
 // API to create a VLAN
-app.post('/api/create-vlan', async (req, res) => {
+app.post('/api/create-vlan', authenticateToken, requirePermission('write_vlans'), async (req, res) => {
   const { vlanId, vlanName, switchIp } = req.body;
   if (!vlanId || !vlanName || !switchIp) {
     return res.status(400).json({ error: 'VLAN ID, VLAN Name, and Switch IP are required' });
@@ -169,7 +231,7 @@ app.post('/api/create-vlan', async (req, res) => {
     };
 
     // Call the playbook generation API
-    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+    const generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -193,7 +255,7 @@ app.post('/api/create-vlan', async (req, res) => {
 });
 
 // New API endpoint for SSH configuration
-app.post('/api/configure-ssh', async (req, res) => {
+app.post('/api/configure-ssh', authenticateToken, requirePermission('configure_ssh'), async (req, res) => {
   const { switchIp, sshEnabled, sshPort, allowedIps } = req.body;
   
   if (!switchIp) {
@@ -209,7 +271,7 @@ app.post('/api/configure-ssh', async (req, res) => {
       allowed_ips: allowedIps || []
     };
 
-    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+    const generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -233,7 +295,7 @@ app.post('/api/configure-ssh', async (req, res) => {
 });
 
 // New API endpoint for port security configuration
-app.post('/api/configure-port-security', async (req, res) => {
+app.post('/api/configure-port-security', authenticateToken, requirePermission('configure_security'), async (req, res) => {
   const { switchIp, portConfigs } = req.body;
   
   if (!switchIp || !portConfigs) {
@@ -247,7 +309,7 @@ app.post('/api/configure-port-security', async (req, res) => {
       port_configs: portConfigs
     };
 
-    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+    const generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -271,7 +333,7 @@ app.post('/api/configure-port-security', async (req, res) => {
 });
 
 // New API endpoint for DHCP snooping configuration
-app.post('/api/configure-dhcp-snooping', async (req, res) => {
+app.post('/api/configure-dhcp-snooping', authenticateToken, requirePermission('configure_security'), async (req, res) => {
   const { switchIp, enabled, trustedPorts } = req.body;
   
   if (!switchIp) {
@@ -286,7 +348,7 @@ app.post('/api/configure-dhcp-snooping', async (req, res) => {
       trusted_ports: trustedPorts || []
     };
 
-    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+    const generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -310,7 +372,7 @@ app.post('/api/configure-dhcp-snooping', async (req, res) => {
 });
 
 // New API endpoint for hostname and management IP configuration
-app.post('/api/configure-hostname', async (req, res) => {
+app.post('/api/configure-hostname', authenticateToken, requirePermission('write_devices'), async (req, res) => {
   const { switchIp, hostname, managementIp } = req.body;
   
   if (!switchIp || !hostname) {
@@ -325,7 +387,7 @@ app.post('/api/configure-hostname', async (req, res) => {
       management_ip: managementIp
     };
 
-    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+    const generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -364,7 +426,7 @@ app.post('/api/configure-routing', async (req, res) => {
       dynamic_routing: dynamicRouting || false
     };
 
-    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+    const generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -403,7 +465,7 @@ app.post('/api/configure-nat', async (req, res) => {
       enabled: enabled !== undefined ? enabled : true
     };
 
-    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+    const generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -442,7 +504,7 @@ app.post('/api/configure-dhcp', async (req, res) => {
       enabled: enabled !== undefined ? enabled : true
     };
 
-    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+    const generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -482,7 +544,7 @@ app.post('/api/configure-stp', async (req, res) => {
       port_configs: portConfigs || []
     };
 
-    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+    const generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -521,7 +583,7 @@ app.post('/api/configure-etherchannel', async (req, res) => {
       groups: groups || []
     };
 
-    const generateResponse = await fetch('http://localhost:5001/api/generate-and-execute', {
+    const generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -581,6 +643,256 @@ io.on('connection', (socket) => {
     clearInterval(statusInterval);
     console.log('Socket.IO client disconnected:', socket.id);
   });
+});
+
+// Monitoring API endpoints
+app.get('/api/monitoring/health', authenticateToken, requirePermission('read_monitoring'), async (req, res) => {
+  try {
+    const health = await monitoringService.getSystemHealth();
+    res.json({
+      success: true,
+      data: health
+    });
+  } catch (error) {
+    console.error('Health check error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get system health',
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/monitoring/metrics', authenticateToken, requirePermission('read_monitoring'), async (req, res) => {
+  try {
+    const metrics = await monitoringService.getSystemMetrics();
+    res.json({
+      success: true,
+      data: metrics
+    });
+  } catch (error) {
+    console.error('Metrics error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get system metrics',
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/monitoring/logs', authenticateToken, requirePermission('read_monitoring'), async (req, res) => {
+  try {
+    const { limit = 100, level } = req.query;
+    const logs = await monitoringService.getRecentLogs(parseInt(limit), level);
+    res.json({
+      success: true,
+      data: logs
+    });
+  } catch (error) {
+    console.error('Logs error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get logs',
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/monitoring/alerts', async (req, res) => {
+  try {
+    const { limit = 50 } = req.query;
+    const alerts = await monitoringService.getAlerts(parseInt(limit));
+    res.json({
+      success: true,
+      data: alerts
+    });
+  } catch (error) {
+    console.error('Alerts error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get alerts',
+      error: error.message
+    });
+  }
+});
+
+// Backup API endpoints
+app.post('/api/backup/create', async (req, res) => {
+  try {
+    const { type = 'full' } = req.body;
+    let result;
+    
+    switch (type) {
+      case 'database':
+        result = await backupService.createDatabaseBackup();
+        break;
+      case 'configuration':
+        result = await backupService.createConfigurationBackup();
+        break;
+      case 'full':
+      default:
+        result = await backupService.createFullBackup();
+        break;
+    }
+    
+    if (result.success) {
+      appendAuditLog(`Backup created: ${result.filename} (${type})`);
+      res.json({
+        success: true,
+        message: `${type} backup created successfully`,
+        data: result
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Backup creation failed',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Backup creation error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/backup/list', async (req, res) => {
+  try {
+    const backups = await backupService.listBackups();
+    res.json({
+      success: true,
+      data: backups
+    });
+  } catch (error) {
+    console.error('Backup list error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to list backups',
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/backup/stats', async (req, res) => {
+  try {
+    const stats = await backupService.getBackupStats();
+    res.json({
+      success: true,
+      data: stats
+    });
+  } catch (error) {
+    console.error('Backup stats error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get backup stats',
+      error: error.message
+    });
+  }
+});
+
+app.post('/api/backup/restore', async (req, res) => {
+  try {
+    const { filename } = req.body;
+    if (!filename) {
+      return res.status(400).json({
+        success: false,
+        message: 'Filename is required'
+      });
+    }
+    
+    const filepath = path.join(backupService.backupDir, filename);
+    if (!fs.existsSync(filepath)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Backup file not found'
+      });
+    }
+    
+    const result = await backupService.restoreFromBackup(filepath);
+    
+    if (result.success) {
+      appendAuditLog(`Backup restored: ${filename}`);
+      res.json({
+        success: true,
+        message: 'Backup restored successfully',
+        data: result
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Backup restore failed',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Backup restore error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
+app.delete('/api/backup/delete/:filename', async (req, res) => {
+  try {
+    const { filename } = req.params;
+    const result = await backupService.deleteBackup(filename);
+    
+    if (result.success) {
+      appendAuditLog(`Backup deleted: ${filename}`);
+      res.json({
+        success: true,
+        message: 'Backup deleted successfully',
+        data: result
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to delete backup',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Backup delete error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
+app.post('/api/backup/cleanup', async (req, res) => {
+  try {
+    const { retentionDays = 30 } = req.body;
+    const result = await backupService.cleanupOldBackups(retentionDays);
+    
+    if (result.success) {
+      appendAuditLog(`Backup cleanup completed: ${result.deletedCount} files deleted`);
+      res.json({
+        success: true,
+        message: 'Backup cleanup completed',
+        data: result
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Backup cleanup failed',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Backup cleanup error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
 });
 
 // Basic API endpoint to get audit logs

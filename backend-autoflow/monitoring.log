@@ -1,0 +1,247 @@
+[2025-07-06T00:27:03.537Z] [INFO] User login successful {"user":"admin","ip":"192.168.1.100"}
+[2025-07-06T00:27:03.539Z] [INFO] VLAN 10 created successfully {"vlanId":10,"name":"Office"}
+[2025-07-06T00:27:03.540Z] [INFO] Backup completed {"type":"full","size":"2.1GB"}
+[2025-07-06T00:27:03.540Z] [INFO] Device discovered {"mac":"00:1A:2B:3C:4D:5E","port":"Fa0/1"}
+[2025-07-06T00:27:03.541Z] [WARNING] High CPU usage detected {"cpuUsage":85,"threshold":80}
+[2025-07-06T00:27:03.542Z] [WARNING] Memory usage high {"memoryUsage":78,"available":"512MB"}
+[2025-07-06T00:27:03.542Z] [WARNING] Multiple failed logins {"user":"unknown","attempts":5}
+[2025-07-06T00:27:03.544Z] [ERROR] Database connection timeout {"retries":3,"duration":"30s"}
+[2025-07-06T00:27:03.544Z] [ERROR] Interface Fa0/3 down {"duration":"5 minutes"}
+[2025-07-06T00:27:03.544Z] [ERROR] Backup failed - disk full {"required":"3GB","available":"1GB"}
+[2025-07-06T00:27:03.545Z] [ERROR] Unauthorized access attempt {"ip":"203.0.113.45","port":22}
+[2025-07-06T00:27:03.545Z] [WARNING] Port scan detected {"source":"198.51.100.25","ports":[22,80,443]}
+[2025-07-06T00:27:03.548Z] [INFO] DHCP lease assigned {"mac":"00:1A:2B:3C:4D:6F","ip":"192.168.10.150"}
+[2025-07-06T00:27:03.548Z] [WARNING] STP topology change {"rootBridge":"SW1-Core"}
+[2025-07-06T00:28:36.259Z] [INFO] User login successful {"user":"admin","ip":"192.168.1.100"}
+[2025-07-06T00:28:36.260Z] [INFO] VLAN 10 created successfully {"vlanId":10,"name":"Office"}
+[2025-07-06T00:28:36.261Z] [INFO] Backup completed {"type":"full","size":"2.1GB"}
+[2025-07-06T00:28:36.261Z] [INFO] Device discovered {"mac":"00:1A:2B:3C:4D:5E","port":"Fa0/1"}
+[2025-07-06T00:28:36.262Z] [WARNING] High CPU usage detected {"cpuUsage":85,"threshold":80}
+[2025-07-06T00:28:36.262Z] [WARNING] Memory usage high {"memoryUsage":78,"available":"512MB"}
+[2025-07-06T00:28:36.263Z] [WARNING] Multiple failed logins {"user":"unknown","attempts":5}
+[2025-07-06T00:28:36.265Z] [ERROR] Database connection timeout {"retries":3,"duration":"30s"}
+[2025-07-06T00:28:36.265Z] [ERROR] Interface Fa0/3 down {"duration":"5 minutes"}
+[2025-07-06T00:28:36.268Z] [ERROR] Backup failed - disk full {"required":"3GB","available":"1GB"}
+[2025-07-06T00:28:36.271Z] [ERROR] Unauthorized access attempt {"ip":"203.0.113.45","port":22}
+[2025-07-06T00:28:36.273Z] [WARNING] Port scan detected {"source":"198.51.100.25","ports":[22,80,443]}
+[2025-07-06T00:28:36.277Z] [INFO] DHCP lease assigned {"mac":"00:1A:2B:3C:4D:6F","ip":"192.168.10.150"}
+[2025-07-06T00:28:36.277Z] [WARNING] STP topology change {"rootBridge":"SW1-Core"}
+[2025-07-06T00:28:40.746Z] [INFO] User login successful {"user":"admin","ip":"192.168.1.100","timestamp":"2025-07-06T00:28:40.746Z"}
+[2025-07-06T00:28:40.747Z] [INFO] VLAN configuration updated {"vlanId":10,"action":"create","switch":"SW1-Core"}
+[2025-07-06T00:28:40.747Z] [INFO] Backup completed successfully {"type":"full","size":"2.5GB","duration":"45s"}
+[2025-07-06T00:28:40.747Z] [INFO] Device discovered on network {"mac":"00:1A:2B:3C:4D:5E","ip":"192.168.1.50","port":"Fa0/1"}
+[2025-07-06T00:28:41.751Z] [WARNING] High CPU usage detected {"cpuUsage":85,"loadAverage":2.5,"threshold":80}
+[2025-07-06T00:28:41.752Z] [WARNING] Memory usage approaching limit {"memoryUsage":78,"available":"512MB","threshold":80}
+[2025-07-06T00:28:41.753Z] [WARNING] Backup directory getting full {"usedSpace":"8.5GB","totalSpace":"10GB","freeSpace":"1.5GB"}
+[2025-07-06T00:28:41.753Z] [WARNING] Multiple failed login attempts {"user":"unknown","ip":"192.168.1.200","attempts":5,"timeWindow":"5 minutes"}
+[2025-07-06T00:28:41.753Z] [WARNING] Interface status changed {"interface":"Fa0/3","oldStatus":"Up","newStatus":"Down","duration":"2 minutes"}
+[2025-07-06T00:28:42.756Z] [ERROR] Database connection failed {"error":"Connection timeout","retries":3,"duration":"30s"}
+[2025-07-06T00:28:42.757Z] [ERROR] Flask API service crashed {"error":"Port 5001 already in use","pid":12345,"restartAttempts":2}
+[2025-07-06T00:28:42.757Z] [ERROR] Backup operation failed {"error":"Insufficient disk space","required":"3GB","available":"1GB","backupType":"full"}
+[2025-07-06T00:28:42.757Z] [ERROR] Network interface down {"interface":"Fa0/1","duration":"10 minutes","impact":"VLAN 10 affected"}
+[2025-07-06T00:28:42.758Z] [ERROR] SSL certificate expired {"certificate":"server.cert","expiryDate":"2024-01-15","daysOverdue":5}
+[2025-07-06T00:28:43.759Z] [ERROR] Unauthorized access attempt {"ip":"203.0.113.45","port":22,"method":"SSH brute force","attempts":50}
+[2025-07-06T00:28:43.760Z] [WARNING] Suspicious network activity {"source":"192.168.1.100","destination":"203.0.113.100","protocol":"TCP","port":80,"packets":1000}
+[2025-07-06T00:28:43.760Z] [ERROR] Port scan detected {"source":"198.51.100.25","ports":[22,23,80,443,8080],"duration":"2 minutes"}
+[2025-07-06T00:28:43.760Z] [WARNING] DHCP spoofing attempt {"interface":"Fa0/5","rogueServer":"192.168.1.254","legitimateServer":"192.168.1.1"}
+[2025-07-06T00:28:44.771Z] [INFO] New VLAN created {"vlanId":30,"name":"Guest Network","ports":["Fa0/7","Fa0/8"]}
+[2025-07-06T00:28:44.771Z] [INFO] DHCP lease assigned {"mac":"00:1A:2B:3C:4D:6F","ip":"192.168.10.150","leaseTime":"24 hours"}
+[2025-07-06T00:28:44.771Z] [WARNING] STP topology change {"rootBridge":"SW1-Core","affectedPorts":["Fa0/2","Fa0/3"],"duration":"30 seconds"}
+[2025-07-06T00:28:44.771Z] [INFO] Port security violation {"port":"Fa0/4","mac":"00:1A:2B:3C:4D:70","action":"shutdown"}
+[2025-07-06T00:28:45.903Z] [WARNING] High CPU load: 2.51 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.51","value":2.51}}
+[2025-07-06T00:28:45.905Z] [ERROR] Failed to read logs {"error":"Unexpected token l in JSON at position 0"}
+[2025-07-06T00:28:45.906Z] [ERROR] Failed to read alerts {"error":"Unexpected token C in JSON at position 0"}
+[2025-07-06T00:28:45.908Z] [ERROR] Failed to read logs {"error":"Unexpected token l in JSON at position 0"}
+[2025-07-06T00:28:45.909Z] [ERROR] Failed to read alerts {"error":"Unexpected token C in JSON at position 0"}
+[2025-07-06T00:33:06.678Z] [WARNING] Port scan detected from suspicious IP {"source":"203.0.113.45","ports":[22,23,80,443,8080,3306,5432],"duration":"5 minutes","scanType":"TCP SYN scan"}
+[2025-07-06T00:33:06.679Z] [WARNING] Multiple failed SSH login attempts {"source":"203.0.113.45","attempts":25,"usernames":["admin","root","user","test"],"timeWindow":"10 minutes"}
+[2025-07-06T00:33:06.679Z] [ERROR] Unauthorized access attempt detected {"source":"203.0.113.45","target":"192.168.1.100","method":"SSH brute force","credentials":"admin:password123","timestamp":"2025-07-06T00:33:06.679Z"}
+[2025-07-06T00:33:06.679Z] [ERROR] Suspicious file upload detected {"filename":"payload.php","size":"2.5MB","source":"203.0.113.45","destination":"/var/www/html/","hash":"a1b2c3d4e5f6..."}
+[2025-07-06T00:33:06.679Z] [ERROR] Unusual network traffic detected {"source":"192.168.1.100","destination":"192.168.1.50","protocol":"SMB","port":445,"dataSize":"15MB","pattern":"lateral_movement"}
+[2025-07-06T00:33:06.680Z] [WARNING] New admin user created {"username":"backdoor_user","source":"192.168.1.100","timestamp":"2025-07-06T00:33:06.680Z","suspicious":true}
+[2025-07-06T00:33:06.680Z] [ERROR] Large data transfer to external IP {"source":"192.168.1.100","destination":"203.0.113.45","dataSize":"500MB","files":["database_backup.sql","config_files.tar.gz"],"protocol":"FTP"}
+[2025-07-06T00:33:06.680Z] [ERROR] Database dump detected {"database":"autoflow_db","size":"250MB","destination":"203.0.113.45","timestamp":"2025-07-06T00:33:06.680Z"}
+[2025-07-06T00:33:06.680Z] [ERROR] Malware detected on system {"filename":"crypto_miner.exe","location":"/tmp/","hash":"malware_hash_123","type":"cryptocurrency miner","source":"203.0.113.45"}
+[2025-07-06T00:33:06.680Z] [ERROR] System process killed unexpectedly {"process":"nginx","pid":1234,"reason":"unknown","suspicious":true}
+[2025-07-06T00:33:06.680Z] [ERROR] Firewall rules modified {"rule":"DROP 203.0.113.45","action":"deleted","source":"192.168.1.100","timestamp":"2025-07-06T00:33:06.680Z"}
+[2025-07-06T00:33:06.681Z] [ERROR] Suspicious cron job added {"job":"*/5 * * * * /tmp/backdoor.sh","user":"root","source":"192.168.1.100"}
+[2025-07-06T00:33:06.681Z] [WARNING] New startup service detected {"service":"systemd-backdoor","path":"/etc/systemd/system/","source":"unknown"}
+[2025-07-06T00:33:08.683Z] [WARNING] CPU usage critically high {"cpuUsage":95,"loadAverage":[4.8,4.2,3.9],"processes":200,"topProcesses":["crypto_miner","nginx","node"]}
+[2025-07-06T00:33:08.684Z] [ERROR] CPU temperature critical {"temperature":85,"threshold":70,"unit":"celsius"}
+[2025-07-06T00:33:08.685Z] [ERROR] Memory critically low {"memoryUsage":98,"available":"50MB","swapUsage":95,"oomKiller":true}
+[2025-07-06T00:33:08.685Z] [WARNING] Memory leak detected {"process":"node","memoryGrowth":"2GB/hour","duration":"3 hours"}
+[2025-07-06T00:33:08.685Z] [ERROR] Disk space critical {"usage":99,"freeSpace":"100MB","largestFiles":["/var/log/attack.log","/tmp/malware.exe"]}
+[2025-07-06T00:33:08.685Z] [WARNING] Disk I/O bottleneck {"readLatency":"500ms","writeLatency":"800ms","queueDepth":50}
+[2025-07-06T00:33:08.686Z] [ERROR] Network interface overloaded {"interface":"eth0","utilization":98,"droppedPackets":1000,"errors":150}
+[2025-07-06T00:33:08.686Z] [WARNING] DDoS attack detected {"source":"multiple","packets":10000,"duration":"30 minutes","type":"SYN flood"}
+[2025-07-06T00:33:10.689Z] [ERROR] ARP spoofing attack detected {"attacker":"192.168.1.200","target":"192.168.1.1","spoofedMac":"00:1A:2B:3C:4D:5E","packets":500}
+[2025-07-06T00:33:10.689Z] [ERROR] Rogue DHCP server detected {"rogueServer":"192.168.1.254","legitimateServer":"192.168.1.1","leases":15}
+[2025-07-06T00:33:10.689Z] [WARNING] VLAN hopping attempt detected {"source":"192.168.1.100","targetVlan":10,"method":"double tagging","packets":25}
+[2025-07-06T00:33:10.690Z] [ERROR] STP root bridge takeover attempt {"attacker":"192.168.1.200","priority":0,"originalRoot":"SW1-Core"}
+[2025-07-06T00:33:12.692Z] [ERROR] SQL injection attempt detected {"source":"203.0.113.45","payload":"'; DROP TABLE users; --","target":"/api/users","blocked":true}
+[2025-07-06T00:33:12.693Z] [WARNING] XSS attack attempt detected {"source":"203.0.113.45","payload":"<script>alert(\"XSS\")</script>","target":"/api/comments","blocked":true}
+[2025-07-06T00:33:12.693Z] [ERROR] Directory traversal attempt detected {"source":"203.0.113.45","payload":"../../../etc/passwd","target":"/api/files","blocked":true}
+[2025-07-06T00:33:12.693Z] [WARNING] API rate limit exceeded {"source":"203.0.113.45","endpoint":"/api/devices","requests":1000,"timeWindow":"1 minute","blocked":true}
+[2025-07-06T00:33:12.730Z] [ERROR] Failed to read logs {"error":"Unexpected token l in JSON at position 0"}
+[2025-07-06T00:33:12.731Z] [ERROR] Failed to read alerts {"error":"Unexpected token C in JSON at position 0"}
+[2025-07-06T00:37:20.399Z] [WARNING] Port scan detected from suspicious IP {"source":"203.0.113.45","ports":[22,23,80,443,8080,3306,5432],"duration":"5 minutes","scanType":"TCP SYN scan"}
+[2025-07-06T00:37:20.400Z] [WARNING] Multiple failed SSH login attempts {"source":"203.0.113.45","attempts":25,"usernames":["admin","root","user","test"],"timeWindow":"10 minutes"}
+[2025-07-06T00:37:20.400Z] [ERROR] Unauthorized access attempt detected {"source":"203.0.113.45","target":"192.168.1.100","method":"SSH brute force","credentials":"admin:password123","timestamp":"2025-07-06T00:37:20.400Z"}
+[2025-07-06T00:37:20.400Z] [ERROR] Suspicious file upload detected {"filename":"payload.php","size":"2.5MB","source":"203.0.113.45","destination":"/var/www/html/","hash":"a1b2c3d4e5f6..."}
+[2025-07-06T00:37:20.400Z] [ERROR] Unusual network traffic detected {"source":"192.168.1.100","destination":"192.168.1.50","protocol":"SMB","port":445,"dataSize":"15MB","pattern":"lateral_movement"}
+[2025-07-06T00:37:20.401Z] [WARNING] New admin user created {"username":"backdoor_user","source":"192.168.1.100","timestamp":"2025-07-06T00:37:20.401Z","suspicious":true}
+[2025-07-06T00:37:20.401Z] [ERROR] Large data transfer to external IP {"source":"192.168.1.100","destination":"203.0.113.45","dataSize":"500MB","files":["database_backup.sql","config_files.tar.gz"],"protocol":"FTP"}
+[2025-07-06T00:37:20.401Z] [ERROR] Database dump detected {"database":"autoflow_db","size":"250MB","destination":"203.0.113.45","timestamp":"2025-07-06T00:37:20.401Z"}
+[2025-07-06T00:37:20.401Z] [ERROR] Malware detected on system {"filename":"crypto_miner.exe","location":"/tmp/","hash":"malware_hash_123","type":"cryptocurrency miner","source":"203.0.113.45"}
+[2025-07-06T00:37:20.401Z] [ERROR] System process killed unexpectedly {"process":"nginx","pid":1234,"reason":"unknown","suspicious":true}
+[2025-07-06T00:37:20.401Z] [ERROR] Firewall rules modified {"rule":"DROP 203.0.113.45","action":"deleted","source":"192.168.1.100","timestamp":"2025-07-06T00:37:20.401Z"}
+[2025-07-06T00:37:20.401Z] [ERROR] Suspicious cron job added {"job":"*/5 * * * * /tmp/backdoor.sh","user":"root","source":"192.168.1.100"}
+[2025-07-06T00:37:20.402Z] [WARNING] New startup service detected {"service":"systemd-backdoor","path":"/etc/systemd/system/","source":"unknown"}
+[2025-07-06T00:37:22.404Z] [WARNING] CPU usage critically high {"cpuUsage":95,"loadAverage":[4.8,4.2,3.9],"processes":200,"topProcesses":["crypto_miner","nginx","node"]}
+[2025-07-06T00:37:22.404Z] [ERROR] CPU temperature critical {"temperature":85,"threshold":70,"unit":"celsius"}
+[2025-07-06T00:37:22.405Z] [ERROR] Memory critically low {"memoryUsage":98,"available":"50MB","swapUsage":95,"oomKiller":true}
+[2025-07-06T00:37:22.405Z] [WARNING] Memory leak detected {"process":"node","memoryGrowth":"2GB/hour","duration":"3 hours"}
+[2025-07-06T00:37:22.405Z] [ERROR] Disk space critical {"usage":99,"freeSpace":"100MB","largestFiles":["/var/log/attack.log","/tmp/malware.exe"]}
+[2025-07-06T00:37:22.405Z] [WARNING] Disk I/O bottleneck {"readLatency":"500ms","writeLatency":"800ms","queueDepth":50}
+[2025-07-06T00:37:22.405Z] [ERROR] Network interface overloaded {"interface":"eth0","utilization":98,"droppedPackets":1000,"errors":150}
+[2025-07-06T00:37:22.405Z] [WARNING] DDoS attack detected {"source":"multiple","packets":10000,"duration":"30 minutes","type":"SYN flood"}
+[2025-07-06T00:37:24.407Z] [ERROR] ARP spoofing attack detected {"attacker":"192.168.1.200","target":"192.168.1.1","spoofedMac":"00:1A:2B:3C:4D:5E","packets":500}
+[2025-07-06T00:37:24.407Z] [ERROR] Rogue DHCP server detected {"rogueServer":"192.168.1.254","legitimateServer":"192.168.1.1","leases":15}
+[2025-07-06T00:37:24.407Z] [WARNING] VLAN hopping attempt detected {"source":"192.168.1.100","targetVlan":10,"method":"double tagging","packets":25}
+[2025-07-06T00:37:24.407Z] [ERROR] STP root bridge takeover attempt {"attacker":"192.168.1.200","priority":0,"originalRoot":"SW1-Core"}
+[2025-07-06T00:37:26.411Z] [ERROR] SQL injection attempt detected {"source":"203.0.113.45","payload":"'; DROP TABLE users; --","target":"/api/users","blocked":true}
+[2025-07-06T00:37:26.412Z] [WARNING] XSS attack attempt detected {"source":"203.0.113.45","payload":"<script>alert(\"XSS\")</script>","target":"/api/comments","blocked":true}
+[2025-07-06T00:37:26.413Z] [ERROR] Directory traversal attempt detected {"source":"203.0.113.45","payload":"../../../etc/passwd","target":"/api/files","blocked":true}
+[2025-07-06T00:37:26.413Z] [WARNING] API rate limit exceeded {"source":"203.0.113.45","endpoint":"/api/devices","requests":1000,"timeWindow":"1 minute","blocked":true}
+[2025-07-06T00:37:26.464Z] [ERROR] Failed to read logs {"error":"Unexpected token l in JSON at position 0"}
+[2025-07-06T00:37:26.464Z] [ERROR] Failed to read alerts {"error":"Unexpected token C in JSON at position 0"}
+[2025-07-06T00:37:27.860Z] [ERROR] Failed to read logs {"error":"Unexpected token l in JSON at position 0"}
+[2025-07-06T00:37:27.871Z] [ERROR] Failed to read alerts {"error":"Unexpected token C in JSON at position 0"}
+[2025-07-06T00:37:27.938Z] [ERROR] Failed to read logs {"error":"Unexpected token l in JSON at position 0"}
+[2025-07-06T00:37:27.939Z] [ERROR] Failed to read alerts {"error":"Unexpected token C in JSON at position 0"}
+[2025-07-06T00:37:28.580Z] [ERROR] Failed to read logs {"error":"Unexpected token l in JSON at position 0"}
+[2025-07-06T00:37:28.580Z] [ERROR] Failed to read alerts {"error":"Unexpected token C in JSON at position 0"}
+[2025-07-06T00:37:28.628Z] [ERROR] Failed to read logs {"error":"Unexpected token l in JSON at position 0"}
+[2025-07-06T00:37:28.693Z] [ERROR] Failed to read alerts {"error":"Unexpected token C in JSON at position 0"}
+[2025-07-06T00:37:57.846Z] [ERROR] Failed to read logs {"error":"Unexpected token l in JSON at position 0"}
+[2025-07-06T00:37:57.851Z] [ERROR] Failed to read alerts {"error":"Unexpected token C in JSON at position 0"}
+[2025-07-06T00:37:57.910Z] [WARNING] High CPU load: 2.28 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.28","value":2.28}}
+[2025-07-06T00:37:57.910Z] [ERROR] Failed to read logs {"error":"Unexpected token l in JSON at position 0"}
+[2025-07-06T00:37:57.911Z] [ERROR] Failed to read alerts {"error":"Unexpected token C in JSON at position 0"}
+[2025-07-06T00:37:57.916Z] [WARNING] High CPU load: 2.28 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.28","value":2.28}}
+[2025-07-06T00:38:32.774Z] [WARNING] Port scan detected from suspicious IP {"source":"203.0.113.45","ports":[22,23,80,443,8080,3306,5432],"duration":"5 minutes","scanType":"TCP SYN scan"}
+[2025-07-06T00:38:32.775Z] [WARNING] Multiple failed SSH login attempts {"source":"203.0.113.45","attempts":25,"usernames":["admin","root","user","test"],"timeWindow":"10 minutes"}
+[2025-07-06T00:38:32.775Z] [ERROR] Unauthorized access attempt detected {"source":"203.0.113.45","target":"192.168.1.100","method":"SSH brute force","credentials":"admin:password123","timestamp":"2025-07-06T00:38:32.775Z"}
+[2025-07-06T00:38:32.775Z] [ERROR] Suspicious file upload detected {"filename":"payload.php","size":"2.5MB","source":"203.0.113.45","destination":"/var/www/html/","hash":"a1b2c3d4e5f6..."}
+[2025-07-06T00:38:32.775Z] [ERROR] Unusual network traffic detected {"source":"192.168.1.100","destination":"192.168.1.50","protocol":"SMB","port":445,"dataSize":"15MB","pattern":"lateral_movement"}
+[2025-07-06T00:38:32.776Z] [WARNING] New admin user created {"username":"backdoor_user","source":"192.168.1.100","timestamp":"2025-07-06T00:38:32.776Z","suspicious":true}
+[2025-07-06T00:38:32.776Z] [ERROR] Large data transfer to external IP {"source":"192.168.1.100","destination":"203.0.113.45","dataSize":"500MB","files":["database_backup.sql","config_files.tar.gz"],"protocol":"FTP"}
+[2025-07-06T00:38:32.776Z] [ERROR] Database dump detected {"database":"autoflow_db","size":"250MB","destination":"203.0.113.45","timestamp":"2025-07-06T00:38:32.776Z"}
+[2025-07-06T00:38:32.777Z] [ERROR] Malware detected on system {"filename":"crypto_miner.exe","location":"/tmp/","hash":"malware_hash_123","type":"cryptocurrency miner","source":"203.0.113.45"}
+[2025-07-06T00:38:32.777Z] [ERROR] System process killed unexpectedly {"process":"nginx","pid":1234,"reason":"unknown","suspicious":true}
+[2025-07-06T00:38:32.777Z] [ERROR] Firewall rules modified {"rule":"DROP 203.0.113.45","action":"deleted","source":"192.168.1.100","timestamp":"2025-07-06T00:38:32.777Z"}
+[2025-07-06T00:38:32.777Z] [ERROR] Suspicious cron job added {"job":"*/5 * * * * /tmp/backdoor.sh","user":"root","source":"192.168.1.100"}
+[2025-07-06T00:38:32.778Z] [WARNING] New startup service detected {"service":"systemd-backdoor","path":"/etc/systemd/system/","source":"unknown"}
+[2025-07-06T00:38:34.781Z] [WARNING] CPU usage critically high {"cpuUsage":95,"loadAverage":[4.8,4.2,3.9],"processes":200,"topProcesses":["crypto_miner","nginx","node"]}
+[2025-07-06T00:38:34.781Z] [ERROR] CPU temperature critical {"temperature":85,"threshold":70,"unit":"celsius"}
+[2025-07-06T00:38:34.781Z] [ERROR] Memory critically low {"memoryUsage":98,"available":"50MB","swapUsage":95,"oomKiller":true}
+[2025-07-06T00:38:34.781Z] [WARNING] Memory leak detected {"process":"node","memoryGrowth":"2GB/hour","duration":"3 hours"}
+[2025-07-06T00:38:34.781Z] [ERROR] Disk space critical {"usage":99,"freeSpace":"100MB","largestFiles":["/var/log/attack.log","/tmp/malware.exe"]}
+[2025-07-06T00:38:34.781Z] [WARNING] Disk I/O bottleneck {"readLatency":"500ms","writeLatency":"800ms","queueDepth":50}
+[2025-07-06T00:38:34.782Z] [ERROR] Network interface overloaded {"interface":"eth0","utilization":98,"droppedPackets":1000,"errors":150}
+[2025-07-06T00:38:34.782Z] [WARNING] DDoS attack detected {"source":"multiple","packets":10000,"duration":"30 minutes","type":"SYN flood"}
+[2025-07-06T00:38:36.784Z] [ERROR] ARP spoofing attack detected {"attacker":"192.168.1.200","target":"192.168.1.1","spoofedMac":"00:1A:2B:3C:4D:5E","packets":500}
+[2025-07-06T00:38:36.785Z] [ERROR] Rogue DHCP server detected {"rogueServer":"192.168.1.254","legitimateServer":"192.168.1.1","leases":15}
+[2025-07-06T00:38:36.785Z] [WARNING] VLAN hopping attempt detected {"source":"192.168.1.100","targetVlan":10,"method":"double tagging","packets":25}
+[2025-07-06T00:38:36.785Z] [ERROR] STP root bridge takeover attempt {"attacker":"192.168.1.200","priority":0,"originalRoot":"SW1-Core"}
+[2025-07-06T00:38:38.787Z] [ERROR] SQL injection attempt detected {"source":"203.0.113.45","payload":"'; DROP TABLE users; --","target":"/api/users","blocked":true}
+[2025-07-06T00:38:38.788Z] [WARNING] XSS attack attempt detected {"source":"203.0.113.45","payload":"<script>alert(\"XSS\")</script>","target":"/api/comments","blocked":true}
+[2025-07-06T00:38:38.788Z] [ERROR] Directory traversal attempt detected {"source":"203.0.113.45","payload":"../../../etc/passwd","target":"/api/files","blocked":true}
+[2025-07-06T00:38:38.788Z] [WARNING] API rate limit exceeded {"source":"203.0.113.45","endpoint":"/api/devices","requests":1000,"timeWindow":"1 minute","blocked":true}
+[2025-07-06T00:39:16.099Z] [WARNING] High CPU load: 2.05 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.05","value":2.05}}
+[2025-07-06T00:40:00.450Z] [WARNING] Port scan detected from suspicious IP {"source":"203.0.113.45","ports":[22,23,80,443,8080,3306,5432],"duration":"5 minutes","scanType":"TCP SYN scan"}
+[2025-07-06T00:40:00.451Z] [WARNING] Multiple failed SSH login attempts {"source":"203.0.113.45","attempts":25,"usernames":["admin","root","user","test"],"timeWindow":"10 minutes"}
+[2025-07-06T00:40:00.451Z] [ERROR] Unauthorized access attempt detected {"source":"203.0.113.45","target":"192.168.1.100","method":"SSH brute force","credentials":"admin:password123","timestamp":"2025-07-06T00:40:00.451Z"}
+[2025-07-06T00:40:00.451Z] [ERROR] Suspicious file upload detected {"filename":"payload.php","size":"2.5MB","source":"203.0.113.45","destination":"/var/www/html/","hash":"a1b2c3d4e5f6..."}
+[2025-07-06T00:40:00.452Z] [ERROR] Unusual network traffic detected {"source":"192.168.1.100","destination":"192.168.1.50","protocol":"SMB","port":445,"dataSize":"15MB","pattern":"lateral_movement"}
+[2025-07-06T00:40:00.452Z] [WARNING] New admin user created {"username":"backdoor_user","source":"192.168.1.100","timestamp":"2025-07-06T00:40:00.452Z","suspicious":true}
+[2025-07-06T00:40:00.452Z] [ERROR] Large data transfer to external IP {"source":"192.168.1.100","destination":"203.0.113.45","dataSize":"500MB","files":["database_backup.sql","config_files.tar.gz"],"protocol":"FTP"}
+[2025-07-06T00:40:00.452Z] [ERROR] Database dump detected {"database":"autoflow_db","size":"250MB","destination":"203.0.113.45","timestamp":"2025-07-06T00:40:00.452Z"}
+[2025-07-06T00:40:00.452Z] [ERROR] Malware detected on system {"filename":"crypto_miner.exe","location":"/tmp/","hash":"malware_hash_123","type":"cryptocurrency miner","source":"203.0.113.45"}
+[2025-07-06T00:40:00.453Z] [ERROR] System process killed unexpectedly {"process":"nginx","pid":1234,"reason":"unknown","suspicious":true}
+[2025-07-06T00:40:00.453Z] [ERROR] Firewall rules modified {"rule":"DROP 203.0.113.45","action":"deleted","source":"192.168.1.100","timestamp":"2025-07-06T00:40:00.453Z"}
+[2025-07-06T00:40:00.453Z] [ERROR] Suspicious cron job added {"job":"*/5 * * * * /tmp/backdoor.sh","user":"root","source":"192.168.1.100"}
+[2025-07-06T00:40:00.453Z] [WARNING] New startup service detected {"service":"systemd-backdoor","path":"/etc/systemd/system/","source":"unknown"}
+[2025-07-06T00:40:02.457Z] [WARNING] CPU usage critically high {"cpuUsage":95,"loadAverage":[4.8,4.2,3.9],"processes":200,"topProcesses":["crypto_miner","nginx","node"]}
+[2025-07-06T00:40:02.457Z] [ERROR] CPU temperature critical {"temperature":85,"threshold":70,"unit":"celsius"}
+[2025-07-06T00:40:02.458Z] [ERROR] Memory critically low {"memoryUsage":98,"available":"50MB","swapUsage":95,"oomKiller":true}
+[2025-07-06T00:40:02.458Z] [WARNING] Memory leak detected {"process":"node","memoryGrowth":"2GB/hour","duration":"3 hours"}
+[2025-07-06T00:40:02.458Z] [ERROR] Disk space critical {"usage":99,"freeSpace":"100MB","largestFiles":["/var/log/attack.log","/tmp/malware.exe"]}
+[2025-07-06T00:40:02.458Z] [WARNING] Disk I/O bottleneck {"readLatency":"500ms","writeLatency":"800ms","queueDepth":50}
+[2025-07-06T00:40:02.459Z] [ERROR] Network interface overloaded {"interface":"eth0","utilization":98,"droppedPackets":1000,"errors":150}
+[2025-07-06T00:40:02.459Z] [WARNING] DDoS attack detected {"source":"multiple","packets":10000,"duration":"30 minutes","type":"SYN flood"}
+[2025-07-06T00:40:04.462Z] [ERROR] ARP spoofing attack detected {"attacker":"192.168.1.200","target":"192.168.1.1","spoofedMac":"00:1A:2B:3C:4D:5E","packets":500}
+[2025-07-06T00:40:04.462Z] [ERROR] Rogue DHCP server detected {"rogueServer":"192.168.1.254","legitimateServer":"192.168.1.1","leases":15}
+[2025-07-06T00:40:04.462Z] [WARNING] VLAN hopping attempt detected {"source":"192.168.1.100","targetVlan":10,"method":"double tagging","packets":25}
+[2025-07-06T00:40:04.462Z] [ERROR] STP root bridge takeover attempt {"attacker":"192.168.1.200","priority":0,"originalRoot":"SW1-Core"}
+[2025-07-06T00:40:06.466Z] [ERROR] SQL injection attempt detected {"source":"203.0.113.45","payload":"'; DROP TABLE users; --","target":"/api/users","blocked":true}
+[2025-07-06T00:40:06.466Z] [WARNING] XSS attack attempt detected {"source":"203.0.113.45","payload":"<script>alert(\"XSS\")</script>","target":"/api/comments","blocked":true}
+[2025-07-06T00:40:06.467Z] [ERROR] Directory traversal attempt detected {"source":"203.0.113.45","payload":"../../../etc/passwd","target":"/api/files","blocked":true}
+[2025-07-06T00:40:06.467Z] [WARNING] API rate limit exceeded {"source":"203.0.113.45","endpoint":"/api/devices","requests":1000,"timeWindow":"1 minute","blocked":true}
+[2025-07-06T00:50:30.725Z] [WARNING] High CPU load: 2.10 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.10","value":2.1}}
+[2025-07-06T00:50:30.729Z] [WARNING] High CPU load: 2.10 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.10","value":2.1}}
+[2025-07-06T00:51:00.781Z] [WARNING] High CPU load: 5.20 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 5.20","value":5.2}}
+[2025-07-06T00:51:00.816Z] [WARNING] High CPU load: 5.20 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 5.20","value":5.2}}
+[2025-07-06T00:51:32.739Z] [WARNING] High CPU load: 8.49 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 8.49","value":8.49}}
+[2025-07-06T00:51:32.770Z] [WARNING] High CPU load: 8.49 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 8.49","value":8.49}}
+[2025-07-06T00:52:02.758Z] [WARNING] High CPU load: 8.11 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 8.11","value":8.11}}
+[2025-07-06T00:52:02.762Z] [WARNING] High CPU load: 8.11 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 8.11","value":8.11}}
+[2025-07-06T00:52:32.717Z] [WARNING] High CPU load: 5.65 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 5.65","value":5.65}}
+[2025-07-06T00:52:32.720Z] [WARNING] High CPU load: 5.65 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 5.65","value":5.65}}
+[2025-07-06T00:53:02.720Z] [WARNING] High CPU load: 3.56 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 3.56","value":3.56}}
+[2025-07-06T00:53:02.726Z] [WARNING] High CPU load: 3.56 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 3.56","value":3.56}}
+[2025-07-06T00:53:32.724Z] [WARNING] High CPU load: 2.16 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.16","value":2.16}}
+[2025-07-06T00:53:32.727Z] [WARNING] High CPU load: 2.16 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.16","value":2.16}}
+[2025-07-06T01:03:02.076Z] [WARNING] Port scan detected from suspicious IP {"source":"203.0.113.45","ports":[22,23,80,443,8080,3306,5432],"duration":"5 minutes","scanType":"TCP SYN scan"}
+[2025-07-06T01:03:02.078Z] [WARNING] Multiple failed SSH login attempts {"source":"203.0.113.45","attempts":25,"usernames":["admin","root","user","test"],"timeWindow":"10 minutes"}
+[2025-07-06T01:03:02.078Z] [ERROR] Unauthorized access attempt detected {"source":"203.0.113.45","target":"192.168.1.100","method":"SSH brute force","credentials":"admin:password123","timestamp":"2025-07-06T01:03:02.078Z"}
+[2025-07-06T01:03:02.079Z] [ERROR] Suspicious file upload detected {"filename":"payload.php","size":"2.5MB","source":"203.0.113.45","destination":"/var/www/html/","hash":"a1b2c3d4e5f6..."}
+[2025-07-06T01:03:02.080Z] [ERROR] Unusual network traffic detected {"source":"192.168.1.100","destination":"192.168.1.50","protocol":"SMB","port":445,"dataSize":"15MB","pattern":"lateral_movement"}
+[2025-07-06T01:03:02.081Z] [WARNING] New admin user created {"username":"backdoor_user","source":"192.168.1.100","timestamp":"2025-07-06T01:03:02.081Z","suspicious":true}
+[2025-07-06T01:03:02.081Z] [ERROR] Large data transfer to external IP {"source":"192.168.1.100","destination":"203.0.113.45","dataSize":"500MB","files":["database_backup.sql","config_files.tar.gz"],"protocol":"FTP"}
+[2025-07-06T01:03:02.081Z] [ERROR] Database dump detected {"database":"autoflow_db","size":"250MB","destination":"203.0.113.45","timestamp":"2025-07-06T01:03:02.081Z"}
+[2025-07-06T01:03:02.085Z] [ERROR] Malware detected on system {"filename":"crypto_miner.exe","location":"/tmp/","hash":"malware_hash_123","type":"cryptocurrency miner","source":"203.0.113.45"}
+[2025-07-06T01:03:02.086Z] [ERROR] System process killed unexpectedly {"process":"nginx","pid":1234,"reason":"unknown","suspicious":true}
+[2025-07-06T01:03:02.086Z] [ERROR] Firewall rules modified {"rule":"DROP 203.0.113.45","action":"deleted","source":"192.168.1.100","timestamp":"2025-07-06T01:03:02.086Z"}
+[2025-07-06T01:03:02.087Z] [ERROR] Suspicious cron job added {"job":"*/5 * * * * /tmp/backdoor.sh","user":"root","source":"192.168.1.100"}
+[2025-07-06T01:03:02.087Z] [WARNING] New startup service detected {"service":"systemd-backdoor","path":"/etc/systemd/system/","source":"unknown"}
+[2025-07-06T01:03:04.094Z] [WARNING] CPU usage critically high {"cpuUsage":95,"loadAverage":[4.8,4.2,3.9],"processes":200,"topProcesses":["crypto_miner","nginx","node"]}
+[2025-07-06T01:03:04.095Z] [ERROR] CPU temperature critical {"temperature":85,"threshold":70,"unit":"celsius"}
+[2025-07-06T01:03:04.097Z] [ERROR] Memory critically low {"memoryUsage":98,"available":"50MB","swapUsage":95,"oomKiller":true}
+[2025-07-06T01:03:04.097Z] [WARNING] Memory leak detected {"process":"node","memoryGrowth":"2GB/hour","duration":"3 hours"}
+[2025-07-06T01:03:04.097Z] [ERROR] Disk space critical {"usage":99,"freeSpace":"100MB","largestFiles":["/var/log/attack.log","/tmp/malware.exe"]}
+[2025-07-06T01:03:04.098Z] [WARNING] Disk I/O bottleneck {"readLatency":"500ms","writeLatency":"800ms","queueDepth":50}
+[2025-07-06T01:03:04.098Z] [ERROR] Network interface overloaded {"interface":"eth0","utilization":98,"droppedPackets":1000,"errors":150}
+[2025-07-06T01:03:04.099Z] [WARNING] DDoS attack detected {"source":"multiple","packets":10000,"duration":"30 minutes","type":"SYN flood"}
+[2025-07-06T01:03:06.104Z] [ERROR] ARP spoofing attack detected {"attacker":"192.168.1.200","target":"192.168.1.1","spoofedMac":"00:1A:2B:3C:4D:5E","packets":500}
+[2025-07-06T01:03:06.104Z] [ERROR] Rogue DHCP server detected {"rogueServer":"192.168.1.254","legitimateServer":"192.168.1.1","leases":15}
+[2025-07-06T01:03:06.105Z] [WARNING] VLAN hopping attempt detected {"source":"192.168.1.100","targetVlan":10,"method":"double tagging","packets":25}
+[2025-07-06T01:03:06.106Z] [ERROR] STP root bridge takeover attempt {"attacker":"192.168.1.200","priority":0,"originalRoot":"SW1-Core"}
+[2025-07-06T01:03:08.110Z] [ERROR] SQL injection attempt detected {"source":"203.0.113.45","payload":"'; DROP TABLE users; --","target":"/api/users","blocked":true}
+[2025-07-06T01:03:08.110Z] [WARNING] XSS attack attempt detected {"source":"203.0.113.45","payload":"<script>alert(\"XSS\")</script>","target":"/api/comments","blocked":true}
+[2025-07-06T01:03:08.110Z] [ERROR] Directory traversal attempt detected {"source":"203.0.113.45","payload":"../../../etc/passwd","target":"/api/files","blocked":true}
+[2025-07-06T01:03:08.111Z] [WARNING] API rate limit exceeded {"source":"203.0.113.45","endpoint":"/api/devices","requests":1000,"timeWindow":"1 minute","blocked":true}
+[2025-07-06T01:08:23.037Z] [WARNING] High CPU load: 2.33 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.33","value":2.33}}
+[2025-07-06T01:08:23.062Z] [WARNING] High CPU load: 2.33 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.33","value":2.33}}
+[2025-07-06T01:08:53.110Z] [WARNING] High CPU load: 2.39 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.39","value":2.39}}
+[2025-07-06T01:08:53.133Z] [WARNING] High CPU load: 2.39 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.39","value":2.39}}
+[2025-07-06T01:09:23.194Z] [WARNING] High CPU load: 2.31 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.31","value":2.31}}
+[2025-07-06T01:09:23.218Z] [WARNING] High CPU load: 2.31 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.31","value":2.31}}
+[2025-07-06T01:09:53.186Z] [WARNING] High CPU load: 2.05 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.05","value":2.05}}
+[2025-07-06T01:09:53.187Z] [WARNING] High CPU load: 2.05 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.05","value":2.05}}
+[2025-07-06T01:10:53.252Z] [WARNING] High CPU load: 2.05 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.05","value":2.05}}
+[2025-07-06T01:10:53.255Z] [WARNING] High CPU load: 2.05 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.05","value":2.05}}
+[2025-07-06T01:11:23.343Z] [WARNING] High CPU load: 2.57 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.57","value":2.57}}
+[2025-07-06T01:11:23.392Z] [WARNING] High CPU load: 2.57 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.57","value":2.57}}
+[2025-07-06T01:11:53.332Z] [WARNING] High CPU load: 2.82 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.82","value":2.82}}
+[2025-07-06T01:11:53.338Z] [WARNING] High CPU load: 2.82 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.82","value":2.82}}
