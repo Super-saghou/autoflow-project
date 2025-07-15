@@ -228,3 +228,35 @@
 [2025-07-06T01:11:23.392Z] [WARNING] High CPU load: 2.57 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.57","value":2.57}}
 [2025-07-06T01:11:53.332Z] [WARNING] High CPU load: 2.82 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.82","value":2.82}}
 [2025-07-06T01:11:53.338Z] [WARNING] High CPU load: 2.82 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.82","value":2.82}}
+[2025-07-06T22:23:31.578Z] [WARNING] High CPU usage detected {"cpuUsage":85,"loadAverage":2.5,"threshold":80}
+[2025-07-06T22:23:31.579Z] [WARNING] Memory usage approaching limit {"memoryUsage":78,"available":"512MB","threshold":80}
+[2025-07-06T22:23:31.579Z] [WARNING] Backup directory getting full {"usedSpace":"8.5GB","totalSpace":"10GB","freeSpace":"1.5GB"}
+[2025-07-06T22:23:31.580Z] [WARNING] Multiple failed login attempts {"user":"unknown","ip":"192.168.1.200","attempts":5,"timeWindow":"5 minutes"}
+[2025-07-06T22:23:31.581Z] [WARNING] Interface status changed {"interface":"Fa0/3","oldStatus":"Up","newStatus":"Down","duration":"2 minutes"}
+[2025-07-06T22:23:32.586Z] [ERROR] Database connection failed {"error":"Connection timeout","retries":3,"duration":"30s"}
+[2025-07-06T22:23:32.587Z] [ERROR] Flask API service crashed {"error":"Port 5001 already in use","pid":12345,"restartAttempts":2}
+[2025-07-06T22:23:32.589Z] [ERROR] Backup operation failed {"error":"Insufficient disk space","required":"3GB","available":"1GB","backupType":"full"}
+[2025-07-06T22:23:32.590Z] [ERROR] Network interface down {"interface":"Fa0/1","duration":"10 minutes","impact":"VLAN 10 affected"}
+[2025-07-06T22:23:32.590Z] [ERROR] SSL certificate expired {"certificate":"server.cert","expiryDate":"2024-01-15","daysOverdue":5}
+[2025-07-06T22:23:33.592Z] [ERROR] Unauthorized access attempt {"ip":"203.0.113.45","port":22,"method":"SSH brute force","attempts":50}
+[2025-07-06T22:23:33.593Z] [WARNING] Suspicious network activity {"source":"192.168.1.100","destination":"203.0.113.100","protocol":"TCP","port":80,"packets":1000}
+[2025-07-06T22:23:33.593Z] [ERROR] Port scan detected {"source":"198.51.100.25","ports":[22,23,80,443,8080],"duration":"2 minutes"}
+[2025-07-06T22:23:33.593Z] [WARNING] DHCP spoofing attempt {"interface":"Fa0/5","rogueServer":"192.168.1.254","legitimateServer":"192.168.1.1"}
+[2025-07-06T22:23:34.599Z] [WARNING] STP topology change {"rootBridge":"SW1-Core","affectedPorts":["Fa0/2","Fa0/3"],"duration":"30 seconds"}
+[2025-07-06T22:28:11.195Z] [WARNING] High CPU usage detected {"cpuUsage":85,"loadAverage":2.5,"threshold":80}
+[2025-07-06T22:28:11.196Z] [WARNING] Memory usage approaching limit {"memoryUsage":78,"available":"512MB","threshold":80}
+[2025-07-06T22:28:11.196Z] [WARNING] Backup directory getting full {"usedSpace":"8.5GB","totalSpace":"10GB","freeSpace":"1.5GB"}
+[2025-07-06T22:28:11.197Z] [WARNING] Multiple failed login attempts {"user":"unknown","ip":"192.168.1.200","attempts":5,"timeWindow":"5 minutes"}
+[2025-07-06T22:28:11.197Z] [WARNING] Interface status changed {"interface":"Fa0/3","oldStatus":"Up","newStatus":"Down","duration":"2 minutes"}
+[2025-07-06T22:28:12.201Z] [ERROR] Database connection failed {"error":"Connection timeout","retries":3,"duration":"30s"}
+[2025-07-06T22:28:12.203Z] [ERROR] Flask API service crashed {"error":"Port 5001 already in use","pid":12345,"restartAttempts":2}
+[2025-07-06T22:28:12.203Z] [ERROR] Backup operation failed {"error":"Insufficient disk space","required":"3GB","available":"1GB","backupType":"full"}
+[2025-07-06T22:28:12.204Z] [ERROR] Network interface down {"interface":"Fa0/1","duration":"10 minutes","impact":"VLAN 10 affected"}
+[2025-07-06T22:28:12.204Z] [ERROR] SSL certificate expired {"certificate":"server.cert","expiryDate":"2024-01-15","daysOverdue":5}
+[2025-07-06T22:28:13.207Z] [ERROR] Unauthorized access attempt {"ip":"203.0.113.45","port":22,"method":"SSH brute force","attempts":50}
+[2025-07-06T22:28:13.208Z] [WARNING] Suspicious network activity {"source":"192.168.1.100","destination":"203.0.113.100","protocol":"TCP","port":80,"packets":1000}
+[2025-07-06T22:28:13.209Z] [ERROR] Port scan detected {"source":"198.51.100.25","ports":[22,23,80,443,8080],"duration":"2 minutes"}
+[2025-07-06T22:28:13.209Z] [WARNING] DHCP spoofing attempt {"interface":"Fa0/5","rogueServer":"192.168.1.254","legitimateServer":"192.168.1.1"}
+[2025-07-06T22:28:14.213Z] [WARNING] STP topology change {"rootBridge":"SW1-Core","affectedPorts":["Fa0/2","Fa0/3"],"duration":"30 seconds"}
+[2025-07-06T22:28:15.359Z] [WARNING] High CPU load: 3.11 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 3.11","value":3.11}}
+[2025-07-06T22:28:27.061Z] [WARNING] High CPU load: 2.86 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.86","value":2.86}}

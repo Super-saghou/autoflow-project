@@ -106,7 +106,7 @@ app.get("/api/devices", authenticateToken, requirePermission('read_devices'), as
 // Legacy login endpoint (for backward compatibility)
 app.post('/api/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
+  const { username, password } = req.body;
     
     // Check if user exists in new system
     const user = await User.findOne({ username });
@@ -136,10 +136,10 @@ app.post('/api/login', async (req, res) => {
     }
     
     // Fallback to legacy authentication
-    if (username === "sarra" && password === "sarra") {
-      return res.json({ message: "Login successful" });
-    } else {
-      return res.status(401).json({ message: "Invalid credentials" });
+  if (username === "sarra" && password === "sarra") {
+    return res.json({ message: "Login successful" });
+  } else {
+    return res.status(401).json({ message: "Invalid credentials" });
     }
   } catch (error) {
     console.error('Login error:', error);
@@ -248,8 +248,14 @@ app.post('/api/create-vlan', authenticateToken, requirePermission('write_vlans')
       console.log("Playbook executed successfully:", result);
       res.json({ message: `VLAN ${vlanId} created successfully`, details: result });
     } else {
+      // Forward the actual error message from Flask API
+      let errorMsg = result.error || result.message || 'Unknown error';
+      if (generateResponse.status !== 200) {
+        // If Flask returned a non-200, include status and any stderr
+        errorMsg += result.stderr ? `\nDetails: ${result.stderr}` : '';
+      }
       console.error("Playbook execution failed:", result);
-      res.status(500).json({ error: 'Failed to create VLAN', details: result });
+      res.status(500).json({ error: errorMsg, details: result });
     }
   } catch (err) {
     console.error('Execution error:', err);
@@ -911,6 +917,137 @@ app.get('/api/logs', (req, res) => {
     const lines = data.trim().split('\n');
     const last100 = lines.slice(-100);
     res.json(last100);
+  });
+});
+
+// --- AI Security Agent Endpoints ---
+
+// Get AI security agent analysis
+app.get('/api/ai-security-agent/analysis', (req, res) => {
+  const logPath = path.join(__dirname, 'ai_security_agent.log');
+  if (!fs.existsSync(logPath)) {
+    return res.json({ analysis: [], status: 'No AI analysis available' });
+  }
+  const logLines = fs.readFileSync(logPath, 'utf-8').split('\n').filter(Boolean);
+  res.json({ 
+    analysis: logLines.slice(-20), // Last 20 AI analysis entries
+    status: 'AI Agent Active'
+  });
+});
+
+// Get AI agent status
+app.get('/api/ai-security-agent/status', (req, res) => {
+  const logPath = path.join(__dirname, 'ai_security_agent.log');
+  const blockedPath = path.join(__dirname, 'blocked.json');
+  
+  const status = {
+    aiAgentActive: fs.existsSync(logPath),
+    lastAnalysis: null,
+    totalAnalysis: 0,
+    blockedEntities: { users: [], ips: [] }
+  };
+  
+  if (fs.existsSync(logPath)) {
+    const logLines = fs.readFileSync(logPath, 'utf-8').split('\n').filter(Boolean);
+    status.totalAnalysis = logLines.length;
+    status.lastAnalysis = logLines[logLines.length - 1] || null;
+  }
+  
+  if (fs.existsSync(blockedPath)) {
+    status.blockedEntities = JSON.parse(fs.readFileSync(blockedPath, 'utf-8'));
+  }
+  
+  res.json(status);
+});
+
+// Trigger manual AI analysis
+app.post('/api/ai-security-agent/analyze', (req, res) => {
+  const { exec } = require('child_process');
+  exec('python3 ai_security_agent.py --manual-analysis', (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ 
+        success: false, 
+        error: 'Failed to trigger AI analysis',
+        details: error.message 
+      });
+    }
+    res.json({ 
+      success: true, 
+      message: 'AI analysis triggered successfully',
+      output: stdout 
+    });
+  });
+});
+
+// --- Security Agent Endpoints ---
+
+// Get security agent actions log
+app.get('/api/security-agent/logs', (req, res) => {
+  const logPath = path.join(__dirname, 'security_agent.log');
+  if (!fs.existsSync(logPath)) {
+    return res.json([]);
+  }
+  const logLines = fs.readFileSync(logPath, 'utf-8').split('\n').filter(Boolean);
+  res.json(logLines);
+});
+
+// Get blocked users and IPs
+app.get('/api/security-agent/blocked', (req, res) => {
+  const blockedPath = path.join(__dirname, 'blocked.json');
+  if (!fs.existsSync(blockedPath)) {
+    return res.json({ users: [], ips: [] });
+  }
+  const blocked = JSON.parse(fs.readFileSync(blockedPath, 'utf-8'));
+  res.json(blocked);
+});
+
+// Unblock a user or IP
+app.post('/api/security-agent/unblock', (req, res) => {
+  const { user, ip } = req.body;
+  const blockedPath = path.join(__dirname, 'blocked.json');
+  let blocked = { users: [], ips: [] };
+  if (fs.existsSync(blockedPath)) {
+    blocked = JSON.parse(fs.readFileSync(blockedPath, 'utf-8'));
+  }
+  let changed = false;
+  if (user && blocked.users.includes(user)) {
+    blocked.users = blocked.users.filter(u => u !== user);
+    changed = true;
+  }
+  if (ip && blocked.ips.includes(ip)) {
+    blocked.ips = blocked.ips.filter(i => i !== ip);
+    changed = true;
+  }
+  if (changed) {
+    fs.writeFileSync(blockedPath, JSON.stringify(blocked, null, 2));
+    const logPath = path.join(__dirname, 'security_agent.log');
+    fs.appendFileSync(logPath, `${new Date().toISOString()} Unblocked ${user ? 'user: ' + user : ''}${ip ? ' ip: ' + ip : ''}\n`);
+  }
+  res.json({ success: changed, blocked });
+});
+
+// API to fetch MAC address table for a specific switch
+app.get('/api/mac-table/:switchName', (req, res) => {
+  const { switchName } = req.params;
+  let switchIp = switchName === 'Cisco 3725' ? '192.168.111.198' : 'localhost';
+  const username = 'sarra'; // Updated to correct SSH username
+  const password = 'sarra'; // Updated to correct SSH password
+  const { exec } = require('child_process');
+  exec(`python3 /home/sarra/ansible/run_mac_table.py ${switchIp} ${username} ${password}`, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing run_mac_table.py: ${error.message}, Exit code: ${error.code}`);
+      return res.status(500).json({ error: 'Failed to fetch MAC table', details: error.message });
+    }
+    try {
+      let macTable = [];
+      if (stdout && stdout.trim()) {
+        macTable = JSON.parse(stdout);
+      }
+      res.json(macTable);
+    } catch (parseError) {
+      console.error(`Error parsing MAC table JSON: ${parseError.message}, Raw output: ${stdout}`);
+      res.status(500).json({ error: 'Failed to parse MAC table data', details: stdout || 'No output' });
+    }
   });
 });
 

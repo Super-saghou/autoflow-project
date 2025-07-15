@@ -18,13 +18,14 @@ const MonitoringPage = ({ API_URL }) => {
   const fetchMonitoringData = async () => {
     try {
       setLoading(true);
-      
+      const token = localStorage.getItem('token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       // Fetch all monitoring data in parallel
       const [healthRes, metricsRes, logsRes, alertsRes] = await Promise.all([
-        fetch(`${API_URL}/api/monitoring/health`),
-        fetch(`${API_URL}/api/monitoring/metrics`),
-        fetch(`${API_URL}/api/monitoring/logs?limit=50&level=${logLevel === 'all' ? '' : logLevel}`),
-        fetch(`${API_URL}/api/monitoring/alerts?limit=20`)
+        fetch(`${API_URL}/api/monitoring/health`, { headers }),
+        fetch(`${API_URL}/api/monitoring/metrics`, { headers }),
+        fetch(`${API_URL}/api/monitoring/logs?limit=50&level=${logLevel === 'all' ? '' : logLevel}`, { headers }),
+        fetch(`${API_URL}/api/monitoring/alerts?limit=20`, { headers })
       ]);
 
       const [healthData, metricsData, logsData, alertsData] = await Promise.all([

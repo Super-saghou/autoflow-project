@@ -12,6 +12,8 @@ import CreateVlanModal from './CreateVlanModal';
 import DhcpModal from './DhcpModal';
 import ReportsPage from '../Pages/ReportsPage';
 import MonitoringPage from './MonitoringPage';
+import SecurityAgentDashboard from './SecurityAgentDashboard';
+import AISecurityDashboard from './AISecurityDashboard';
 
 const Dashboard = () => {
   const [devices, setDevices] = useState([]);
@@ -36,6 +38,13 @@ const Dashboard = () => {
   const [hostnameStatus, setHostnameStatus] = useState('');
   const [dhcpSnoopingEnabled, setDhcpSnoopingEnabled] = useState(false);
   const [trustedPorts, setTrustedPorts] = useState(['Fa0/1']);
+  
+  // Security Agent state
+  const [securityLogs, setSecurityLogs] = useState([]);
+  const [blockedUsers, setBlockedUsers] = useState([]);
+  const [blockedIPs, setBlockedIPs] = useState([]);
+  const [securityLoading, setSecurityLoading] = useState(false);
+  const [securityError, setSecurityError] = useState(null);
   
   // Backup system state
   const [backupStats, setBackupStats] = useState(null);
@@ -114,6 +123,62 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [health, setHealth] = useState(null);
   const [message, setMessage] = useState(null);
+  // MAC Table state
+  const [macTable, setMacTable] = useState([]);
+  const [macTableLoading, setMacTableLoading] = useState(false);
+  const [macTableError, setMacTableError] = useState('');
+  
+  // Security Agent functions
+  const fetchSecurityData = async () => {
+    setSecurityLoading(true);
+    setSecurityError(null);
+    try {
+      const [logsRes, blockedRes] = await Promise.all([
+        fetch(`${API_URL}/api/security-agent/logs`),
+        fetch(`${API_URL}/api/security-agent/blocked`),
+      ]);
+      setSecurityLogs(await logsRes.json());
+      const blockedData = await blockedRes.json();
+      setBlockedUsers(blockedData.users || []);
+      setBlockedIPs(blockedData.ips || []);
+    } catch (err) {
+      setSecurityError('Failed to fetch security data');
+    }
+    setSecurityLoading(false);
+  };
+
+  const handleUnblock = async (user, ip) => {
+    setSecurityLoading(true);
+    setSecurityError(null);
+    try {
+      await fetch(`${API_URL}/api/security-agent/unblock`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user, ip }),
+      });
+      fetchSecurityData();
+    } catch (err) {
+      setSecurityError('Failed to unblock');
+      setSecurityLoading(false);
+    }
+  };
+  
+  const fetchMacTable = async () => {
+    setMacTableLoading(true);
+    setMacTableError('');
+    try {
+      // You can make switchName dynamic if needed
+      const res = await fetch(`${API_URL}/api/mac-table/Cisco%203725`);
+      if (!res.ok) throw new Error('Failed to fetch MAC table');
+      const data = await res.json();
+      setMacTable(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setMacTableError(err.message);
+      setMacTable([]);
+    } finally {
+      setMacTableLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchDevices = async () => {
@@ -145,6 +210,10 @@ const Dashboard = () => {
         }
       };
       fetchHealth();
+    }
+    
+    if (activeSection === 'security-agent') {
+      fetchSecurityData();
     }
   }, [activeSection, API_URL]);
 
@@ -867,6 +936,8 @@ const Dashboard = () => {
                 {userProfile.role === 'Admin' && <li className="nav-item"><button onClick={() => setActiveSection('monitoring')} className={`nav-button ${activeSection === 'monitoring' ? 'active' : ''}`}><span className="nav-icon">📊</span>{isMenuOpen && 'Monitoring'}</button></li>}
             <li className="nav-item"><button onClick={() => setActiveSection('help')} className={`nav-button ${activeSection === 'help' ? 'active' : ''}`}><span className="nav-icon">❓</span>{isMenuOpen && 'Help'}</button></li>
             {userProfile.role === 'Developer' && <li className="nav-item"><button onClick={() => setActiveSection('developer')} className={`nav-button ${activeSection === 'developer' ? 'active' : ''}`}><span className="nav-icon">👨‍💻</span>{isMenuOpen && 'Developer Dashboard'}</button></li>}
+              <li className="nav-item"><button onClick={() => setActiveSection('security-agent')} className={`nav-button ${activeSection === 'security-agent' ? 'active' : ''}`}><span className="nav-icon">🔒</span>{isMenuOpen && 'Security Agent'}</button></li>
+              <li className="nav-item"><button onClick={() => setActiveSection('ai-security-agent')} className={`nav-button ${activeSection === 'ai-security-agent' ? 'active' : ''}`}><span className="nav-icon">🤖</span>{isMenuOpen && 'AI Security Agent'}</button></li>
             <li className="nav-item"><button onClick={handleLogout} className="nav-button"><span className="nav-icon">🚪</span>{isMenuOpen && 'Logout'}</button></li>
           </ul>
         </div>
@@ -2484,25 +2555,30 @@ const Dashboard = () => {
                       fontWeight: 500,
                       boxShadow: '0 2px 8px rgba(59, 130, 246, 0.06)',
                     }}
+                    // Optionally add search logic here
                   />
                   <button
+                    onClick={fetchMacTable}
+                    disabled={macTableLoading}
                     style={{
                       background: 'linear-gradient(90deg, #3b82f6 0%, #fbbf24 100%)',
                       color: '#fff',
                       padding: '12px 32px',
                       border: 'none',
                       borderRadius: 14,
-                      cursor: 'pointer',
+                      cursor: macTableLoading ? 'not-allowed' : 'pointer',
                       fontSize: 18,
                       fontWeight: 700,
                       boxShadow: '0 4px 15px rgba(59, 130, 246, 0.10)',
                       transition: 'all 0.2s',
                       letterSpacing: 1,
+                      opacity: macTableLoading ? 0.6 : 1,
                     }}
                   >
-                    Refresh
+                    {macTableLoading ? 'Loading...' : 'Refresh'}
                   </button>
                 </div>
+                {macTableError && <div style={{ color: '#ef4444', fontWeight: 700, marginBottom: 18 }}>{macTableError}</div>}
                 <div style={{ overflowX: 'auto', borderRadius: 18, boxShadow: '0 2px 8px rgba(59, 130, 246, 0.04)' }}>
                   <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, background: '#fff', borderRadius: 18, fontSize: 18 }}>
                     <thead>
@@ -2514,13 +2590,10 @@ const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {/* Example MAC table data, replace with real data as needed */}
-                      {[
-                        { mac: '00:1A:2B:3C:4D:5E', port: 'Fa0/1', vlan: 10, type: 'Dynamic' },
-                        { mac: '00:1A:2B:3C:4D:5F', port: 'Fa0/2', vlan: 20, type: 'Static' },
-                        { mac: '00:1A:2B:3C:4D:60', port: 'Fa0/3', vlan: 10, type: 'Dynamic' },
-                        { mac: '00:1A:2B:3C:4D:61', port: 'Fa0/4', vlan: 30, type: 'Dynamic' },
-                      ].map((entry, idx) => (
+                      {macTable.length === 0 && !macTableLoading && (
+                        <tr><td colSpan={4} style={{ textAlign: 'center', color: '#6b7280', padding: 32 }}>No MAC table data. Click Refresh.</td></tr>
+                      )}
+                      {macTable.map((entry, idx) => (
                         <tr key={idx} style={{ borderBottom: '1.5px solid #e0e7ef' }}>
                           <td style={{ padding: '16px 16px', color: '#ea580c', fontWeight: 700 }}>{entry.mac}</td>
                           <td style={{ padding: '16px 16px' }}>{entry.port}</td>
@@ -3305,6 +3378,20 @@ const Dashboard = () => {
                 {etherChannelStatusMsg && <p style={{ color: '#7c3aed', marginTop: 18, fontWeight: 700, fontSize: 16 }}>{etherChannelStatusMsg}</p>}
               </div>
             </div>
+          )}
+                     {activeSection === 'security-agent' && (
+             <SecurityAgentDashboard
+               securityLogs={securityLogs}
+               blockedUsers={blockedUsers}
+               blockedIPs={blockedIPs}
+               securityLoading={securityLoading}
+               securityError={securityError}
+               handleUnblock={handleUnblock}
+               fetchSecurityData={fetchSecurityData}
+             />
+           )}
+           {activeSection === 'ai-security-agent' && (
+             <AISecurityDashboard />
           )}
         </div>
       </div>
