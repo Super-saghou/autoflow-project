@@ -136,9 +136,21 @@ app.post('/api/login', async (req, res) => {
     }
     
     // Fallback to legacy authentication
-  if (username === "sarra" && password === "sarra") {
-    return res.json({ message: "Login successful" });
-  } else {
+    if (username === "sarra" && password === "sarra") {
+      const { generateToken } = await import('./middleware/auth.js');
+      const token = generateToken("legacy-sarra");
+      return res.json({
+        message: "Login successful",
+        token,
+        user: {
+          id: "legacy-sarra",
+          username: "sarra",
+          email: "",
+          role: "Admin",
+          permissions: ["write_vlans", "read_devices", "write_devices"]
+        }
+      });
+    } else {
     return res.status(401).json({ message: "Invalid credentials" });
     }
   } catch (error) {

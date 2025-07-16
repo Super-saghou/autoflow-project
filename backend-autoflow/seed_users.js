@@ -66,6 +66,27 @@ async function seed() {
     console.log('Monitor user updated with new password and permissions.');
   }
 
+  const sarraUsername = 'sarra';
+  const sarraPassword = 'sarra123';
+  const sarraEmail = 'sarra@example.com';
+  const sarraRole = 'Admin';
+
+  // Sarra user
+  let sarra = await User.findOne({ username: sarraUsername });
+  if (!sarra) {
+    sarra = new User({ username: sarraUsername, password: sarraPassword, email: sarraEmail, role: sarraRole, permissions });
+    await sarra.save();
+    console.log('Sarra user created:', sarraUsername, sarraPassword);
+  } else {
+    const hashed = await bcrypt.hash(sarraPassword, 10);
+    sarra.password = hashed;
+    sarra.permissions = permissions;
+    sarra.role = sarraRole;
+    sarra.email = sarraEmail;
+    await sarra.save();
+    console.log('Sarra user updated with new password and permissions.');
+  }
+
   await mongoose.disconnect();
 }
 

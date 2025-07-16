@@ -654,10 +654,12 @@ const Dashboard = () => {
 
   const handleVlanCreate = async ({ vlanId, vlanName, switchType }) => {
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:5000/api/create-vlan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           vlanId: parseInt(vlanId),

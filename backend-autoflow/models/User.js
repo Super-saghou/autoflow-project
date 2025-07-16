@@ -90,8 +90,7 @@ userSchema.pre('save', async function(next) {
 
 // Compare password method
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  // TEMPORARY: Use plain text comparison for debugging
-  return candidatePassword === this.password;
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Check if account is locked

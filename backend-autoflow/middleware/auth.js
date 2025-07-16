@@ -7,23 +7,29 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 // Authentication middleware
 const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
+  console.log('Auth header:', authHeader); // Debug log
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  console.log('Parsed token:', token); // Debug log
 
   if (!token) {
+    console.log('No token provided'); // Debug log
     return res.status(401).json({ message: 'Access token required' });
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('Decoded JWT:', decoded); // Debug log
     const user = await User.findById(decoded.userId).select('-password');
     
     if (!user || !user.isActive) {
+      console.log('Invalid or inactive user'); // Debug log
       return res.status(401).json({ message: 'Invalid or inactive user' });
     }
 
     req.user = user;
     next();
   } catch (error) {
+    console.log('JWT error:', error); // Debug log
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({ message: 'Token expired' });
     }

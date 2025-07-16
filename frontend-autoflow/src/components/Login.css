@@ -36,16 +36,61 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* Updated login-card for glassmorphism effect */
+.login-logo {
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #1e3a8a;
+  margin-bottom: 8px;
+  text-align: center;
+  font-family: 'Inter', 'Poppins', 'Roboto', Arial, sans-serif;
+  user-select: none;
+}
+
+.login-subtitle {
+  font-size: 1.08rem;
+  color: #1A2A44; /* Changed to a dark blue for better contrast */
+  margin-top: 6px;
+  margin-bottom: 0;
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.2px;
+  text-shadow: 0 1px 2px rgba(30,58,138,0.07); /* subtle shadow for clarity */
+}
+
+.login-divider {
+  width: 100%;
+  height: 1.5px;
+  background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+  opacity: 0.13;
+  margin: 18px 0 18px 0;
+  border-radius: 2px;
+}
+
+.login-error-message {
+  background: rgba(255, 0, 0, 0.07);
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  box-shadow: 0 2px 8px rgba(185, 28, 28, 0.04);
+}
+
+/* Refined glassmorphism for login-card */
 .login-card {
-  background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(18px) saturate(1.2);
   padding: 48px 36px;
   border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(30, 58, 138, 0.10);
+  box-shadow: 0 8px 32px rgba(30, 58, 138, 0.13);
   width: 90%;
   max-width: 420px;
-  border: 1.5px solid rgba(30, 58, 138, 0.10);
+  border: 1.5px solid rgba(30, 58, 138, 0.13);
 }
 
 /* Updated login-header */
@@ -150,78 +195,105 @@ body {
 }
 
 .sidebar {
-  background: rgba(30, 58, 138, 0.08);
-  backdrop-filter: blur(14px);
-  border-right: 1.5px solid rgba(30, 58, 138, 0.10);
-  padding: 28px 18px;
-  transition: width 0.3s ease;
-  box-shadow: 2px 0 18px rgba(30, 58, 138, 0.06);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(18px) saturate(1.2);
+  border-right: 2px solid rgba(30, 58, 138, 0.10);
+  padding: 32px 20px 32px 18px;
+  min-width: 230px;
+  max-width: 260px;
+  box-shadow: 4px 0 32px rgba(30, 58, 138, 0.10);
+  border-top-right-radius: 32px;
+  border-bottom-right-radius: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: background 0.3s, box-shadow 0.3s, min-width 0.3s;
 }
 
 .sidebar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
+  width: 100%;
 }
 
 .sidebar-header h3 {
-  color: #3b82f6;
-  font-size: 24px;
-  font-weight: 700;
+  color: #1e3a8a;
+  font-size: 1.7rem;
+  font-weight: 800;
   margin: 0;
+  letter-spacing: 1.5px;
+  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  user-select: none;
 }
 
 .sidebar-toggle {
   background: none;
   border: none;
-  color: #f97316;
-  font-size: 26px;
+  color: #3b82f6;
+  font-size: 28px;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s, color 0.2s;
+  margin-left: 8px;
 }
 
 .sidebar-toggle:hover {
-  transform: rotate(90deg);
+  transform: rotate(90deg) scale(1.1);
+  color: #1e3a8a;
 }
 
 .nav-list {
   list-style: none;
   padding: 0;
+  width: 100%;
 }
 
 .nav-item {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
+  width: 100%;
 }
 
 .nav-button {
   width: 100%;
-  padding: 14px;
-  background: #1e3a8a;
-  color: #fff;
+  padding: 14px 18px;
+  background: rgba(30, 58, 138, 0.10);
+  color: #1e3a8a;
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
-  font-size: 17px;
+  font-size: 1.08rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  transition: all 0.2s;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.04);
+  letter-spacing: 0.2px;
+  position: relative;
 }
 
 .nav-button.active {
-  background: linear-gradient(90deg, #f97316 0%, #3b82f6 100%);
-  box-shadow: 0 4px 15px rgba(30, 58, 138, 0.10);
+  background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(30, 58, 138, 0.13);
+  transform: scale(1.03);
 }
 
 .nav-button:hover {
-  background: linear-gradient(90deg, #f97316 0%, #3b82f6 100%);
-  transform: translateX(5px);
+  background: linear-gradient(90deg, #3b82f6 0%, #1e3a8a 100%);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(30, 58, 138, 0.18);
+  transform: translateX(4px) scale(1.02);
 }
 
 .nav-icon {
-  margin-right: 12px;
+  margin-right: 14px;
+  font-size: 1.2em;
+  color: inherit;
+  opacity: 0.85;
 }
 
 .main-content {
@@ -320,42 +392,46 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+/* Subsection styles */
 .config-section {
-  margin-bottom: 24px;
-  background: rgba(255, 249, 229, 0.18);
+  background: rgba(30, 58, 138, 0.06);
   border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 4px 15px rgba(30, 58, 138, 0.06);
-  transition: all 0.2s;
-  max-width: 640px;
+  margin-bottom: 10px;
+  padding: 12px 18px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(30, 58, 138, 0.03);
 }
 
 .config-section:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(30, 58, 138, 0.10);
+  background: rgba(30, 58, 138, 0.13);
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.07);
 }
 
 .config-section h3 {
-  color: #3b82f6;
-  font-size: 20px;
+  font-size: 1.08rem;
   font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+  color: #1e3a8a;
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
 }
 
 .config-subsection {
-  padding-left: 18px;
-  margin-bottom: 16px;
+  margin-left: 18px;
+  margin-bottom: 6px;
+  padding-left: 8px;
+  border-left: 2.5px solid #3b82f6;
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.04);
+  transition: background 0.2s;
 }
 
 .config-subsection h4 {
-  color: #1e3a8a;
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1A2A44;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  letter-spacing: 0.1px;
 }
 
 .device-list {
