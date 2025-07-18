@@ -1,93 +1,70 @@
-# ssh_relay.py
-"""
-Python SSH relay server for browser-based SSH to GNS3 switch.
-
-Install dependencies:
-    pip install flask flask-socketio eventlet paramiko python-dotenv
-
-Run the server:
-    export SSH_HOST=192.168.111.198
-    export SSH_USER=sarra
-    export SSH_PASS=your_password_here
-    python ssh_relay.py
-
-Frontend should connect to ws://localhost:5001/socket.io/
-"""
-import os
-import eventlet
+import asyncio
+import websockets
 import paramiko
-from flask import Flask
-from flask_socketio import SocketIO, emit
-from dotenv import load_dotenv
+import os
 
-load_dotenv()
+SWITCH_IP = os.getenv('SWITCH_IP', '192.168.111.198')
+SWITCH_USER = os.getenv('SWITCH_USER', 'sarra')
+SWITCH_PASS = os.getenv('SWITCH_PASS', 'sarra')
+RELAY_PORT = 5002
 
-SSH_HOST = os.getenv('SSH_HOST', '192.168.111.198')
-SSH_USER = os.getenv('SSH_USER', 'sarra')
-SSH_PASS = os.getenv('SSH_PASS', 'your_password_here')
-SSH_PORT = int(os.getenv('SSH_PORT', 22))
-
-app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins='*')
-
-sessions = {}
-
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected')
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    sid = str(request.sid)
-    if sid in sessions:
-        ssh, chan = sessions[sid]
-        chan.close()
-        ssh.close()
-        del sessions[sid]
-    print('Client disconnected')
-
-@socketio.on('start-ssh')
-def start_ssh(data):
-    sid = str(request.sid)
+async def ssh_handler(websocket, path):
+    ssh = None
+    chan = None
     try:
+        # Connect to switch via SSH
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(SSH_HOST, port=SSH_PORT, username=SSH_USER, password=SSH_PASS, look_for_keys=False, allow_agent=False)
-        chan = ssh.invoke_shell()
-        sessions[sid] = (ssh, chan)
-        emit('terminal-output', {'output': f'Connected to {SSH_HOST} as {SSH_USER}\n'})
-        def read_from_ssh():
+        ssh.connect(SWITCH_IP, username=SWITCH_USER, password=SWITCH_PASS, look_for_keys=False, allow_agent=False, timeout=10)
+        # Open an interactive shell with PTY
+        chan = ssh.invoke_shell(term='xterm', width=120, height=40)
+        chan.settimeout(0.0)
+        print(f"[+] SSH session established to {SWITCH_IP}")
+
+        async def ws_to_ssh():
+            async for message in websocket:
+                if chan.send_ready():
+                    chan.send(message)
+
+        async def ssh_to_ws():
             while True:
-                try:
-                    data = chan.recv(1024)
-                    if not data:
-                        break
-                    socketio.emit('terminal-output', {'output': data.decode(errors='ignore')}, room=sid)
-                except Exception:
-                    break
-        eventlet.spawn_n(read_from_ssh)
+                await asyncio.sleep(0.01)
+                if chan.recv_ready():
+                    data = chan.recv(4096)
+                    if data:
+                        try:
+                            await websocket.send(data.decode('utf-8', errors='ignore'))
+                        except Exception as e:
+                            print(f"[!] WebSocket send error: {e}")
+                            break
+
+        await asyncio.gather(ws_to_ssh(), ssh_to_ws())
     except Exception as e:
-        emit('terminal-output', {'output': f'Error: {str(e)}\n'})
-
-@socketio.on('terminal-input')
-def terminal_input(data):
-    sid = str(request.sid)
-    if sid in sessions:
-        ssh, chan = sessions[sid]
+        print(f"[!] Error: {e}")
         try:
-            chan.send(data.get('command', ''))
-        except Exception as e:
-            emit('terminal-output', {'output': f'Error: {str(e)}\n'})
+            await websocket.send(f"\r\n[SSH Relay Error] {e}\r\n")
+        except:
+            pass
+    finally:
+        if chan:
+            try:
+                chan.close()
+            except:
+                pass
+        if ssh:
+            try:
+                ssh.close()
+            except:
+                pass
+        try:
+            await websocket.close()
+        except:
+            pass
+        print("[-] SSH/WebSocket session closed.")
 
-@socketio.on('end-ssh')
-def end_ssh(data):
-    sid = str(request.sid)
-    if sid in sessions:
-        ssh, chan = sessions[sid]
-        chan.close()
-        ssh.close()
-        del sessions[sid]
-        emit('terminal-output', {'output': 'SSH session closed.\n'})
-
-if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5001) 
+if __name__ == "__main__":
+    print(f"[SSH Relay] Listening on port {RELAY_PORT} (WebSocket) -> {SWITCH_IP} (SSH)")
+    asyncio.get_event_loop().run_until_complete(
+        websockets.serve(ssh_handler, '0.0.0.0', RELAY_PORT)
+    )
+    asyncio.get_event_loop().run_forever() 

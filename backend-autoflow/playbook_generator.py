@@ -17,7 +17,7 @@ class AnsiblePlaybookGenerator:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
     def generate_vlan_playbook(self, switch_ip, vlan_id, vlan_name, interfaces=None):
-        """Generate a playbook for VLAN creation (old IOS compatible)"""
+        """Generate a playbook for VLAN creation using ios_command for NM-16ESW/old-style devices"""
         playbook = {
             'name': f'Create VLAN {vlan_id} - {vlan_name}',
             'hosts': 'all',
@@ -25,35 +25,25 @@ class AnsiblePlaybookGenerator:
             'vars': {
                 'ansible_network_os': 'ios',
                 'ansible_connection': 'network_cli',
-                'vlan_id': vlan_id,
+                'vlan_id': int(vlan_id),
                 'vlan_name': vlan_name,
                 'interfaces': interfaces or []
             },
             'tasks': [
                 {
-                    'name': f'Create VLAN {vlan_id} in vlan database',
-                    'ios_config': {
-                        'lines': [
+                    'name': f'Ensure VLAN {vlan_id} exists (old-style NM-16ESW)',
+                    'ios_command': {
+                        'commands': [
                             'vlan database',
-                            f'vlan {vlan_id}',
-                            'exit'
-                        ]
-                    }
-                },
-                {
-                    'name': f'Set VLAN {vlan_id} name in config mode',
-                    'ios_config': {
-                        'lines': [
-                            f'vlan {vlan_id}',
-                            f'name {vlan_name}',
+                            f'vlan {vlan_id} name {vlan_name}',
                             'exit'
                         ]
                     }
                 }
             ]
         }
-        
-        # Add interface configuration if provided
+
+        # Add interface configuration if provided (still use ios_config for this part)
         if interfaces:
             for interface in interfaces:
                 playbook['tasks'].append({
@@ -66,7 +56,7 @@ class AnsiblePlaybookGenerator:
                         ]
                     }
                 })
-        
+
         return self._save_playbook(playbook, f"vlan_{vlan_id}_{vlan_name}")
     
     def generate_ssh_playbook(self, switch_ip, ssh_enabled=True, ssh_port=22, allowed_ips=None):
@@ -91,8 +81,7 @@ class AnsiblePlaybookGenerator:
                             'crypto key generate rsa modulus 2048',
                             f'ip ssh port {ssh_port}',
                             'ip ssh version 2'
-                        ],
-                        'state': 'present'
+                        ]
                     }
                 }
             ]
@@ -103,8 +92,7 @@ class AnsiblePlaybookGenerator:
                 playbook['tasks'].append({
                     'name': f'Allow SSH access from {ip}',
                     'ios_config': {
-                        'lines': [f'ip ssh server access-list {ip}'],
-                        'state': 'present'
+                        'lines': [f'ip ssh server access-list {ip}']
                     }
                 })
         
@@ -184,8 +172,7 @@ class AnsiblePlaybookGenerator:
                     'ios_config': {
                         'lines': [
                             f'ip nat inside source list {rule.get("acl", "1")} interface {rule.get("outside_interface", "GigabitEthernet0/0")} overload'
-                        ],
-                        'state': 'present'
+                        ]
                     }
                 })
         
@@ -208,8 +195,7 @@ class AnsiblePlaybookGenerator:
                 {
                     'name': f'Configure STP mode: {mode}',
                     'ios_config': {
-                        'lines': [f'spanning-tree mode {mode}'],
-                        'state': 'present'
+                        'lines': [f'spanning-tree mode {mode}']
                     }
                 }
             ]
@@ -225,8 +211,7 @@ class AnsiblePlaybookGenerator:
                             f'spanning-tree portfast {port_config.get("portfast", "disable")}',
                             f'spanning-tree cost {port_config.get("cost", "100")}',
                             'exit'
-                        ],
-                        'state': 'present'
+                        ]
                     }
                 })
         
@@ -256,8 +241,7 @@ class AnsiblePlaybookGenerator:
                             f'interface Port-channel {group.get("group_id")}',
                             f'channel-protocol {group.get("protocol", "lacp")}',
                             'exit'
-                        ],
-                        'state': 'present'
+                        ]
                     }
                 })
                 
@@ -269,8 +253,7 @@ class AnsiblePlaybookGenerator:
                                 f'interface {interface}',
                                 f'channel-group {group.get("group_id")} mode {group.get("mode", "active")}',
                                 'exit'
-                            ],
-                            'state': 'present'
+                            ]
                         }
                     })
         
@@ -298,8 +281,7 @@ class AnsiblePlaybookGenerator:
                     'ios_config': {
                         'lines': [
                             f'ip route {route.get("network")} {route.get("subnet")} {route.get("next_hop")}'
-                        ],
-                        'state': 'present'
+                        ]
                     }
                 })
         
@@ -311,8 +293,7 @@ class AnsiblePlaybookGenerator:
                         'router ospf 1',
                         'network 0.0.0.0 255.255.255.255 area 0',
                         'exit'
-                    ],
-                    'state': 'present'
+                    ]
                 }
             })
         
@@ -344,8 +325,7 @@ class AnsiblePlaybookGenerator:
                             f'switchport port-security maximum {port_config.get("max_mac", "1")}',
                             f'switchport port-security violation {port_config.get("violation", "shutdown")}',
                             'exit'
-                        ],
-                        'state': 'present'
+                        ]
                     }
                 })
         
@@ -367,8 +347,7 @@ class AnsiblePlaybookGenerator:
                 {
                     'name': 'Enable DHCP snooping globally',
                     'ios_config': {
-                        'lines': ['ip dhcp snooping'],
-                        'state': 'present'
+                        'lines': ['ip dhcp snooping']
                     }
                 }
             ]
@@ -383,8 +362,7 @@ class AnsiblePlaybookGenerator:
                             f'interface {port}',
                             'ip dhcp snooping trust',
                             'exit'
-                        ],
-                        'state': 'present'
+                        ]
                     }
                 })
         

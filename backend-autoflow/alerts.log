@@ -260,3 +260,7 @@
 [2025-07-06T22:28:14.213Z] [WARNING] STP topology change {"rootBridge":"SW1-Core","affectedPorts":["Fa0/2","Fa0/3"],"duration":"30 seconds"}
 [2025-07-06T22:28:15.359Z] [WARNING] High CPU load: 3.11 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 3.11","value":3.11}}
 [2025-07-06T22:28:27.061Z] [WARNING] High CPU load: 2.86 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.86","value":2.86}}
+[2025-07-18T04:37:44.025Z] [WARNING] High CPU load: 2.11 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.11","value":2.11}}
+[2025-07-18T04:37:44.129Z] [WARNING] High CPU load: 2.11 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.11","value":2.11}}
+[2025-07-18T04:37:44.143Z] [WARNING] High CPU load: 2.11 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.11","value":2.11}}
+[2025-07-18T04:37:44.180Z] [WARNING] High CPU load: 2.11 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.11","value":2.11}}

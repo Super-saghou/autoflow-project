@@ -15,15 +15,18 @@ import MonitoringService from './monitoring_service.js';
 import authRoutes from './routes/auth.js';
 import { authenticateToken, requireRole, requirePermission } from './middleware/auth.js';
 import { fileURLToPath } from 'url';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import { body, validationResult } from 'express-validator';
 
-// Get __dirname equivalent for ES modules
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
+
 config();
 
-// Get Flask API URL from environment variable, default to localhost:5001
+
 const FLASK_API_URL = process.env.FLASK_API_URL || 'http://localhost:5001';
 
 const app = express();
@@ -39,6 +42,8 @@ app.use(cors({
   origin: ['http://192.168.111.201:31508', 'http://localhost:3000'],
   credentials: true,
 }));
+
+app.use(helmet());
 
 // Connect to MongoDB
 connectDB();
@@ -226,44 +231,73 @@ app.get('/api/interfaces/:switchName', (req, res) => {
 });
 
 // API to create a VLAN
-app.post('/api/create-vlan', authenticateToken, requirePermission('write_vlans'), async (req, res) => {
+app.post('/api/create-vlan',
+  authenticateToken,
+  requirePermission('write_vlans'),
+  [
+    body('vlanId').isInt({ min: 1, max: 4094 }).withMessage('VLAN ID must be an integer between 1 and 4094'),
+    body('vlanName').isString().trim().notEmpty().withMessage('VLAN Name is required'),
+    body('switchIp').isIP().withMessage('Switch IP must be a valid IP address')
+  ],
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+  async (req, res) => {
   const { vlanId, vlanName, switchIp } = req.body;
   if (!vlanId || !vlanName || !switchIp) {
     return res.status(400).json({ error: 'VLAN ID, VLAN Name, and Switch IP are required' });
   }
-  if (!/^\d+$/.test(vlanId) || vlanId < 1 || vlanId > 4094) {
+  if (!/^[0-9]+$/.test(vlanId) || vlanId < 1 || vlanId > 4094) {
     return res.status(400).json({ error: 'Invalid VLAN ID' });
   }
 
   try {
-    // Use the new playbook generation system
     const playbookData = {
       action: 'vlan',
       target_ip: switchIp,
       vlan_id: vlanId,
       vlan_name: vlanName,
-      interfaces: [] // Can be extended to include specific interfaces
+      interfaces: []
     };
 
-    // Call the playbook generation API
-    const generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(playbookData)
-    });
+    let generateResponse;
+    try {
+      generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(playbookData)
+      });
+    } catch (fetchErr) {
+      console.error('Error connecting to Flask API:', fetchErr);
+      return res.status(502).json({
+        error: 'Failed to connect to the network automation service. Please ensure the Flask API is running on port 5001.',
+        details: fetchErr.message
+      });
+    }
 
-    const result = await generateResponse.json();
+    let result;
+    try {
+      result = await generateResponse.json();
+    } catch (jsonErr) {
+      console.error('Error parsing response from Flask API:', jsonErr);
+      return res.status(500).json({
+        error: 'Invalid response from network automation service.',
+        details: jsonErr.message
+      });
+    }
     
     if (result.success) {
       console.log("Playbook executed successfully:", result);
       res.json({ message: `VLAN ${vlanId} created successfully`, details: result });
     } else {
-      // Forward the actual error message from Flask API
       let errorMsg = result.error || result.message || 'Unknown error';
       if (generateResponse.status !== 200) {
-        // If Flask returned a non-200, include status and any stderr
         errorMsg += result.stderr ? `\nDetails: ${result.stderr}` : '';
       }
       console.error("Playbook execution failed:", result);
@@ -974,7 +1008,6 @@ app.get('/api/ai-security-agent/status', (req, res) => {
 
 // Trigger manual AI analysis
 app.post('/api/ai-security-agent/analyze', (req, res) => {
-  const { exec } = require('child_process');
   exec('python3 ai_security_agent.py --manual-analysis', (error, stdout, stderr) => {
     if (error) {
       return res.status(500).json({ 
@@ -1044,7 +1077,6 @@ app.get('/api/mac-table/:switchName', (req, res) => {
   let switchIp = switchName === 'Cisco 3725' ? '192.168.111.198' : 'localhost';
   const username = 'sarra'; // Updated to correct SSH username
   const password = 'sarra'; // Updated to correct SSH password
-  const { exec } = require('child_process');
   exec(`python3 /home/sarra/ansible/run_mac_table.py ${switchIp} ${username} ${password}`, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing run_mac_table.py: ${error.message}, Exit code: ${error.code}`);
@@ -1092,6 +1124,14 @@ app.post('/api/generate-and-execute', (req, res, next) => {
   appendAuditLog(`/api/generate-and-execute called by ${req.ip}`);
   next();
 });
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+app.use('/api/', apiLimiter);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, '0.0.0.0', () => {

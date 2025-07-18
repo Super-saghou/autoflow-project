@@ -49,7 +49,7 @@ const Login = () => {
             <label>Username</label>
             <input
               type="text"
-              value={username}
+ value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="form-input"
               autoComplete="username"
