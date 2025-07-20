@@ -14,7 +14,6 @@ const DhcpModal = ({ open, onClose, onCreateDhcp, onAssignToInterface }) => {
   });
   const [isCreating, setIsCreating] = useState(false);
   const [response, setResponse] = useState('');
-  const [showAssignOption, setShowAssignOption] = useState(false);
 
   if (!open) return null;
 
@@ -49,7 +48,6 @@ const DhcpModal = ({ open, onClose, onCreateDhcp, onAssignToInterface }) => {
       
       if (response.ok) {
         setResponse(`✅ DHCP pool "${dhcpConfig.poolName}" created successfully!`);
-        setShowAssignOption(true);
         console.log('DHCP creation result:', result);
       } else {
         setResponse(`❌ Error: ${result.error || 'Unknown error'}`);
@@ -61,11 +59,6 @@ const DhcpModal = ({ open, onClose, onCreateDhcp, onAssignToInterface }) => {
     } finally {
       setIsCreating(false);
     }
-  };
-
-  const handleAssignToInterface = () => {
-    onAssignToInterface();
-    onClose();
   };
 
   const handleClose = () => {
@@ -80,7 +73,6 @@ const DhcpModal = ({ open, onClose, onCreateDhcp, onAssignToInterface }) => {
       leaseTime: '24'
     });
     setResponse('');
-    setShowAssignOption(false);
     setIsCreating(false);
     onClose();
   };
@@ -240,26 +232,6 @@ const DhcpModal = ({ open, onClose, onCreateDhcp, onAssignToInterface }) => {
             </div>
           )}
           
-          {showAssignOption && (
-            <div className="dhcp-assign-section">
-              <div className="dhcp-divider"></div>
-              <h3>What would you like to do next?</h3>
-              <div className="dhcp-assign-buttons">
-                <button 
-                  className="dhcp-btn dhcp-btn-success"
-                  onClick={handleAssignToInterface}
-                >
-                  📋 Assign to Interface
-                </button>
-                <button 
-                  className="dhcp-btn dhcp-btn-info"
-                  onClick={handleClose}
-                >
-                  ✅ Done
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

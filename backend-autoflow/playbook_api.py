@@ -12,6 +12,9 @@ import os
 import sys
 from pathlib import Path
 from playbook_generator import AnsiblePlaybookGenerator
+from netmiko import ConnectHandler
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -354,6 +357,66 @@ def create_dhcp():
             'success': False,
             'error': str(e)
         }), 500
+
+@app.route('/api/list-vlans', methods=['POST'])
+def list_vlans():
+    data = request.get_json()
+    switch_ip = data.get('switch_ip')
+    if not switch_ip:
+        return jsonify({'success': False, 'error': 'No switch IP provided'}), 400
+
+    # Hardcoded credentials for debugging
+    device = {
+        'device_type': 'cisco_ios',
+        'host': switch_ip,
+        'username': 'sarra',
+        'password': 'sarra',
+        'secret': 'sarra',
+    }
+    print("Device settings:", device)
+    try:
+        net_connect = ConnectHandler(**device)
+        if device['secret']:
+            net_connect.enable()
+        output = net_connect.send_command('show vlan-switch brief')
+        vlans = []
+        for line in output.splitlines():
+            if line.strip() and line[0].isdigit():
+                parts = line.split()
+                if len(parts) >= 2:
+                    vlans.append({'vlan_id': parts[0], 'vlan_name': parts[1]})
+        return jsonify({'success': True, 'vlans': vlans})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/delete-vlan', methods=['POST'])
+def delete_vlan():
+    import traceback
+    data = request.get_json()
+    switch_ip = data.get('switch_ip')
+    vlan_id = data.get('vlan_id')
+    if not switch_ip or not vlan_id:
+        return jsonify({'success': False, 'error': 'Missing switch_ip or vlan_id'}), 400
+
+    device = {
+        'device_type': 'cisco_ios',
+        'host': switch_ip,
+        'username': 'sarra',
+        'password': 'sarra',
+        'secret': 'sarra',
+    }
+    try:
+        net_connect = ConnectHandler(**device)
+        net_connect.enable()
+        commands = [
+            f'no vlan {vlan_id}',
+            'write memory'
+        ]
+        output = net_connect.send_config_set(commands)
+        return jsonify({'success': True, 'output': output})
+    except Exception as e:
+        print("Error deleting VLAN:", traceback.format_exc())
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/health', methods=['GET'])
 def health_check():

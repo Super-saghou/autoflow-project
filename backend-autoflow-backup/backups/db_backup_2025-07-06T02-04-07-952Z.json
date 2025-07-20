@@ -1,0 +1,67 @@
+{
+  "timestamp": "2025-07-06T02:04:08.019Z",
+  "version": "1.0",
+  "type": "database",
+  "devices": [
+    {
+      "_id": "685454737b0ffb5bf3af0d94",
+      "name": "Swicth1",
+      "ip": "192.168.111.198",
+      "createdAt": "2025-06-19T18:18:27.689Z",
+      "__v": 0
+    },
+    {
+      "_id": "685454757b0ffb5bf3af0d96",
+      "name": "Swicth1",
+      "ip": "192.168.111.198",
+      "createdAt": "2025-06-19T18:18:29.101Z",
+      "__v": 0
+    },
+    {
+      "_id": "685454757b0ffb5bf3af0d98",
+      "name": "Swicth1",
+      "ip": "192.168.111.198",
+      "createdAt": "2025-06-19T18:18:29.585Z",
+      "__v": 0
+    },
+    {
+      "_id": "685454757b0ffb5bf3af0d9a",
+      "name": "Swicth1",
+      "ip": "192.168.111.198",
+      "createdAt": "2025-06-19T18:18:29.804Z",
+      "__v": 0
+    },
+    {
+      "_id": "685454767b0ffb5bf3af0d9c",
+      "name": "Swicth1",
+      "ip": "192.168.111.198",
+      "createdAt": "2025-06-19T18:18:30.027Z",
+      "__v": 0
+    },
+    {
+      "_id": "685454767b0ffb5bf3af0d9e",
+      "name": "Swicth1",
+      "ip": "192.168.111.198",
+      "createdAt": "2025-06-19T18:18:30.652Z",
+      "__v": 0
+    },
+    {
+      "_id": "685454767b0ffb5bf3af0da0",
+      "name": "Swicth1",
+      "ip": "192.168.111.198",
+      "createdAt": "2025-06-19T18:18:30.851Z",
+      "__v": 0
+    },
+    {
+      "_id": "685454777b0ffb5bf3af0da2",
+      "name": "Swicth1",
+      "ip": "192.168.111.198",
+      "createdAt": "2025-06-19T18:18:31.080Z",
+      "__v": 0
+    }
+  ],
+  "metadata": {
+    "totalDevices": 8,
+    "backupCreatedBy": "AutoFlow Backup Service"
+  }
+}

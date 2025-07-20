@@ -16,15 +16,23 @@
   box-shadow: 0 8px 32px rgba(30, 58, 138, 0.08);
   padding: 64px 56px;
   margin: 0 auto;
-  max-width: 1400px;
+  max-width: 900px;
   width: 98vw;
-  max-height: 98vh;
+  max-height: 90vh;
   height: auto;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   animation: interfaces-modal-pop 0.25s cubic-bezier(0.4,0.2,0.2,1);
+}
+
+/* Add a scrollable wrapper for the table */
+.interfaces-table-wrapper {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  max-height: 60vh;
+  margin-bottom: 24px;
 }
 
 @keyframes interfaces-modal-pop {

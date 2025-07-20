@@ -42,7 +42,7 @@ class AnsiblePlaybookGenerator:
                 }
             ]
         }
-
+        
         # Add interface configuration if provided (still use ios_config for this part)
         if interfaces:
             for interface in interfaces:
@@ -56,7 +56,7 @@ class AnsiblePlaybookGenerator:
                         ]
                     }
                 })
-
+        
         return self._save_playbook(playbook, f"vlan_{vlan_id}_{vlan_name}")
     
     def generate_ssh_playbook(self, switch_ip, ssh_enabled=True, ssh_port=22, allowed_ips=None):

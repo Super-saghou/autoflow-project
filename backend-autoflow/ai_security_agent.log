@@ -12,3 +12,7 @@
 2025-07-09T02:55:48.960783 Basic Security Analysis - Users with failed attempts: {}, IPs with failed attempts: {}
 2025-07-15T21:32:53.780005 Basic Security Analysis - Users with failed attempts: {}, IPs with failed attempts: {}
 2025-07-15T22:01:32.350528 AI Analysis Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-07-18T21:37:41.416898 AI Analysis Error: 'FieldInfo' object is not a mapping
+2025-07-19T14:46:59.240142 AI Analysis Error: 'FieldInfo' object is not a mapping
+2025-07-19T14:47:02.126896 AI Analysis Error: 'FieldInfo' object is not a mapping
+2025-07-19T17:14:28.913463 AI Analysis Error: 'FieldInfo' object is not a mapping

@@ -141,7 +141,7 @@ app.post('/api/login', async (req, res) => {
     }
     
     // Fallback to legacy authentication
-    if (username === "sarra" && password === "sarra") {
+  if (username === "sarra" && password === "sarra") {
       const { generateToken } = await import('./middleware/auth.js');
       const token = generateToken("legacy-sarra");
       return res.json({
@@ -155,7 +155,7 @@ app.post('/api/login', async (req, res) => {
           permissions: ["write_vlans", "read_devices", "write_devices"]
         }
       });
-    } else {
+  } else {
     return res.status(401).json({ message: "Invalid credentials" });
     }
   } catch (error) {
@@ -213,13 +213,9 @@ app.get('/api/interfaces/:switchName', (req, res) => {
       let interfaces = [];
       if (stdout && stdout.trim()) {
         interfaces = JSON.parse(stdout);
-      } else {
-        console.warn('Empty or invalid stdout, using fallback');
-        interfaces = [['Fa1/0', 'Down'], ['Fa1/1', 'Down'], ['Fa1/2', 'Down'], ['Fa1/3', 'Down'], ['Fa1/4', 'Down'], ['Fa1/5', 'Down'], ['Fa1/6', 'Down'], ['Fa1/7', 'Down'], ['Fa1/8', 'Down'], ['Fa1/9', 'Down'], ['Fa1/10', 'Down'], ['Fa1/11', 'Down'], ['Fa1/12', 'Down'], ['Fa1/13', 'Down'], ['Fa1/14', 'Down'], ['Fa1/15', 'Down']];
       }
       if (!Array.isArray(interfaces) || interfaces.length === 0) {
-        console.warn(`No valid interfaces returned for ${switchName}, using fallback`);
-        interfaces = [['Fa1/0', 'Down'], ['Fa1/1', 'Down'], ['Fa1/2', 'Down'], ['Fa1/3', 'Down'], ['Fa1/4', 'Down'], ['Fa1/5', 'Down'], ['Fa1/6', 'Down'], ['Fa1/7', 'Down'], ['Fa1/8', 'Down'], ['Fa1/9', 'Down'], ['Fa1/10', 'Down'], ['Fa1/11', 'Down'], ['Fa1/12', 'Down'], ['Fa1/13', 'Down'], ['Fa1/14', 'Down'], ['Fa1/15', 'Down']];
+        return res.status(500).json({ error: 'No valid interface data returned from switch.' });
       }
       console.log(`Parsed interfaces for ${switchName}:`, interfaces);
       res.json(interfaces);
@@ -267,12 +263,12 @@ app.post('/api/create-vlan',
     let generateResponse;
     try {
       generateResponse = await fetch(`${FLASK_API_URL}/api/generate-and-execute`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(playbookData)
-      });
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playbookData)
+    });
     } catch (fetchErr) {
       console.error('Error connecting to Flask API:', fetchErr);
       return res.status(502).json({
@@ -1095,6 +1091,66 @@ app.get('/api/mac-table/:switchName', (req, res) => {
   });
 });
 
+// API to list VLANs on a switch
+app.post('/api/list-vlans', authenticateToken, requirePermission('read_vlans'), async (req, res) => {
+  const { switchIp } = req.body;
+  if (!switchIp) {
+    return res.status(400).json({ error: 'Switch IP is required' });
+  }
+  try {
+    const response = await fetch(`${FLASK_API_URL}/api/list-vlans`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ switch_ip: switchIp })
+    });
+    const result = await response.json();
+    if (response.ok && result.success) {
+      res.json({ vlans: result.vlans });
+    } else {
+      res.status(500).json({ error: result.error || 'Failed to list VLANs', details: result });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// API to delete a VLAN on a switch
+app.post('/api/delete-vlan', authenticateToken, requirePermission('delete_vlans'), async (req, res) => {
+  const { switchIp, vlanId } = req.body;
+  if (!switchIp || !vlanId) {
+    return res.status(400).json({ error: 'Switch IP and VLAN ID are required' });
+  }
+  try {
+    const response = await fetch(`${FLASK_API_URL}/api/delete-vlan`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ switch_ip: switchIp, vlan_id: vlanId })
+    });
+    const result = await response.json();
+    if (response.ok && result.success) {
+      res.json({ message: `VLAN ${vlanId} deleted successfully`, details: result });
+    } else {
+      res.status(500).json({ error: result.error || 'Failed to delete VLAN', details: result });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// API to assign VLAN to an interface
+app.post('/api/assign-vlan', authenticateToken, requirePermission('write_vlans'), (req, res) => {
+  const { switchIp, interfaceName, vlanId } = req.body;
+  if (!switchIp || !interfaceName || !vlanId) {
+    return res.status(400).json({ error: 'Missing required parameters' });
+  }
+  exec(`python3 /home/sarra/ansible/assign_vlan.py ${switchIp} ${interfaceName} ${vlanId}`, (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+    res.json({ success: true, output: stdout });
+  });
+});
+
 // Handle unknown routes (404 JSON)
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
@@ -1136,4 +1192,50 @@ app.use('/api/', apiLimiter);
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server started on http://0.0.0.0:${PORT}`);
+});
+
+app.get('/api/list-dhcp-pools', (req, res) => {
+  const { exec } = require('child_process');
+  exec('python3 /home/sarra/ansible/list_dhcp_pools.py', (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+    try {
+      const pools = JSON.parse(stdout);
+      res.json({ pools });
+    } catch (parseError) {
+      res.status(500).json({ error: 'Failed to parse DHCP pools', details: stdout });
+    }
+  });
+});
+
+app.post('/api/configure-dhcp-snooping', authenticateToken, requirePermission('configure_security'), (req, res) => {
+  const { switchIp, vlans, trustedPorts, rateLimits } = req.body;
+  if (!switchIp || !vlans) {
+    return res.status(400).json({ error: 'Missing required parameters' });
+  }
+  const vlansArg = Array.isArray(vlans) ? vlans.join(',') : vlans;
+  const trustedArg = trustedPorts ? trustedPorts.join(',') : '';
+  const rateArg = rateLimits ? JSON.stringify(rateLimits) : '';
+  exec(`python3 /home/sarra/ansible/configure_dhcp_snooping.py ${switchIp} ${vlansArg} ${trustedArg} '${rateArg}'`, (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+    res.json({ success: true, output: stdout });
+  });
+});
+
+app.get('/api/dhcp-snooping-status', authenticateToken, requirePermission('read_security'), (req, res) => {
+  const { exec } = require('child_process');
+  exec('python3 /home/sarra/ansible/show_dhcp_snooping.py', (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+    try {
+      const result = JSON.parse(stdout);
+      res.json(result);
+    } catch (parseError) {
+      res.status(500).json({ error: 'Failed to parse snooping status', details: stdout });
+    }
+  });
 });

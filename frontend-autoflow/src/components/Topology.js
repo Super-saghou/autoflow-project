@@ -32,7 +32,7 @@ const TerminalModal = ({ device, onClose }) => {
       fitAddon.fit();
       xtermRef.current = term;
       fitAddonRef.current = fitAddon;
-      socketRef.current = new window.WebSocket('ws://localhost:5002');
+      socketRef.current = new window.WebSocket('ws://localhost:5010');
       socketRef.current.onopen = () => {
         term.write('\r\n[Connected to SSH relay]\r\n');
         fitAddon.fit();

@@ -13,7 +13,7 @@ import DhcpModal from './DhcpModal';
 import ReportsPage from '../Pages/ReportsPage';
 import MonitoringPage from './MonitoringPage';
 import SecurityAgentDashboard from './SecurityAgentDashboard';
-import AISecurityDashboard from './AISecurityDashboard';
+import AIPromptModal from './AIPromptModal';
 
 const Dashboard = () => {
   const [devices, setDevices] = useState([]);
@@ -45,6 +45,9 @@ const Dashboard = () => {
   const [blockedIPs, setBlockedIPs] = useState([]);
   const [securityLoading, setSecurityLoading] = useState(false);
   const [securityError, setSecurityError] = useState(null);
+  
+  // AI Security Agent state
+  const [aiPromptModalOpen, setAiPromptModalOpen] = useState(false);
   
   // Backup system state
   const [backupStats, setBackupStats] = useState(null);
@@ -79,10 +82,7 @@ const Dashboard = () => {
   const [natEnabled, setNatEnabled] = useState(true);
   const [natStatusMsg, setNatStatusMsg] = useState('');
   const [dhcpEnabled, setDhcpEnabled] = useState(true);
-  const [dhcpPools, setDhcpPools] = useState([
-    { name: 'Office', network: '192.168.10.0/24', range: '192.168.10.100-200', gateway: '192.168.10.1', dns: '8.8.8.8', leases: 12 },
-    { name: 'Lab', network: '10.10.0.0/16', range: '10.10.0.100-250', gateway: '10.10.0.1', dns: '1.1.1.1', leases: 5 },
-  ]);
+  const [dhcpPools, setDhcpPools] = useState([]);
   const [newDhcpPool, setNewDhcpPool] = useState({ name: '', network: '', range: '', gateway: '', dns: '', leases: 0 });
   const [dhcpStatusMsg, setDhcpStatusMsg] = useState('');
   const [stpEnabled, setStpEnabled] = useState(true);
@@ -564,55 +564,24 @@ const Dashboard = () => {
   ];
 
   const handleAssignToInterface = async () => {
-    console.log('handleAssignToInterface called');
     setCreateVlanModalOpen(false);
-    
-    // If we already have interfaces from pre-fetch, use them immediately
-    if (modalInterfaces.length > 0) {
-      console.log('Using pre-fetched interfaces:', modalInterfaces);
-      setInterfacesModalOpen(true);
-      return;
-    }
-    
-    // Otherwise, fetch them now
     setIsLoadingInterfaces(true);
-    
+    setInterfacesModalOpen(true); // Open modal immediately
     try {
-      console.log('Fetching real interfaces for assignment...');
       const response = await fetch(`${API_URL}/api/interfaces/Cisco%203725`);
-      console.log('Response status:', response.status);
-      
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
       const interfacesData = await response.json();
-      console.log('Real interfaces data:', interfacesData);
-      
-      // Convert the data format to match what InterfacesModal expects
-      const formattedInterfaces = interfacesData.map(([name, status]) => ({
-        name: name,
-        status: status
-      }));
-      
-      console.log('Formatted interfaces:', formattedInterfaces);
+      const formattedInterfaces = interfacesData.map(([name, status]) => ({ name, status }));
       setModalInterfaces(formattedInterfaces);
-      console.log('Setting interfaces modal open...');
-      setInterfacesModalOpen(true);
     } catch (error) {
-      console.error('Error fetching interfaces:', error);
-      // Fallback to default interfaces if API fails
-      const fallbackInterfaces = [
+      setModalInterfaces([
         { name: 'Fa0/1', status: 'Down' },
         { name: 'Fa0/2', status: 'Down' },
         { name: 'Fa0/3', status: 'Down' },
         { name: 'Fa0/4', status: 'Down' },
-      ];
-      console.log('Using fallback interfaces:', fallbackInterfaces);
-      setModalInterfaces(fallbackInterfaces);
-      console.log('Setting interfaces modal open (fallback)...');
-      setInterfacesModalOpen(true);
+      ]);
     } finally {
       setIsLoadingInterfaces(false);
-      console.log('Loading finished, interfacesModalOpen should be:', true);
     }
   };
 
@@ -647,9 +616,32 @@ const Dashboard = () => {
     }
   };
 
-  const handleVlanSave = (data) => {
-    // TODO: call API to save VLAN config
-    alert('Saved VLAN config: ' + JSON.stringify(data));
+  const handleVlanSave = async (data) => {
+    // data: { interfaceName, switchType, mode, vlanId }
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/assign-vlan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          switchIp: '192.168.111.198',
+          interfaceName: data.interfaceName,
+          vlanId: data.vlanId
+        })
+      });
+      const result = await response.json();
+      if (response.ok && result.success) {
+        alert(`✅ VLAN ${data.vlanId} assigned to ${data.interfaceName} successfully!`);
+        // Optionally refresh interface status here
+      } else {
+        alert(`❌ Error assigning VLAN: ${result.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      alert(`❌ Network error: ${error.message}`);
+    }
   };
 
   const handleVlanCreate = async ({ vlanId, vlanName, switchType }) => {
@@ -833,6 +825,84 @@ const Dashboard = () => {
     }
   }, [activeSection]);
 
+  // VLAN state
+  const [vlans, setVlans] = useState([]);
+  const [isLoadingVlans, setIsLoadingVlans] = useState(false);
+  const [vlanError, setVlanError] = useState(null);
+
+  // Fetch VLANs from backend
+  const fetchVlans = async () => {
+    setIsLoadingVlans(true);
+    setVlanError(null);
+    try {
+      const response = await fetch(`${API_URL}/api/list-vlans`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ switchIp: '192.168.111.198' })
+      });
+      const data = await response.json();
+      if (response.ok && data.vlans) {
+        setVlans(data.vlans);
+      } else {
+        setVlanError(data.error || 'Failed to fetch VLANs');
+      }
+    } catch (err) {
+      setVlanError(err.message);
+    } finally {
+      setIsLoadingVlans(false);
+    }
+  };
+
+  // Delete VLAN
+  const handleDeleteVlan = async (vlanId) => {
+    if (!window.confirm(`Are you sure you want to delete VLAN ${vlanId}?`)) return;
+    try {
+      const response = await fetch(`${API_URL}/api/delete-vlan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ switchIp: '192.168.111.198', vlanId })
+      });
+      const data = await response.json();
+      if (response.ok && data.message) {
+        setVlans(vlans.filter(v => v.vlan_id !== vlanId));
+        alert(`✅ VLAN ${vlanId} deleted successfully!`);
+      } else {
+        alert(`❌ Error deleting VLAN: ${data.error || 'Unknown error'}`);
+      }
+    } catch (err) {
+      alert(`❌ Network error: ${err.message}`);
+    }
+  };
+
+  // Fetch VLANs on mount
+  useEffect(() => {
+    fetchVlans();
+  }, []);
+
+  // Fetch real DHCP pools from backend
+  const fetchDhcpPools = async () => {
+    console.log('Show button clicked');
+    try {
+      const response = await fetch('http://localhost:5000/api/list-dhcp-pools');
+      const data = await response.json();
+      if (response.ok && data.pools) {
+        setDhcpPools(data.pools);
+      }
+    } catch (err) {
+      // Optionally handle error
+    }
+  };
+
+  useEffect(() => {
+    fetchDhcpPools();
+  }, []);
+
+  // After creating a new DHCP pool, call fetchDhcpPools()
+  const handleCreateDhcp = async (poolData) => {
+    // ... existing code to create pool ...
+    await fetchDhcpPools();
+  };
+
   return (
     <div
       className={`dashboard-container ${theme}`}
@@ -986,24 +1056,12 @@ const Dashboard = () => {
             </div>
           )}
           {activeSection === 'home' && (
-            <div style={{ width: '100%', minHeight: '80vh', background: '#f7fafc', padding: '0 0 48px 0' }}>
-              <div style={{
-                background: 'linear-gradient(120deg, #f0f9ff 0%, #fef9c3 100%)',
-                borderRadius: 36,
-                boxShadow: '0 8px 32px rgba(59, 130, 246, 0.08)',
-                padding: '48px 64px',
-                maxWidth: '1400px',
-                margin: '48px auto 0 auto',
-                color: '#1e40af',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'stretch',
-                gap: 32,
-              }}>
+            <div className="home-bg-gradient">
+              <div className="home-main-card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 18 }}>
                   <div style={{ fontSize: 54, color: '#fbbf24', marginRight: 12 }}>🏠</div>
                   <div>
-                    <h2 style={{ fontSize: 34, fontWeight: 800, margin: 0, color: '#1e40af', letterSpacing: 1 }}>Welcome, {userProfile.username}!</h2>
+                    <h2 className="home-header-accent">Welcome, {userProfile.username}!</h2>
                     <p style={{ color: '#ea580c', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
                       Your centralized hub for network management and automation. Monitor your network, configure devices, and manage your infrastructure from one place.
                     </p>
@@ -1012,30 +1070,39 @@ const Dashboard = () => {
                 {/* First Row - 3 widgets distributed evenly */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32, marginBottom: 32 }}>
                   {/* Quick Stats */}
-                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
-                    <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Quick Stats</h3>
+                  <div className="home-widget" style={{ 
+                    border: '3px solid #ffffff', 
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
+                  }}>
+                    <h3>Quick Stats</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Total Devices</span>
-                        <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 18 }}>{devices.length}</span>
+                        <span className="stat-label">Total Devices</span>
+                        <span className="stat-value">{devices.length}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Active Connections</span>
-                        <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 18 }}>3</span>
+                        <span className="stat-label">Active Connections</span>
+                        <span className="stat-value">3</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>VLANs Configured</span>
-                        <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 18 }}>5</span>
+                        <span className="stat-label">VLANs Configured</span>
+                        <span className="stat-value">5</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>System Status</span>
-                        <span style={{ color: '#10b981', fontWeight: 700, fontSize: 18 }}>Healthy</span>
+                        <span className="stat-label">System Status</span>
+                        <span className="stat-value" style={{ color: '#10b981' }}>Healthy</span>
                       </div>
                     </div>
                   </div>
                   
                   {/* Quick Actions */}
-                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                  <div style={{ 
+                    background: '#ffffff', 
+                    borderRadius: 20, 
+                    padding: '28px', 
+                    border: '3px solid #ffffff',
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
+                  }}>
                     <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Quick Actions</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       <button
@@ -1110,7 +1177,13 @@ const Dashboard = () => {
                   </div>
                   
                   {/* System Status */}
-                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                  <div style={{ 
+                    background: '#ffffff', 
+                    borderRadius: 20, 
+                    padding: '28px', 
+                    border: '3px solid #ffffff',
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
+                  }}>
                     <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>System Status</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1151,7 +1224,13 @@ const Dashboard = () => {
                 {/* Second Row - 2 widgets distributed evenly */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 32 }}>
                   {/* Recent Activity */}
-                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                  <div style={{ 
+                    background: '#ffffff', 
+                    borderRadius: 20, 
+                    padding: '28px', 
+                    border: '3px solid #ffffff',
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
+                  }}>
                     <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Recent Activity</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
@@ -1186,7 +1265,13 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Network Overview */}
-                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                  <div style={{ 
+                    background: '#ffffff', 
+                    borderRadius: 20, 
+                    padding: '28px', 
+                    border: '3px solid #ffffff',
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
+                  }}>
                     <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Network Overview</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1212,7 +1297,13 @@ const Dashboard = () => {
                 {/* Third Row - 3 widgets distributed evenly */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32, marginTop: 32 }}>
                   {/* Device Status */}
-                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                  <div style={{ 
+                    background: '#ffffff', 
+                    borderRadius: 20, 
+                    padding: '28px', 
+                    border: '3px solid #ffffff',
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
+                  }}>
                     <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Device Status</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1235,7 +1326,13 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Network Alerts */}
-                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                  <div style={{ 
+                    background: '#ffffff', 
+                    borderRadius: 20, 
+                    padding: '28px', 
+                    border: '3px solid #ffffff',
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
+                  }}>
                     <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Network Alerts</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
@@ -1263,7 +1360,13 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Performance Metrics */}
-                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                  <div style={{ 
+                    background: '#ffffff', 
+                    borderRadius: 20, 
+                    padding: '28px', 
+                    border: '3px solid #ffffff',
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
+                  }}>
                     <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Performance Metrics</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1290,6 +1393,7 @@ const Dashboard = () => {
           )}
           {activeSection === 'switching' && (
             <div style={{ width: '100%', minHeight: '80vh', background: '#f8fafc', padding: '0 0 48px 0' }}>
+              {/* Only render the switch cards and content here, no VLAN table */}
               <div style={{
                 background: '#fffdfa',
                 borderRadius: 36,
@@ -1305,7 +1409,7 @@ const Dashboard = () => {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 18 }}>
                   <div style={{ fontSize: 54, color: '#3b82f6', marginRight: 12 }}>🔀</div>
-            <div>
+                  <div>
                     <h2 style={{ fontSize: 34, fontWeight: 800, margin: 0, color: '#3b82f6', letterSpacing: 1 }}>VLANs - Switch Types</h2>
                     <p style={{ color: '#ea580c', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
                       Select a switch type to view or configure VLAN settings. Each switch may have unique VLAN features and configuration options.
@@ -1774,12 +1878,9 @@ const Dashboard = () => {
                     DHCP is {dhcpEnabled ? 'Enabled' : 'Disabled'}
                   </span>
                   <button
-                    onClick={() => {
-                      setDhcpEnabled(!dhcpEnabled);
-                      setDhcpStatusMsg('');
-                    }}
+                    onClick={fetchDhcpPools}
                     style={{
-                      background: dhcpEnabled ? 'linear-gradient(90deg, #2563eb 0%, #fbbf24 100%)' : 'linear-gradient(90deg, #fbbf24 0%, #ea580c 100%)',
+                      background: 'linear-gradient(90deg, #2563eb 0%, #3b82f6 100%)',
                       color: '#fff',
                       padding: '12px 32px',
                       border: 'none',
@@ -1792,7 +1893,7 @@ const Dashboard = () => {
                       letterSpacing: 1,
                     }}
                   >
-                    {dhcpEnabled ? 'Disable DHCP' : 'Enable DHCP'}
+                    Show
                   </button>
                 </div>
                 <div style={{ overflowX: 'auto', borderRadius: 14, boxShadow: '0 2px 8px rgba(59, 130, 246, 0.04)', background: '#fff' }}>
@@ -3393,8 +3494,138 @@ const Dashboard = () => {
              />
            )}
            {activeSection === 'ai-security-agent' && (
-             <AISecurityDashboard />
-          )}
+             <div style={{ width: '100%', minHeight: '80vh', background: '#f8fafc', padding: '0 0 48px 0' }}>
+               <div style={{
+                 background: '#fffdfa',
+                 borderRadius: 36,
+                 boxShadow: '0 8px 32px rgba(59, 130, 246, 0.10)',
+                 padding: '48px 64px',
+                 maxWidth: '1400px',
+                 margin: '48px auto 0 auto',
+                 color: '#1e3a8a',
+                 display: 'flex',
+                 flexDirection: 'column',
+                 alignItems: 'stretch',
+                 gap: 32,
+               }}>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 18 }}>
+                   <div style={{ fontSize: 54, color: '#3b82f6', marginRight: 12 }}>🤖</div>
+                   <div>
+                     <h2 style={{ fontSize: 34, fontWeight: 800, margin: 0, color: '#3b82f6', letterSpacing: 1 }}>AI Security Agent</h2>
+                     <p style={{ color: '#ea580c', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
+                       Intelligent threat detection powered by AI. The agent analyzes security patterns and makes informed decisions.
+                     </p>
+                   </div>
+                 </div>
+
+                 <div style={{ display: 'flex', gap: 16, marginBottom: 32 }}>
+                   <button
+                     onClick={() => setAiPromptModalOpen(true)}
+                     style={{
+                       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                       color: 'white',
+                       padding: '16px 32px',
+                       border: 'none',
+                       borderRadius: 16,
+                       cursor: 'pointer',
+                       fontSize: 18,
+                       fontWeight: 600,
+                       boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+                       transition: 'all 0.3s ease',
+                       display: 'flex',
+                       alignItems: 'center',
+                       gap: 12
+                     }}
+                     onMouseOver={(e) => {
+                       e.target.style.transform = 'translateY(-2px)';
+                       e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)';
+                     }}
+                     onMouseOut={(e) => {
+                       e.target.style.transform = 'translateY(0)';
+                       e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.3)';
+                     }}
+                   >
+                     <span style={{ fontSize: 24 }}>💬</span>
+                     Custom AI Prompt
+                   </button>
+                 </div>
+
+                 <div style={{ 
+                   background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', 
+                   borderRadius: 20, 
+                   padding: 32, 
+                   border: '2px solid #e2e8f0' 
+                 }}>
+                   <h3 style={{ color: '#3b82f6', fontSize: 24, fontWeight: 700, marginBottom: 16 }}>
+                     🤖 AI Agent Capabilities
+                   </h3>
+                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+                     <div style={{ 
+                       background: 'white', 
+                       padding: 20, 
+                       borderRadius: 16, 
+                       border: '1px solid #e2e8f0',
+                       boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                     }}>
+                       <h4 style={{ color: '#3b82f6', fontSize: 18, fontWeight: 600, marginBottom: 12 }}>🔍 Security Analysis</h4>
+                       <p style={{ color: '#64748b', lineHeight: 1.6 }}>
+                         Analyze network security posture, identify vulnerabilities, and detect potential threats in real-time.
+                       </p>
+                     </div>
+                     <div style={{ 
+                       background: 'white', 
+                       padding: 20, 
+                       borderRadius: 16, 
+                       border: '1px solid #e2e8f0',
+                       boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                     }}>
+                       <h4 style={{ color: '#3b82f6', fontSize: 18, fontWeight: 600, marginBottom: 12 }}>🛡️ Threat Detection</h4>
+                       <p style={{ color: '#64748b', lineHeight: 1.6 }}>
+                         Monitor for suspicious activities, unauthorized access attempts, and security incidents.
+                       </p>
+                     </div>
+                     <div style={{ 
+                       background: 'white', 
+                       padding: 20, 
+                       borderRadius: 16, 
+                       border: '1px solid #e2e8f0',
+                       boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                     }}>
+                       <h4 style={{ color: '#3b82f6', fontSize: 18, fontWeight: 600, marginBottom: 12 }}>📊 Risk Assessment</h4>
+                       <p style={{ color: '#64748b', lineHeight: 1.6 }}>
+                         Provide detailed risk assessments and actionable recommendations for security improvements.
+                       </p>
+                     </div>
+                   </div>
+                 </div>
+
+                 <div style={{ 
+                   background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', 
+                   borderRadius: 20, 
+                   padding: 32, 
+                   border: '2px solid #fbbf24' 
+                 }}>
+                   <h3 style={{ color: '#92400e', fontSize: 24, fontWeight: 700, marginBottom: 16 }}>
+                     💡 How to Use
+                   </h3>
+                   <div style={{ color: '#92400e', lineHeight: 1.8 }}>
+                     <p style={{ marginBottom: 12 }}>
+                       <strong>1.</strong> Click the "Custom AI Prompt" button above
+                     </p>
+                     <p style={{ marginBottom: 12 }}>
+                       <strong>2.</strong> Enter your security analysis request or select from example prompts
+                     </p>
+                     <p style={{ marginBottom: 12 }}>
+                       <strong>3.</strong> The AI agent will analyze your request and provide detailed insights
+                     </p>
+                     <p>
+                       <strong>4.</strong> Review the AI-generated security recommendations and take action
+                     </p>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           )}
         </div>
       </div>
       <Tooltip id="main-tooltip" place="top" effect="solid" />
@@ -3424,6 +3655,12 @@ const Dashboard = () => {
         open={dhcpModalOpen}
         onClose={() => setDhcpModalOpen(false)}
         onAssignToInterface={handleDhcpAssignToInterface}
+      />
+      
+      {/* AI Prompt Modal */}
+      <AIPromptModal 
+        open={aiPromptModalOpen}
+        onClose={() => setAiPromptModalOpen(false)}
       />
     </div>
   );

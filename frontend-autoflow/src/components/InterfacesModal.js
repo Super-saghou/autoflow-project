@@ -14,30 +14,32 @@ const InterfacesModal = ({ open, onClose, switchType, interfaces, onEdit, isLoad
             <p style={{ fontSize: '14px', color: '#64748b' }}>Fetching real-time status from switch</p>
           </div>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Interface</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {interfaces.map(({ name, status }) => (
-                <tr key={name}>
-                  <td>
-                    <span
-                      className={status.toLowerCase()}
-                      style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                      onClick={() => onEdit(name)}
-                    >
-                      {name}
-                    </span>
-                  </td>
-                  <td className={status.toLowerCase()}>{status}</td>
+          <div className="interfaces-table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Interface</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {interfaces.map(({ name, status }) => (
+                  <tr key={name}>
+                    <td>
+                      <span
+                        className={status.toLowerCase()}
+                        style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                        onClick={() => onEdit(name)}
+                      >
+                        {name}
+                      </span>
+                    </td>
+                    <td className={status.toLowerCase()}>{status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         <button className="interfaces-modal-close" onClick={onClose}>&times;</button>
       </div>

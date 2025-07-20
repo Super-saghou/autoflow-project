@@ -62,6 +62,12 @@
   font-weight: 700;
   position: relative;
   z-index: 1;
+  color: #fff !important;
+  text-shadow: none !important;
+  background: none !important;
+  background-clip: initial !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
 .create-vlan-modal-close {
