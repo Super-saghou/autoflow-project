@@ -18,6 +18,9 @@ import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import { body, validationResult } from 'express-validator';
+import aclsRouter from './routes/acls.js';
+import { execFile } from 'child_process';
+import './ssh_websocket_server.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -72,11 +75,21 @@ initializeRoles();
 
 // Auth routes
 app.use('/api/auth', authRoutes);
+app.use('/api/acls', aclsRouter);
 
 // Test route to verify server is running
 app.get('/api/test', (req, res) => {
   console.log('Test route hit');
   res.json({ message: 'Server is running' });
+});
+
+// Health check endpoint for Kubernetes
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    service: 'AutoFlow Backend'
+  });
 });
 
 // API to add a device and run playbook
@@ -202,8 +215,8 @@ app.get('/api/interfaces/:switchName', (req, res) => {
   console.log(`Current working directory: ${process.cwd()}`);
 
   let switchIp = switchName === 'Cisco 3725' ? '192.168.111.198' : 'localhost';
-  console.log(`Executing command: python3 /home/sarra/ansible/run_interfaces.py ${switchIp}`);
-  exec(`python3 /home/sarra/ansible/run_interfaces.py ${switchIp}`, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
+  console.log(`Executing command: python3 /app/run_interfaces.py ${switchIp}`);
+  exec(`python3 /app/run_interfaces.py ${switchIp}`, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing run_interfaces.py: ${error.message}, Exit code: ${error.code}`);
       return res.status(500).json({ error: 'Failed to fetch interfaces', details: error.message });
@@ -1073,7 +1086,7 @@ app.get('/api/mac-table/:switchName', (req, res) => {
   let switchIp = switchName === 'Cisco 3725' ? '192.168.111.198' : 'localhost';
   const username = 'sarra'; // Updated to correct SSH username
   const password = 'sarra'; // Updated to correct SSH password
-  exec(`python3 /home/sarra/ansible/run_mac_table.py ${switchIp} ${username} ${password}`, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
+  exec(`python3 /home/sarra/autoflow-project/backend-autoflow/run_mac_table.py ${switchIp} ${username} ${password}`, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing run_mac_table.py: ${error.message}, Exit code: ${error.code}`);
       return res.status(500).json({ error: 'Failed to fetch MAC table', details: error.message });
@@ -1151,7 +1164,159 @@ app.post('/api/assign-vlan', authenticateToken, requirePermission('write_vlans')
   });
 });
 
-// Handle unknown routes (404 JSON)
+// --- ACL Management Endpoints ---
+
+// List all ACLs on a switch
+app.get('/api/acls/:switchIp', authenticateToken, requirePermission('configure_security'), (req, res) => {
+  const { switchIp } = req.params;
+  // TODO: Implement /home/sarra/ansible/acl_list.py to fetch ACLs
+  const { exec } = require('child_process');
+  exec(`python3 /home/sarra/ansible/acl_list.py ${switchIp}`, (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+    try {
+      const acls = JSON.parse(stdout);
+      res.json({ acls });
+    } catch (parseError) {
+      res.status(500).json({ error: 'Failed to parse ACLs', details: stdout });
+    }
+  });
+});
+
+// Create a new ACL
+app.post('/api/acls/create', authenticateToken, requirePermission('configure_security'), (req, res) => {
+  const { switchIp, aclName, aclType } = req.body;
+  if (!switchIp || !aclName || !aclType) {
+    return res.status(400).json({ error: 'Missing required parameters' });
+  }
+  // TODO: Implement /home/sarra/ansible/acl_create.py
+  const { exec } = require('child_process');
+  exec(`python3 /home/sarra/ansible/acl_create.py ${switchIp} ${aclName} ${aclType}`, (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+    res.json({ success: true, output: stdout });
+  });
+});
+
+// Add a rule to an ACL
+app.post('/api/acls/add-rule', authenticateToken, requirePermission('configure_security'), (req, res) => {
+  const { switchIp, aclName, rule } = req.body;
+  if (!switchIp || !aclName || !rule) {
+    return res.status(400).json({ error: 'Missing required parameters' });
+  }
+  // TODO: Implement /home/sarra/ansible/acl_add_rule.py
+  const { exec } = require('child_process');
+  exec(`python3 /home/sarra/ansible/acl_add_rule.py ${switchIp} ${aclName} '${rule}'`, (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+    res.json({ success: true, output: stdout });
+  });
+});
+
+// Remove a rule from an ACL
+app.post('/api/acls/remove-rule', authenticateToken, requirePermission('configure_security'), (req, res) => {
+  const { switchIp, aclName, rule } = req.body;
+  if (!switchIp || !aclName || !rule) {
+    return res.status(400).json({ error: 'Missing required parameters' });
+  }
+  // TODO: Implement /home/sarra/ansible/acl_remove_rule.py
+  const { exec } = require('child_process');
+  exec(`python3 /home/sarra/ansible/acl_remove_rule.py ${switchIp} ${aclName} '${rule}'`, (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+    res.json({ success: true, output: stdout });
+  });
+});
+
+// Delete an ACL
+app.post('/api/acls/delete', authenticateToken, requirePermission('configure_security'), (req, res) => {
+  const { switchIp, aclName } = req.body;
+  if (!switchIp || !aclName) {
+    return res.status(400).json({ error: 'Missing required parameters' });
+  }
+  // TODO: Implement /home/sarra/ansible/acl_delete.py
+  const { exec } = require('child_process');
+  exec(`python3 /home/sarra/ansible/acl_delete.py ${switchIp} ${aclName}`, (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+    res.json({ success: true, output: stdout });
+  });
+});
+
+// Apply an ACL to an interface
+app.post('/api/acls/apply', authenticateToken, requirePermission('configure_security'), (req, res) => {
+  const { switchIp, aclName, iface, direction } = req.body;
+  if (!switchIp || !aclName || !iface || !direction) {
+    return res.status(400).json({ error: 'Missing required parameters' });
+  }
+  // TODO: Implement /home/sarra/ansible/acl_apply.py
+  const { exec } = require('child_process');
+  exec(`python3 /home/sarra/ansible/acl_apply.py ${switchIp} ${aclName} ${iface} ${direction}`, (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+    res.json({ success: true, output: stdout });
+  });
+});
+
+// Remove an ACL from an interface
+app.post('/api/acls/remove-from-iface', authenticateToken, requirePermission('configure_security'), (req, res) => {
+  const { switchIp, aclName, iface, direction } = req.body;
+  if (!switchIp || !aclName || !iface || !direction) {
+    return res.status(400).json({ error: 'Missing required parameters' });
+  }
+  // TODO: Implement /home/sarra/ansible/acl_remove_from_iface.py
+  const { exec } = require('child_process');
+  exec(`python3 /home/sarra/ansible/acl_remove_from_iface.py ${switchIp} ${aclName} ${iface} ${direction}`, (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+    res.json({ success: true, output: stdout });
+  });
+});
+
+app.post('/api/create-acl', (req, res) => {
+  const { aclNumber, rules, switchIp } = req.body;
+  if (!aclNumber || !rules || !switchIp) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const input = JSON.stringify({ aclNumber, rules, switchIp });
+  console.log('Calling Python script with input:', input);
+
+  const pythonProcess = execFile(
+    'python3',
+    ['create_acl_on_switch.py'],
+    { cwd: __dirname },
+    (error, stdout, stderr) => {
+      console.log('Python script stdout:', stdout);
+      console.log('Python script stderr:', stderr);
+      if (error) {
+        console.error('Python script error:', error);
+        return res.status(500).json({ error: stderr || error.message });
+      }
+      try {
+        const result = JSON.parse(stdout);
+        if (result.success) {
+          res.json({ message: 'ACL created and applied', output: result.output });
+        } else {
+          res.status(500).json({ error: result.error });
+        }
+      } catch (e) {
+        console.error('Failed to parse script output:', stdout);
+        res.status(500).json({ error: 'Failed to parse script output', details: stdout });
+      }
+    }
+  );
+  pythonProcess.stdin.write(input);
+  pythonProcess.stdin.end();
+});
+
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });

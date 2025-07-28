@@ -10,10 +10,15 @@ import subprocess
 import json
 import os
 import sys
+import warnings
 from pathlib import Path
 from playbook_generator import AnsiblePlaybookGenerator
 from netmiko import ConnectHandler
 from dotenv import load_dotenv
+
+# Suppress deprecation warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="cryptography")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="paramiko")
 load_dotenv()
 
 app = Flask(__name__)
@@ -140,7 +145,7 @@ def execute_playbook():
             ['ansible-playbook', '-i', inventory_path, playbook_path, '-v'],
             capture_output=True,
             text=True,
-            cwd='/home/sarra/ansible'
+            cwd=os.getcwd()
         )
         
         if result.returncode == 0:
@@ -261,7 +266,7 @@ def generate_and_execute():
             ['ansible-playbook', '-i', inventory_path, playbook_path, '-v'],
             capture_output=True,
             text=True,
-            cwd='/home/sarra/ansible'
+            cwd=os.getcwd()
         )
         
         if result.returncode == 0:
@@ -328,7 +333,7 @@ def create_dhcp():
             ['ansible-playbook', '-i', inventory_path, playbook_path, '-v'],
             capture_output=True,
             text=True,
-            cwd='/home/sarra/ansible'
+            cwd=os.getcwd()
         )
         
         if result.returncode == 0:

@@ -1,0 +1,16 @@
+- name: Create VLAN 11 - VL11
+  hosts: all
+  gather_facts: false
+  vars:
+    ansible_network_os: ios
+    ansible_connection: network_cli
+    vlan_id: 11
+    vlan_name: VL11
+    interfaces: []
+  tasks:
+  - name: Ensure VLAN 11 exists (old-style NM-16ESW)
+    ios_command:
+      commands:
+      - vlan database
+      - vlan 11 name VL11
+      - exit

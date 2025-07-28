@@ -33,7 +33,7 @@ const DhcpModal = ({ open, onClose, onCreateDhcp, onAssignToInterface }) => {
     setResponse('Creating DHCP pool...');
 
     try {
-      const response = await fetch('http://localhost:5001/api/create-dhcp', {
+      const response = await fetch('/api/create-dhcp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

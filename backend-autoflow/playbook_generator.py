@@ -10,9 +10,14 @@ import os
 import yaml
 from datetime import datetime
 from pathlib import Path
+import subprocess
 
 class AnsiblePlaybookGenerator:
-    def __init__(self, output_dir="/home/sarra/ansible/generated_playbooks"):
+    def __init__(self, output_dir=None):
+        if output_dir is None:
+            # Use /app/generated_playbooks in Docker, else use local dir
+            import os
+            output_dir = os.environ.get("GENERATED_PLAYBOOKS_DIR", "generated_playbooks")
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
@@ -439,6 +444,39 @@ class AnsiblePlaybookGenerator:
             yaml.dump(inventory, f, default_flow_style=False)
         
         return str(inventory_path)
+
+    @staticmethod
+    def generate_acl_playbook(filename, acl_number, permit_subnet, permit_wildcard):
+        playbook = f"""---
+- name: Configure ACL on switch1
+  hosts: switch1
+  gather_facts: no
+  connection: network_cli
+  tasks:
+    - name: Configure ACL
+      cisco.ios.ios_config:
+        lines:
+          - access-list {acl_number} permit {permit_subnet} {permit_wildcard}
+          - access-list {acl_number} deny any
+    - name: Show ACLs
+      cisco.ios.ios_command:
+        commands:
+          - show access-lists
+      register: acl_output
+    - name: Print ACL output
+      debug:
+        var: acl_output.stdout_lines
+"""
+        with open(filename, "w") as f:
+            f.write(playbook)
+
+    @staticmethod
+    def run_playbook(playbook_file, inventory_file="inventory"):
+        result = subprocess.run(
+            ["ansible-playbook", "-i", inventory_file, playbook_file],
+            capture_output=True, text=True
+        )
+        return result.stdout
 
 def main():
     """Main function to handle command line usage"""

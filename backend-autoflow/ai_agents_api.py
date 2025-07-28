@@ -3,7 +3,15 @@ from flask_cors import CORS
 import logging
 import os
 import requests
+import warnings
 from datetime import datetime
+import threading
+import uuid
+import time
+
+# Suppress deprecation warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="cryptography")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="paramiko")
 
 app = Flask(__name__)
 CORS(app)
@@ -14,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 # Ollama configuration
 OLLAMA_BASE_URL = "http://localhost:11434"
-OLLAMA_MODEL = "tinyllama:latest"
+OLLAMA_MODEL = "llama3.2:1b"
 
 def check_ollama_available():
     """Check if Ollama is running and the model is available"""
@@ -163,6 +171,120 @@ def agent_status():
             "agent_status": "/agent_status"
         }
     })
+
+# In-memory task store (for demo; use persistent store in production)
+task_store = {}
+
+def run_agent_ai_config_task(task_id, prompt):
+    import subprocess
+    import shlex
+    try:
+        # 1. Write preprompt to /agentic/preprompt.txt (for agent3.py)
+        with open('/agentic/preprompt.txt', 'w', encoding='utf-8') as f:
+            f.write(prompt)
+        task_store[task_id]['step'] = 'Prompt written to /agentic/preprompt.txt'
+
+        # 2. Try to call CrewAI orchestrator script (/agentic/crewai.py or local)
+        crew_script = None
+        if os.path.exists('/agentic/crewai.py'):
+            crew_script = '/agentic/crewai.py'
+        else:
+            for candidate in ['crew.py', 'crewai.py', 'crewAI.py', 'crew_agent.py']:
+                if os.path.exists(candidate):
+                    crew_script = candidate
+                    break
+        if crew_script:
+            # Call the script, pass prompt as argument if supported, else rely on preprompt.txt
+            try:
+                cmd = f'python3 {crew_script}'
+                crew_output = subprocess.check_output(
+                    shlex.split(cmd),
+                    stderr=subprocess.STDOUT,
+                    timeout=300,
+                    cwd='/agentic'
+                ).decode('utf-8', errors='ignore')
+                task_store[task_id]['crew_output'] = crew_output
+                # Try to parse key steps from output
+                # (You can improve this parsing based on your script's output format)
+                if 'playbook generated' in crew_output.lower():
+                    task_store[task_id]['playbook_result'] = 'Playbook generated.'
+                if 'exécution du playbook' in crew_output.lower() or 'execution of playbook' in crew_output.lower():
+                    # Find execution log
+                    lines = crew_output.splitlines()
+                    exec_lines = [l for l in lines if 'ansible-playbook' in l or 'FAILED' in l or 'SUCCESS' in l]
+                    task_store[task_id]['exec_result'] = '\n'.join(exec_lines)
+                # Optionally, read output.txt for AI commands
+                try:
+                    with open('/agentic/output.txt', 'r', encoding='utf-8') as f:
+                        task_store[task_id]['ai_commands'] = f.read()
+                except Exception:
+                    pass
+                task_store[task_id]['status'] = 'completed'
+                task_store[task_id]['success'] = True
+                return
+            except subprocess.CalledProcessError as e:
+                # Always capture all output, even on error
+                crew_output = e.output.decode('utf-8', errors='ignore')
+                task_store[task_id]['crew_output'] = crew_output
+                task_store[task_id]['status'] = 'error'
+                task_store[task_id]['error'] = f'CrewAI script error: {crew_output}'
+                # Optionally, try to parse logs as above
+                return
+            except Exception as e:
+                task_store[task_id]['status'] = 'error'
+                task_store[task_id]['error'] = f'CrewAI script exception: {str(e)}'
+                return
+        # Fallback: previous logic
+        try:
+            ai_commands = generate_ai_response(prompt, role="Network Engineer")
+            with open('output.txt', 'w', encoding='utf-8') as f:
+                f.write(ai_commands)
+            task_store[task_id]['ai_commands'] = ai_commands
+            task_store[task_id]['step'] = 'AI commands generated'
+        except Exception as e:
+            task_store[task_id]['status'] = 'error'
+            task_store[task_id]['error'] = f'AI generation error: {str(e)}'
+            return
+        try:
+            playbook_result = subprocess.check_output([
+                'python3', 'agent2_generate_playbook.py', 'output.txt'
+            ], stderr=subprocess.STDOUT, timeout=120).decode('utf-8', errors='ignore')
+        except Exception as e:
+            playbook_result = f"Playbook generation error: {str(e)}"
+        task_store[task_id]['playbook_result'] = playbook_result
+        try:
+            exec_result = subprocess.check_output([
+                'ansible-playbook', 'playbook.yml', '-i', 'inventory.ini', '-vv'
+            ], stderr=subprocess.STDOUT, timeout=180).decode('utf-8', errors='ignore')
+            success = True
+        except subprocess.CalledProcessError as e:
+            exec_result = e.output.decode('utf-8', errors='ignore')
+            success = False
+        task_store[task_id]['exec_result'] = exec_result
+        task_store[task_id]['success'] = success
+        task_store[task_id]['status'] = 'completed' if success else 'error'
+    except Exception as e:
+        task_store[task_id]['status'] = 'error'
+        task_store[task_id]['error'] = str(e)
+
+@app.route('/api/agent-ai-config-task', methods=['POST'])
+def agent_ai_config_task():
+    data = request.get_json()
+    prompt = data.get('prompt')
+    if not prompt:
+        return jsonify({'error': 'No prompt provided'}), 400
+    task_id = str(uuid.uuid4())
+    task_store[task_id] = {'status': 'running', 'created': time.time()}
+    thread = threading.Thread(target=run_agent_ai_config_task, args=(task_id, prompt))
+    thread.start()
+    return jsonify({'task_id': task_id, 'status': 'started'})
+
+@app.route('/api/agent-ai-config-task/status/<task_id>', methods=['GET'])
+def agent_ai_config_task_status(task_id):
+    task = task_store.get(task_id)
+    if not task:
+        return jsonify({'error': 'Task not found'}), 404
+    return jsonify(task)
 
 if __name__ == "__main__":
     logger.info("Starting AI Agents API on port 5003...")

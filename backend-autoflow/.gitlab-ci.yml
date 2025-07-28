@@ -1,0 +1,96 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  DOCKER_USERNAME: "sarra539"
+  BACKEND_IMAGE: "autoflow-backend"
+  FRONTEND_IMAGE: "autoflow-front"
+  KUBERNETES_NAMESPACE: "autoflow"
+
+# Cache dependencies
+cache:
+  paths:
+    - backend-autoflow/node_modules/
+    - frontend-autoflow/node_modules/
+
+# Test stage
+test:
+  stage: test
+  image: node:18-alpine
+  before_script:
+    - cd backend-autoflow
+    - npm ci
+  script:
+    - npm test
+  only:
+    - main
+    - merge_requests
+
+# Build Backend Image
+build-backend:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd backend-autoflow
+    - docker build -t $DOCKER_USERNAME/$BACKEND_IMAGE:$CI_COMMIT_SHA .
+    - docker build -t $DOCKER_USERNAME/$BACKEND_IMAGE:latest .
+    - docker push $DOCKER_USERNAME/$BACKEND_IMAGE:$CI_COMMIT_SHA
+    - docker push $DOCKER_USERNAME/$BACKEND_IMAGE:latest
+  only:
+    - main
+
+# Build Frontend Image
+build-frontend:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd frontend-autoflow
+    - docker build -t $DOCKER_USERNAME/$FRONTEND_IMAGE:$CI_COMMIT_SHA .
+    - docker build -t $DOCKER_USERNAME/$FRONTEND_IMAGE:latest .
+    - docker push $DOCKER_USERNAME/$FRONTEND_IMAGE:$CI_COMMIT_SHA
+    - docker push $DOCKER_USERNAME/$FRONTEND_IMAGE:latest
+  only:
+    - main
+
+# Deploy to Kubernetes
+deploy:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  before_script:
+    - echo "$KUBE_CONFIG" | base64 -d > kubeconfig
+    - export KUBECONFIG=kubeconfig
+  script:
+    # Create namespace
+    - kubectl apply -f k8s/namespace.yaml
+    
+    # Apply secrets and PVC
+    - kubectl apply -f k8s/secrets.yaml -n $KUBERNETES_NAMESPACE
+    - kubectl apply -f k8s/backup-pvc.yaml -n $KUBERNETES_NAMESPACE
+    
+    # Update deployment images
+    - kubectl set image deployment/backend-deployment backend=$DOCKER_USERNAME/$BACKEND_IMAGE:$CI_COMMIT_SHA -n $KUBERNETES_NAMESPACE
+    - kubectl set image deployment/frontend-deployment frontend=$DOCKER_USERNAME/$FRONTEND_IMAGE:$CI_COMMIT_SHA -n $KUBERNETES_NAMESPACE
+    
+    # Wait for rollouts
+    - kubectl rollout status deployment/backend-deployment -n $KUBERNETES_NAMESPACE
+    - kubectl rollout status deployment/frontend-deployment -n $KUBERNETES_NAMESPACE
+    
+    # Check deployment status
+    - kubectl get pods -n $KUBERNETES_NAMESPACE
+    - kubectl get services -n $KUBERNETES_NAMESPACE
+  environment:
+    name: production
+    url: http://192.168.111.201:31560
+  only:
+    - main
+  when: manual 

@@ -60,21 +60,27 @@ const AIPromptModal = ({ open, onClose }) => {
   const [response, setResponse] = useState('');
   const [error, setError] = useState('');
   const [agentStatus, setAgentStatus] = useState(null);
+  const [taskId, setTaskId] = useState(null);
+  const [taskStatus, setTaskStatus] = useState(null);
+  const [polling, setPolling] = useState(false);
+  const [aiCommands, setAiCommands] = useState('');
+  const [playbookResult, setPlaybookResult] = useState('');
+  const [execResult, setExecResult] = useState('');
 
   const examplePrompts = [
-    "Analyze the current network security posture and identify potential vulnerabilities",
-    "Review VLAN configuration and suggest security improvements",
-    "Check for any suspicious network activity or potential threats",
-    "Provide recommendations for DHCP snooping configuration",
-    "Analyze port security settings and suggest enhancements",
-    "Review SSH configuration and security best practices",
-    "Check for any unauthorized access attempts or security incidents",
-    "Provide network segmentation recommendations for better security"
+    "Create VLAN 10 named Marketing on switch 192.168.111.198",
+    "Assign interface Fa0/1 to VLAN 20",
+    "Enable DHCP snooping on VLANs 10,20,30 and trust port Fa0/1",
+    "Configure SSH access on port 2222 and allow only 192.168.1.100",
+    "Set hostname to 'Branch-Switch' and management IP to 10.0.0.2",
+    "Create a DHCP pool for subnet 192.168.50.0/24 with gateway 192.168.50.1",
+    "Enable port security on Fa0/2 with max 2 MAC addresses",
+    "Configure EtherChannel on ports Fa0/3 and Fa0/4"
   ];
 
   const checkAgentStatus = async () => {
     try {
-      const response = await fetch('http://localhost:5003/agent_status');
+      const response = await fetch('/api/agent_status');
       const data = await response.json();
       setAgentStatus(data);
     } catch (err) {
@@ -82,35 +88,62 @@ const AIPromptModal = ({ open, onClose }) => {
     }
   };
 
+  const pollTaskStatus = (id) => {
+    setPolling(true);
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/agent-ai-config-task/status/${id}`);
+        const data = await res.json();
+        setTaskStatus(data.status);
+        setAiCommands(data.ai_commands || '');
+        setPlaybookResult(data.playbook_result || '');
+        setExecResult(data.exec_result || '');
+        if (data.status === 'completed' || data.status === 'error') {
+          setPolling(false);
+          setLoading(false);
+          if (data.status === 'error') setError(data.error || 'Task failed');
+        } else {
+          setTimeout(poll, 2000);
+        }
+      } catch (err) {
+        setPolling(false);
+        setLoading(false);
+        setError('Failed to poll task status');
+      }
+    };
+    poll();
+  };
+
   const handleSubmit = async () => {
     if (!prompt.trim()) {
       setError('Please enter a prompt');
       return;
     }
-
     setLoading(true);
     setError('');
     setResponse('');
-
+    setTaskId(null);
+    setTaskStatus(null);
+    setAiCommands('');
+    setPlaybookResult('');
+    setExecResult('');
     try {
-      const response = await fetch('http://localhost:5003/custom_analysis', {
+      const res = await fetch('/api/agent-ai-config-task', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt: prompt.trim() }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: prompt.trim() })
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setResponse(data.result);
+      const data = await res.json();
+      if (res.ok && data.task_id) {
+        setTaskId(data.task_id);
+        setTaskStatus('running');
+        pollTaskStatus(data.task_id);
       } else {
-        setError(data.error || 'Failed to get AI analysis');
+        setError(data.error || 'Failed to start task');
+        setLoading(false);
       }
     } catch (err) {
       setError('Failed to connect to AI agents. Please ensure the AI service is running.');
-    } finally {
       setLoading(false);
     }
   };
@@ -124,6 +157,12 @@ const AIPromptModal = ({ open, onClose }) => {
     setResponse('');
     setError('');
     setLoading(false);
+    setTaskId(null);
+    setTaskStatus(null);
+    setAiCommands('');
+    setPlaybookResult('');
+    setExecResult('');
+    setPolling(false);
     onClose();
   };
 
@@ -145,8 +184,8 @@ const AIPromptModal = ({ open, onClose }) => {
           gap: 2
         }}>
           <SmartToy sx={{ fontSize: 28 }} />
-          <Typography variant="h6" fontWeight={600}>
-            AI Security Agent - Custom Analysis
+          <Typography variant="body1" fontWeight={600} sx={{ fontSize: '1.25rem' }}>
+            Agent AI Config - Custom Configuration
           </Typography>
         </DialogTitle>
 
@@ -171,26 +210,23 @@ const AIPromptModal = ({ open, onClose }) => {
               </Box>
             </Box>
           )}
-
           {/* Prompt Input */}
           <PromptSection>
             <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Psychology />
-              Enter Your Security Analysis Request
+              Enter Your Configuration Request
             </Typography>
-            
             <TextField
               fullWidth
               multiline
               rows={4}
               variant="outlined"
-              placeholder="Describe what you want the AI to analyze or investigate..."
+              placeholder="Describe what you want the AI to configure..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              disabled={loading}
+              disabled={loading || polling}
               sx={{ mb: 2 }}
             />
-
             <Typography variant="body2" color="textSecondary" gutterBottom>
               Example prompts:
             </Typography>
@@ -207,24 +243,37 @@ const AIPromptModal = ({ open, onClose }) => {
               ))}
             </ExamplePrompts>
           </PromptSection>
-
           {/* Error Display */}
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
-
-          {/* Response Display */}
-          {response && (
-            <ResponseSection>
+          {/* Task Progress/Results */}
+          {taskId && (
+            <Box sx={{ mt: 3 }}>
               <Divider sx={{ mb: 2 }}>
-                <Chip label="AI Analysis Results" color="primary" />
+                <Chip label={taskStatus === 'completed' ? 'Task Complete' : taskStatus === 'error' ? 'Task Failed' : 'Running...'} color={taskStatus === 'completed' ? 'success' : taskStatus === 'error' ? 'error' : 'primary'} />
               </Divider>
-              <ResponseBox>
-                {response}
-              </ResponseBox>
-            </ResponseSection>
+              {aiCommands && (
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="subtitle2" color="primary">AI-Generated Commands</Typography>
+                  <ResponseBox>{aiCommands}</ResponseBox>
+                </Box>
+              )}
+              {playbookResult && (
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="subtitle2" color="primary">Playbook Generation Output</Typography>
+                  <ResponseBox>{playbookResult}</ResponseBox>
+                </Box>
+              )}
+              {execResult && (
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="subtitle2" color="primary">Playbook Execution Log</Typography>
+                  <ResponseBox>{execResult}</ResponseBox>
+                </Box>
+              )}
+            </Box>
           )}
         </DialogContent>
 
@@ -236,15 +285,15 @@ const AIPromptModal = ({ open, onClose }) => {
             onClick={handleSubmit}
             variant="contained"
             color="primary"
-            disabled={loading || !prompt.trim()}
-            startIcon={loading ? <CircularProgress size={20} /> : <Send />}
+            disabled={loading || !prompt.trim() || polling}
+            startIcon={loading || polling ? <CircularProgress size={20} /> : <Send />}
             sx={{ 
               borderRadius: 2, 
               fontWeight: 600,
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
             }}
           >
-            {loading ? 'Analyzing...' : 'Send to AI Agent'}
+            {loading || polling ? 'Running...' : 'Send to AI Agent'}
           </Button>
         </DialogActions>
       </Dialog>

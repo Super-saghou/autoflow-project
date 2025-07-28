@@ -18,7 +18,7 @@ const CreateVlanModal = ({ open, onClose, onAssignToInterface }) => {
     setVlanError(null);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/list-vlans', {
+      const response = await fetch('/api/list-vlans', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ const CreateVlanModal = ({ open, onClose, onAssignToInterface }) => {
     if (!window.confirm(`Are you sure you want to delete VLAN ${vlanId}?`)) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/delete-vlan', {
+      const response = await fetch('/api/delete-vlan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const CreateVlanModal = ({ open, onClose, onAssignToInterface }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/create-vlan', {
+      const response = await fetch('/api/create-vlan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

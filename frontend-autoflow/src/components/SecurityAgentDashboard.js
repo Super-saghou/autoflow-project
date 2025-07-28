@@ -61,25 +61,20 @@ function SecurityAgentDashboard({
   fetchSecurityData
 }) {
   return (
-    <Container>
-      <Typography variant="h4" color="primary" fontWeight={700} gutterBottom>
-        <span role="img" aria-label="shield">🛡️</span> Security Agent Dashboard
-      </Typography>
-      <Typography variant="body1" color="textSecondary" gutterBottom>
-        Monitor and control automated security actions. Blocked users and IPs are listed below. Unblock with a click.
-      </Typography>
-      <Button
-        onClick={fetchSecurityData}
-        disabled={securityLoading}
-        variant="contained"
-        color="primary"
-        sx={{ mb: 3, borderRadius: 2, fontWeight: 600 }}
-      >
-        {securityLoading ? <CircularProgress size={22} color="inherit" /> : 'Refresh'}
-      </Button>
-      {securityError && <Empty style={{ color: '#f97316' }}>{securityError}</Empty>}
-
-      <SectionCard elevation={2}>
+    <Container style={{ background: 'linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%)', borderRadius: 36, boxShadow: '0 8px 32px rgba(99,102,241,0.10)', padding: '48px 0', marginTop: 32 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 32, marginBottom: 32 }}>
+        <div style={{ fontSize: 72, color: '#6366f1', marginRight: 18 }}>🧑‍💼</div>
+        <div>
+          <Typography variant="h3" style={{ color: '#6366f1', fontWeight: 900, letterSpacing: 2, textShadow: '0 2px 12px #e0e7ff', marginBottom: 8 }} gutterBottom>
+            Agent
+          </Typography>
+          <Typography variant="h5" style={{ color: '#0ea5e9', fontWeight: 700, marginBottom: 0, letterSpacing: 1 }} gutterBottom>
+            Full agentic automation: let the agents handle real network tasks, not just chat.
+          </Typography>
+        </div>
+      </div>
+      <Divider sx={{ mb: 4 }} />
+      <SectionCard elevation={3} style={{ background: 'rgba(236, 233, 254, 0.95)', border: '2px solid #6366f1', boxShadow: '0 4px 24px 0 rgba(99,102,241,0.10)' }}>
         <Typography variant="h6" color="primary" gutterBottom>Blocked Users</Typography>
         <Divider sx={{ mb: 2 }} />
         <List>
@@ -99,8 +94,7 @@ function SecurityAgentDashboard({
           ))}
         </List>
       </SectionCard>
-
-      <SectionCard elevation={2}>
+      <SectionCard elevation={3} style={{ background: 'rgba(236, 233, 254, 0.95)', border: '2px solid #6366f1', boxShadow: '0 4px 24px 0 rgba(99,102,241,0.10)' }}>
         <Typography variant="h6" color="primary" gutterBottom>Blocked IPs</Typography>
         <Divider sx={{ mb: 2 }} />
         <List>
@@ -120,11 +114,10 @@ function SecurityAgentDashboard({
           ))}
         </List>
       </SectionCard>
-
-      <SectionCard elevation={2}>
+      <SectionCard elevation={3} style={{ background: 'rgba(236, 233, 254, 0.95)', border: '2px solid #6366f1', boxShadow: '0 4px 24px 0 rgba(99,102,241,0.10)' }}>
         <Typography variant="h6" color="primary" gutterBottom>Agent Actions Log</Typography>
         <Divider sx={{ mb: 2 }} />
-        <LogBox>
+        <LogBox style={{ background: '#f4f7ff', border: '1.5px solid #6366f1', minHeight: 120 }}>
           {(Array.isArray(securityLogs) ? securityLogs : []).length === 0 ? <Empty>No actions yet.</Empty> :
             (Array.isArray(securityLogs) ? securityLogs : []).map((line, idx) => <div key={idx}>{line}</div>)}
         </LogBox>

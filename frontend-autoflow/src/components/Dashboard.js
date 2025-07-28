@@ -14,6 +14,8 @@ import ReportsPage from '../Pages/ReportsPage';
 import MonitoringPage from './MonitoringPage';
 import SecurityAgentDashboard from './SecurityAgentDashboard';
 import AIPromptModal from './AIPromptModal';
+import AgentPromptSection from './AgentPromptSection';
+import AclsSection from './AclsSection';
 
 const Dashboard = () => {
   const [devices, setDevices] = useState([]);
@@ -117,9 +119,10 @@ const Dashboard = () => {
     { key: 'routing', title: 'Routing' },
     { key: 'nat', title: 'NAT' },
     { key: 'dhcp', title: 'DHCP' },
+    { key: 'acls', title: 'ACLs (Access Control Lists)' },
   ];
   const navigate = useNavigate();
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const API_URL = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '');
   const [error, setError] = useState(null);
   const [health, setHealth] = useState(null);
   const [message, setMessage] = useState(null);
@@ -484,7 +487,7 @@ const Dashboard = () => {
                 responseElement.style.color = 'initial';
                 responseElement.textContent = 'Creating VLAN...';
                 try {
-                  const res = await fetch(window.location.origin.replace('3000', '5000') + '/api/create-vlan', {
+                  const res = await fetch('/api/create-vlan', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ vlanId: vlanId, vlanName: vlanName, switchIp: '192.168.111.198' }) // Adjust IP as per GNS3 switch
@@ -620,7 +623,7 @@ const Dashboard = () => {
     // data: { interfaceName, switchType, mode, vlanId }
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/assign-vlan', {
+      const response = await fetch('/api/assign-vlan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -647,7 +650,7 @@ const Dashboard = () => {
   const handleVlanCreate = async ({ vlanId, vlanName, switchType }) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/create-vlan', {
+      const response = await fetch('/api/create-vlan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -883,7 +886,7 @@ const Dashboard = () => {
   const fetchDhcpPools = async () => {
     console.log('Show button clicked');
     try {
-      const response = await fetch('http://localhost:5000/api/list-dhcp-pools');
+      const response = await fetch('/api/list-dhcp-pools');
       const data = await response.json();
       if (response.ok && data.pools) {
         setDhcpPools(data.pools);
@@ -999,6 +1002,7 @@ const Dashboard = () => {
                   <li className="nav-sub-item"><button onClick={() => setActiveSection('routing')} className="nav-sub-button">Routing</button></li>
                   <li className="nav-sub-item"><button onClick={() => setActiveSection('nat')} className="nav-sub-button">NAT</button></li>
                   <li className="nav-sub-item"><button onClick={() => setActiveSection('dhcp')} className="nav-sub-button">DHCP</button></li>
+                  <li className="nav-sub-item"><button onClick={() => setActiveSection('acls')} className="nav-sub-button">ACLs (Access Control Lists)</button></li>
                 </ul>
               )}
             </li>
@@ -1008,8 +1012,8 @@ const Dashboard = () => {
                 {userProfile.role === 'Admin' && <li className="nav-item"><button onClick={() => setActiveSection('monitoring')} className={`nav-button ${activeSection === 'monitoring' ? 'active' : ''}`}><span className="nav-icon">📊</span>{isMenuOpen && 'Monitoring'}</button></li>}
             <li className="nav-item"><button onClick={() => setActiveSection('help')} className={`nav-button ${activeSection === 'help' ? 'active' : ''}`}><span className="nav-icon">❓</span>{isMenuOpen && 'Help'}</button></li>
             {userProfile.role === 'Developer' && <li className="nav-item"><button onClick={() => setActiveSection('developer')} className={`nav-button ${activeSection === 'developer' ? 'active' : ''}`}><span className="nav-icon">👨‍💻</span>{isMenuOpen && 'Developer Dashboard'}</button></li>}
-              <li className="nav-item"><button onClick={() => setActiveSection('security-agent')} className={`nav-button ${activeSection === 'security-agent' ? 'active' : ''}`}><span className="nav-icon">🔒</span>{isMenuOpen && 'Security Agent'}</button></li>
-              <li className="nav-item"><button onClick={() => setActiveSection('ai-security-agent')} className={`nav-button ${activeSection === 'ai-security-agent' ? 'active' : ''}`}><span className="nav-icon">🤖</span>{isMenuOpen && 'AI Security Agent'}</button></li>
+              <li className="nav-item"><button onClick={() => setActiveSection('agent')} className={`nav-button ${activeSection === 'agent' ? 'active' : ''}`}><span className="nav-icon">🧑‍💼</span>{isMenuOpen && 'Agent'}</button></li>
+              <li className="nav-item"><button onClick={() => setActiveSection('agent-ai-config')} className={`nav-button ${activeSection === 'agent-ai-config' ? 'active' : ''}`}><span className="nav-icon">🤖</span>{isMenuOpen && 'Agent AI Config'}</button></li>
             <li className="nav-item"><button onClick={handleLogout} className="nav-button"><span className="nav-icon">🚪</span>{isMenuOpen && 'Logout'}</button></li>
           </ul>
         </div>
@@ -1503,24 +1507,93 @@ const Dashboard = () => {
             </div>
           )}
           {activeSection === 'devices' && (
-            <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 32 }}>
-              <div className="config-section" style={{ background: '#F5F5F7', borderRadius: 18, boxShadow: '0 4px 18px rgba(30, 58, 138, 0.08)', padding: '32px 24px' }}>
-                <ul className="device-list">
+            <div style={{ maxWidth: 1000, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 32 }}>
+              <div className="config-section" style={{ 
+                background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
+                borderRadius: 24, 
+                boxShadow: '0 8px 32px rgba(30, 58, 138, 0.12), 0 4px 16px rgba(30, 58, 138, 0.08)', 
+                padding: '40px 32px',
+                border: '1px solid rgba(30, 58, 138, 0.1)'
+              }}>
+                <h2 style={{ 
+                  fontSize: 36, 
+                  fontWeight: 800, 
+                  color: '#1e3a8a', 
+                  marginBottom: 32,
+                  textAlign: 'center',
+                  background: 'linear-gradient(45deg, #1e3a8a, #3b82f6)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  textShadow: '0 2px 4px rgba(30, 58, 138, 0.1)'
+                }}>
+                  🔧 Device Configuration Options
+                </h2>
+                <ul className="device-list" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                   {deviceSubsections.map(sub => (
                     <li key={sub.key} className="device-item" style={{ cursor: 'pointer', flexDirection: 'column', alignItems: 'flex-start' }}>
                       <div
-                        style={{ fontWeight: 600, fontSize: 17, color: '#1e3a8a', width: '100%' }}
+                        style={{ 
+                          fontWeight: 800, 
+                          fontSize: 28, 
+                          color: '#1e3a8a', 
+                          width: '100%', 
+                          padding: '16px 20px',
+                          background: 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%)',
+                          borderRadius: '12px',
+                          border: '2px solid #c7d2fe',
+                          boxShadow: '0 4px 12px rgba(30, 58, 138, 0.08)',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          marginBottom: '8px',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          textShadow: '0 1px 2px rgba(30, 58, 138, 0.1)'
+                        }}
                         onClick={() => setActiveSwitchSubsection(activeSwitchSubsection === sub.key ? null : sub.key)}
+                        onMouseEnter={(e) => {
+                          e.target.style.background = 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)';
+                          e.target.style.transform = 'translateY(-2px)';
+                          e.target.style.boxShadow = '0 8px 20px rgba(30, 58, 138, 0.15)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%)';
+                          e.target.style.transform = 'translateY(0)';
+                          e.target.style.boxShadow = '0 4px 12px rgba(30, 58, 138, 0.08)';
+                        }}
                       >
-                        {sub.title}
-                        <span style={{ float: 'right', fontWeight: 400, fontSize: 18, color: '#3b82f6' }}>{activeSwitchSubsection === sub.key ? '▲' : '▼'}</span>
+                        <span style={{ 
+                          background: 'linear-gradient(45deg, #1e3a8a, #3b82f6)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text',
+                          fontWeight: 800
+                        }}>
+                          {sub.title}
+                        </span>
+                        <span style={{ 
+                          fontWeight: 600, 
+                          fontSize: 26, 
+                          color: '#3b82f6',
+                          background: 'linear-gradient(45deg, #3b82f6, #1e3a8a)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text',
+                          transition: 'all 0.3s ease'
+                        }}>
+                          {activeSwitchSubsection === sub.key ? '▲' : '▼'}
+                        </span>
                       </div>
                       {activeSwitchSubsection === sub.key && (
                         <div className="config-subsection" style={{ marginTop: 10, width: '100%' }}>
-                          {/* Placeholder for configuration UI for each subsection */}
-                          <p style={{ color: '#1A2A44', fontSize: 15, margin: 0 }}>
-                            Configuration options for <b>{sub.title}</b> will appear here.
-                          </p>
+                          {sub.key === 'acls' ? (
+                            <AclsSection />
+                          ) : (
+                            <p style={{ color: '#1A2A44', fontSize: 18, margin: 0 }}>
+                              Configuration options for <b>{sub.title}</b> will appear here.
+                            </p>
+                          )}
                         </div>
                       )}
                   </li>
@@ -3482,150 +3555,84 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-                     {activeSection === 'security-agent' && (
-             <SecurityAgentDashboard
-               securityLogs={securityLogs}
-               blockedUsers={blockedUsers}
-               blockedIPs={blockedIPs}
-               securityLoading={securityLoading}
-               securityError={securityError}
-               handleUnblock={handleUnblock}
-               fetchSecurityData={fetchSecurityData}
-             />
-           )}
-           {activeSection === 'ai-security-agent' && (
-             <div style={{ width: '100%', minHeight: '80vh', background: '#f8fafc', padding: '0 0 48px 0' }}>
-               <div style={{
-                 background: '#fffdfa',
-                 borderRadius: 36,
-                 boxShadow: '0 8px 32px rgba(59, 130, 246, 0.10)',
-                 padding: '48px 64px',
-                 maxWidth: '1400px',
-                 margin: '48px auto 0 auto',
-                 color: '#1e3a8a',
-                 display: 'flex',
-                 flexDirection: 'column',
-                 alignItems: 'stretch',
-                 gap: 32,
-               }}>
-                 <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 18 }}>
-                   <div style={{ fontSize: 54, color: '#3b82f6', marginRight: 12 }}>🤖</div>
-                   <div>
-                     <h2 style={{ fontSize: 34, fontWeight: 800, margin: 0, color: '#3b82f6', letterSpacing: 1 }}>AI Security Agent</h2>
-                     <p style={{ color: '#ea580c', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
-                       Intelligent threat detection powered by AI. The agent analyzes security patterns and makes informed decisions.
-                     </p>
-                   </div>
-                 </div>
-
-                 <div style={{ display: 'flex', gap: 16, marginBottom: 32 }}>
-                   <button
-                     onClick={() => setAiPromptModalOpen(true)}
-                     style={{
-                       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                       color: 'white',
-                       padding: '16px 32px',
-                       border: 'none',
-                       borderRadius: 16,
-                       cursor: 'pointer',
-                       fontSize: 18,
-                       fontWeight: 600,
-                       boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
-                       transition: 'all 0.3s ease',
-                       display: 'flex',
-                       alignItems: 'center',
-                       gap: 12
-                     }}
-                     onMouseOver={(e) => {
-                       e.target.style.transform = 'translateY(-2px)';
-                       e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)';
-                     }}
-                     onMouseOut={(e) => {
-                       e.target.style.transform = 'translateY(0)';
-                       e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.3)';
-                     }}
-                   >
-                     <span style={{ fontSize: 24 }}>💬</span>
-                     Custom AI Prompt
-                   </button>
-                 </div>
-
-                 <div style={{ 
-                   background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', 
-                   borderRadius: 20, 
-                   padding: 32, 
-                   border: '2px solid #e2e8f0' 
-                 }}>
-                   <h3 style={{ color: '#3b82f6', fontSize: 24, fontWeight: 700, marginBottom: 16 }}>
-                     🤖 AI Agent Capabilities
-                   </h3>
-                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
-                     <div style={{ 
-                       background: 'white', 
-                       padding: 20, 
-                       borderRadius: 16, 
-                       border: '1px solid #e2e8f0',
-                       boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                     }}>
-                       <h4 style={{ color: '#3b82f6', fontSize: 18, fontWeight: 600, marginBottom: 12 }}>🔍 Security Analysis</h4>
-                       <p style={{ color: '#64748b', lineHeight: 1.6 }}>
-                         Analyze network security posture, identify vulnerabilities, and detect potential threats in real-time.
-                       </p>
-                     </div>
-                     <div style={{ 
-                       background: 'white', 
-                       padding: 20, 
-                       borderRadius: 16, 
-                       border: '1px solid #e2e8f0',
-                       boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                     }}>
-                       <h4 style={{ color: '#3b82f6', fontSize: 18, fontWeight: 600, marginBottom: 12 }}>🛡️ Threat Detection</h4>
-                       <p style={{ color: '#64748b', lineHeight: 1.6 }}>
-                         Monitor for suspicious activities, unauthorized access attempts, and security incidents.
-                       </p>
-                     </div>
-                     <div style={{ 
-                       background: 'white', 
-                       padding: 20, 
-                       borderRadius: 16, 
-                       border: '1px solid #e2e8f0',
-                       boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                     }}>
-                       <h4 style={{ color: '#3b82f6', fontSize: 18, fontWeight: 600, marginBottom: 12 }}>📊 Risk Assessment</h4>
-                       <p style={{ color: '#64748b', lineHeight: 1.6 }}>
-                         Provide detailed risk assessments and actionable recommendations for security improvements.
-                       </p>
-                     </div>
-                   </div>
-                 </div>
-
-                 <div style={{ 
-                   background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', 
-                   borderRadius: 20, 
-                   padding: 32, 
-                   border: '2px solid #fbbf24' 
-                 }}>
-                   <h3 style={{ color: '#92400e', fontSize: 24, fontWeight: 700, marginBottom: 16 }}>
-                     💡 How to Use
-                   </h3>
-                   <div style={{ color: '#92400e', lineHeight: 1.8 }}>
-                     <p style={{ marginBottom: 12 }}>
-                       <strong>1.</strong> Click the "Custom AI Prompt" button above
-                     </p>
-                     <p style={{ marginBottom: 12 }}>
-                       <strong>2.</strong> Enter your security analysis request or select from example prompts
-                     </p>
-                     <p style={{ marginBottom: 12 }}>
-                       <strong>3.</strong> The AI agent will analyze your request and provide detailed insights
-                     </p>
-                     <p>
-                       <strong>4.</strong> Review the AI-generated security recommendations and take action
-                     </p>
-                   </div>
-                 </div>
-               </div>
-             </div>
-           )}
+          {activeSection === 'agent' && (
+            <div style={{ width: '100%', minHeight: '80vh', background: 'linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%)', padding: '0 0 48px 0' }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.95)',
+                borderRadius: 40,
+                boxShadow: '0 12px 48px 0 rgba(30, 64, 175, 0.12)',
+                padding: '56px 72px',
+                maxWidth: '1200px',
+                margin: '48px auto 0 auto',
+                color: '#0f172a',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'stretch',
+                gap: 40,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 32, marginBottom: 24 }}>
+                  <div style={{ fontSize: 64, color: '#6366f1', marginRight: 18 }}>🧑‍💼</div>
+                  <div>
+                    <h2 style={{ fontSize: 40, fontWeight: 900, margin: 0, color: '#6366f1', letterSpacing: 2, textShadow: '0 2px 12px #e0e7ff' }}>Agent</h2>
+                    <p style={{ color: '#0ea5e9', fontSize: 22, margin: 0, marginTop: 10, maxWidth: 800, fontWeight: 600, letterSpacing: 1 }}>
+                      Full agentic automation: enter a network security or config prompt and let the agents (3-step workflow) do the real work—preprompt, AI, playbook, execution. See real logs and results below.
+                    </p>
+                  </div>
+                </div>
+                {/* Prompt Input and Results */}
+                <AgentPromptSection />
+              </div>
+            </div>
+          )}
+          {activeSection === 'agent-ai-config' && (
+            <div style={{ width: '100%', minHeight: '80vh', background: '#f8fafc', padding: '0 0 48px 0' }}>
+              <div style={{
+                background: '#fffdfa',
+                borderRadius: 36,
+                boxShadow: '0 8px 32px rgba(59, 130, 246, 0.10)',
+                padding: '48px 64px',
+                maxWidth: '1400px',
+                margin: '48px auto 0 auto',
+                color: '#1e3a8a',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'stretch',
+                gap: 32,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 18 }}>
+                  <div style={{ fontSize: 54, color: '#3b82f6', marginRight: 12 }}>🤖</div>
+                  <div>
+                    <h2 style={{ fontSize: 34, fontWeight: 800, margin: 0, color: '#3b82f6', letterSpacing: 1 }}>Agent AI Config</h2>
+                    <p style={{ color: '#ea580c', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
+                      Use natural language to generate and apply network configurations. The agent will interpret your prompt, generate commands, create an Ansible playbook, and execute it on your devices.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  style={{
+                    background: 'linear-gradient(90deg, #2563eb 0%, #3b82f6 100%)',
+                    color: '#fff',
+                    padding: '16px 40px',
+                    border: 'none',
+                    borderRadius: 16,
+                    fontSize: 20,
+                    fontWeight: 700,
+                    margin: '32px 0',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 15px rgba(59, 130, 246, 0.10)',
+                    alignSelf: 'center',
+                  }}
+                  onClick={() => setAiPromptModalOpen(true)}
+                >
+                  + New AI Configuration Task
+                </button>
+                {/* The rest of the section will be implemented in the next steps */}
+              </div>
+            </div>
+          )}
+          {activeSection === 'acls' && (
+            <AclsSection />
+          )}
         </div>
       </div>
       <Tooltip id="main-tooltip" place="top" effect="solid" />

@@ -1,0 +1,17 @@
+---
+- name: Get switch interfaces
+  hosts: switch1
+  gather_facts: no
+  
+  tasks:
+    - name: Get interface information
+      cisco.ios.ios_facts:
+        gather_subset:
+          - interfaces
+      register: ios_facts
+
+    - name: Display interface status
+      debug:
+        msg: "{{ item.key }} - Admin Up: {{ item.value.enabled }}"
+      loop: "{{ ios_facts.ansible_facts.ansible_network_resources.interfaces | dict2items }}"
+      when: item.value is defined 
