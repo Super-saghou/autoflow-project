@@ -15,7 +15,7 @@ build-backend:
   services:
     - docker:dind
   before_script:
-    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   script:
     - cd backend-autoflow
     - docker build -t $DOCKER_USERNAME/$BACKEND_IMAGE:$CI_COMMIT_SHA .
@@ -32,7 +32,7 @@ build-frontend:
   services:
     - docker:dind
   before_script:
-    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   script:
     - cd frontend-autoflow
     - docker build -t $DOCKER_USERNAME/$FRONTEND_IMAGE:$CI_COMMIT_SHA .
