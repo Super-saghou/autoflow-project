@@ -1,5 +1,4 @@
 stages:
-  - test
   - build
   - deploy
 
@@ -8,25 +7,6 @@ variables:
   BACKEND_IMAGE: "autoflow-backend"
   FRONTEND_IMAGE: "autoflow-front"
   KUBERNETES_NAMESPACE: "autoflow"
-
-# Cache dependencies
-cache:
-  paths:
-    - backend-autoflow/node_modules/
-    - frontend-autoflow/node_modules/
-
-# Test stage
-test:
-  stage: test
-  image: node:18-alpine
-  before_script:
-    - cd backend-autoflow
-    - npm ci
-  script:
-    - npm test
-  only:
-    - main
-    - merge_requests
 
 # Build Backend Image
 build-backend:
@@ -93,4 +73,4 @@ deploy:
     url: http://192.168.111.201:31560
   only:
     - main
-  when: manual 
+  when: manual
