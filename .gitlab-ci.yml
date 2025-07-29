@@ -46,17 +46,13 @@ deploy:
     - echo "$KUBE_CONFIG" | base64 -d > kubeconfig
     - export KUBECONFIG=kubeconfig
   script:
-    # Only update the Docker images in existing deployments
-    - kubectl set image deployment/backend-deployment backend=$DOCKER_USERNAME/autoflow-repo:VerifUpdate -n default
-    - kubectl set image deployment/frontend-deployment frontend=$DOCKER_USERNAME/autoflow-front:VersionTestKuber9 -n default
-    
-    # Wait for rollouts
-    - kubectl rollout status deployment/backend-deployment -n default
-    - kubectl rollout status deployment/frontend-deployment -n default
-    
-    # Check status
-    - kubectl get pods -n default
-    - kubectl get services -n default
+    - kubectl get pods
+    - kubectl set image deployment/backend-deployment backend=sarra539/autoflow-repo:VerifUpdate
+    - kubectl set image deployment/frontend-deployment frontend=sarra539/autoflow-front:VersionTestKuber9
+    - kubectl rollout status deployment/backend-deployment
+    - kubectl rollout status deployment/frontend-deployment
+    - kubectl get pods
+    - kubectl get services
   environment:
     name: production
     url: http://192.168.111.201:31560
