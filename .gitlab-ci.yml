@@ -4,9 +4,6 @@ stages:
 
 variables:
   DOCKER_USERNAME: "sarra539"
-  BACKEND_IMAGE: "autoflow-backend"
-  FRONTEND_IMAGE: "autoflow-front"
-  KUBERNETES_NAMESPACE: "autoflow"
 
 # Build Backend Image
 build-backend:
@@ -46,13 +43,8 @@ deploy:
     - echo "$KUBE_CONFIG" | base64 -d > kubeconfig
     - export KUBECONFIG=kubeconfig
   script:
+    - kubectl version --client
     - kubectl get pods
-    - kubectl set image deployment/backend-deployment backend=sarra539/autoflow-repo:VerifUpdate
-    - kubectl set image deployment/frontend-deployment frontend=sarra539/autoflow-front:VersionTestKuber9
-    - kubectl rollout status deployment/backend-deployment
-    - kubectl rollout status deployment/frontend-deployment
-    - kubectl get pods
-    - kubectl get services
   environment:
     name: production
     url: http://192.168.111.201:31560
