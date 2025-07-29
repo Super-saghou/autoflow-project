@@ -4,50 +4,69 @@ stages:
 
 variables:
   DOCKER_USERNAME: "sarra539"
+  BACKEND_IMAGE: "${DOCKER_USERNAME}/autoflow-repo:VerifUpdate"
+  FRONTEND_IMAGE: "${DOCKER_USERNAME}/autoflow-front:VersionTestKuber9"
+  KUBERNETES_NAMESPACE: "autoflow"
 
 # Build Backend Image
 build-backend:
   stage: build
-  image: docker:latest
+  image: docker:24.0
   services:
-    - docker:dind
+    - docker:24.0-dind
   before_script:
-    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
   script:
     - cd backend-autoflow
-    - docker build -t $DOCKER_USERNAME/autoflow-repo:VerifUpdate .
-    - docker push $DOCKER_USERNAME/autoflow-repo:VerifUpdate
+    - docker build --no-cache --pull -t $BACKEND_IMAGE .
+    - docker push $BACKEND_IMAGE
+  retry:
+    max: 2
   only:
     - main
+  tags:
+    - docker
 
 # Build Frontend Image
 build-frontend:
   stage: build
-  image: docker:latest
+  image: docker:24.0
   services:
-    - docker:dind
+    - docker:24.0-dind
   before_script:
-    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
   script:
     - cd frontend-autoflow
-    - docker build -t $DOCKER_USERNAME/autoflow-front:VersionTestKuber9 .
-    - docker push $DOCKER_USERNAME/autoflow-front:VersionTestKuber9
+    - docker build --no-cache --pull -t $FRONTEND_IMAGE .
+    - docker push $FRONTEND_IMAGE
+  retry:
+    max: 2
   only:
     - main
+  tags:
+    - docker
 
 # Deploy to Kubernetes
 deploy:
   stage: deploy
-  image: bitnami/kubectl:latest
+  image: bitnami/kubectl:1.28
   before_script:
     - echo "$KUBE_CONFIG" | base64 -d > kubeconfig
     - export KUBECONFIG=kubeconfig
   script:
-    - kubectl version --client
-    - kubectl get pods
+    - kubectl config use-context production
+    - kubectl get pods -n $KUBERNETES_NAMESPACE
+    - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE -n $KUBERNETES_NAMESPACE
+    - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE -n $KUBERNETES_NAMESPACE
+    - kubectl rollout status deployment/backend-deployment -n $KUBERNETES_NAMESPACE --timeout=300s
+    - kubectl rollout status deployment/frontend-deployment -n $KUBERNETES_NAMESPACE --timeout=300s
+    - kubectl get pods -n $KUBERNETES_NAMESPACE
+    - kubectl get services -n $KUBERNETES_NAMESPACE
   environment:
     name: production
     url: http://192.168.111.201:31560
   only:
     - main
   when: manual
+  tags:
+    - kubernetes
