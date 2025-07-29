@@ -18,10 +18,8 @@ build-backend:
     - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   script:
     - cd backend-autoflow
-    - docker build -t $DOCKER_USERNAME/$BACKEND_IMAGE:$CI_COMMIT_SHA .
-    - docker build -t $DOCKER_USERNAME/$BACKEND_IMAGE:latest .
-    - docker push $DOCKER_USERNAME/$BACKEND_IMAGE:$CI_COMMIT_SHA
-    - docker push $DOCKER_USERNAME/$BACKEND_IMAGE:latest
+    - docker build -t $DOCKER_USERNAME/autoflow-repo:VerifUpdate .
+    - docker push $DOCKER_USERNAME/autoflow-repo:VerifUpdate
   only:
     - main
 
@@ -35,10 +33,8 @@ build-frontend:
     - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   script:
     - cd frontend-autoflow
-    - docker build -t $DOCKER_USERNAME/$FRONTEND_IMAGE:$CI_COMMIT_SHA .
-    - docker build -t $DOCKER_USERNAME/$FRONTEND_IMAGE:latest .
-    - docker push $DOCKER_USERNAME/$FRONTEND_IMAGE:$CI_COMMIT_SHA
-    - docker push $DOCKER_USERNAME/$FRONTEND_IMAGE:latest
+    - docker build -t $DOCKER_USERNAME/autoflow-front:VersionTestKuber9 .
+    - docker push $DOCKER_USERNAME/autoflow-front:VersionTestKuber9
   only:
     - main
 
@@ -50,24 +46,17 @@ deploy:
     - echo "$KUBE_CONFIG" | base64 -d > kubeconfig
     - export KUBECONFIG=kubeconfig
   script:
-    # Create namespace
-    - kubectl apply -f k8s/namespace.yaml
-    
-    # Apply secrets and PVC
-    - kubectl apply -f k8s/secrets.yaml -n $KUBERNETES_NAMESPACE
-    - kubectl apply -f k8s/backup-pvc.yaml -n $KUBERNETES_NAMESPACE
-    
-    # Update deployment images
-    - kubectl set image deployment/backend-deployment backend=$DOCKER_USERNAME/$BACKEND_IMAGE:$CI_COMMIT_SHA -n $KUBERNETES_NAMESPACE
-    - kubectl set image deployment/frontend-deployment frontend=$DOCKER_USERNAME/$FRONTEND_IMAGE:$CI_COMMIT_SHA -n $KUBERNETES_NAMESPACE
+    # Only update the Docker images in existing deployments
+    - kubectl set image deployment/backend-deployment backend=$DOCKER_USERNAME/autoflow-repo:VerifUpdate -n default
+    - kubectl set image deployment/frontend-deployment frontend=$DOCKER_USERNAME/autoflow-front:VersionTestKuber9 -n default
     
     # Wait for rollouts
-    - kubectl rollout status deployment/backend-deployment -n $KUBERNETES_NAMESPACE
-    - kubectl rollout status deployment/frontend-deployment -n $KUBERNETES_NAMESPACE
+    - kubectl rollout status deployment/backend-deployment -n default
+    - kubectl rollout status deployment/frontend-deployment -n default
     
-    # Check deployment status
-    - kubectl get pods -n $KUBERNETES_NAMESPACE
-    - kubectl get services -n $KUBERNETES_NAMESPACE
+    # Check status
+    - kubectl get pods -n default
+    - kubectl get services -n default
   environment:
     name: production
     url: http://192.168.111.201:31560
