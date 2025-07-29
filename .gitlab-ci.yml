@@ -1,94 +1,98 @@
 stages:
-     - build
-     - deploy
+  - build
+  - deploy
 
-   variables:
-     DOCKER_USERNAME: "sarra539"
-     BACKEND_IMAGE: "${DOCKER_USERNAME}/autoflow-repo:VerifUpdate"
-     FRONTEND_IMAGE: "${DOCKER_USERNAME}/autoflow-front:VersionTestKuber9"
-     KUBERNETES_NAMESPACE: "autoflow"
+variables:
+  DOCKER_USERNAME: "sarra539"
+  BACKEND_IMAGE: "sarra539/autoflow-repo:VerifUpdate"
+  FRONTEND_IMAGE: "sarra539/autoflow-front:VersionTestKuber9"
 
-   # Build Backend Image
-   build-backend:
-     stage: build
-     image: docker:24.0
-     services:
-       - docker:24.0-dind
-     before_script:
-       - echo "Checking Docker version..."
-       - docker --version
-       - echo "Attempting Docker login..."
-       - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker login failed"; exit 1; }
-     script:
-       - echo "Verifying backend directory..."
-       - ls -la backend-autoflow || { echo "Directory backend-autoflow not found"; exit 1; }
-       - cd backend-autoflow
-       - echo "Building backend image..."
-       - docker build --no-cache --pull -t $BACKEND_IMAGE .
-       - echo "Pushing backend image..."
-       - docker push $BACKEND_IMAGE
-     retry:
-       max: 2
-     only:
-       - main
-     tags:
-       - docker
+# Build Backend Image
+build-backend:
+  stage: build
+  image: docker:24.0
+  services:
+    - docker:24.0-dind
+  before_script:
+    - echo "Checking Docker version..."
+    - docker --version
+    - echo "Attempting Docker login..."
+    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker login failed"; exit 1; }
+  script:
+    - echo "Verifying backend directory..."
+    - ls -la backend-autoflow || { echo "Directory backend-autoflow not found"; exit 1; }
+    - cd backend-autoflow
+    - echo "Building backend image..."
+    - docker build --no-cache --pull -t $BACKEND_IMAGE .
+    - echo "Pushing backend image..."
+    - docker push $BACKEND_IMAGE
+  retry:
+    max: 2
+  only:
+    - main
+  tags:
+    - docker
 
-   # Build Frontend Image
-   build-frontend:
-     stage: build
-     image: docker:24.0
-     services:
-       - docker:24.0-dind
-     before_script:
-       - echo "Checking Docker version..."
-       - docker --version
-       - echo "Attempting Docker login..."
-       - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker login failed"; exit 1; }
-     script:
-       - echo "Verifying frontend directory..."
-       - ls -la frontend-autoflow || { echo "Directory frontend-autoflow not found"; exit 1; }
-       - cd frontend-autoflow
-       - echo "Building frontend image..."
-       - docker build --no-cache --pull -t $FRONTEND_IMAGE .
-       - echo "Pushing frontend image..."
-       - docker push $FRONTEND_IMAGE
-     retry:
-       max: 2
-     only:
-       - main
-     tags:
-       - docker
+# Build Frontend Image
+build-frontend:
+  stage: build
+  image: docker:24.0
+  services:
+    - docker:24.0-dind
+  before_script:
+    - echo "Checking Docker version..."
+    - docker --version
+    - echo "Attempting Docker login..."
+    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker login failed"; exit 1; }
+  script:
+    - echo "Verifying frontend directory..."
+    - ls -la frontend-autoflow || { echo "Directory frontend-autoflow not found"; exit 1; }
+    - cd frontend-autoflow
+    - echo "Building frontend image..."
+    - docker build --no-cache --pull -t $FRONTEND_IMAGE .
+    - echo "Pushing frontend image..."
+    - docker push $FRONTEND_IMAGE
+  retry:
+    max: 2
+  only:
+    - main
+  tags:
+    - docker
 
-   # Deploy to Kubernetes
-   deploy:
-     stage: deploy
-     image: bitnami/kubectl:1.28
-     before_script:
-       - echo "Decoding KUBE_CONFIG..."
-       - echo "$KUBE_CONFIG" | base64 -d > kubeconfig || { echo "Failed to decode KUBE_CONFIG"; exit 1; }
-       - export KUBECONFIG=kubeconfig
-       - echo "Checking kubectl version..."
-       - kubectl version --client
-     script:
-       - echo "Listing available contexts..."
-       - kubectl config get-contexts
-       - echo "Switching to production context..."
-       - kubectl config use-context production || { echo "Failed to switch to production context"; exit 1; }
-       - echo "Checking namespace $KUBERNETES_NAMESPACE..."
-       - kubectl get namespace $KUBERNETES_NAMESPACE || { echo "Namespace $KUBERNETES_NAMESPACE not found"; exit 1; }
-       - kubectl get pods -n $KUBERNETES_NAMESPACE
-       - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE -n $KUBERNETES_NAMESPACE || { echo "Failed to update backend deployment"; exit 1; }
-       - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE -n $KUBERNETES_NAMESPACE || { echo "Failed to update frontend deployment"; exit 1; }
-       - kubectl rollout status deployment/backend-deployment -n $KUBERNETES_NAMESPACE --timeout=300s
-       - kubectl rollout status deployment/frontend-deployment -n $KUBERNETES_NAMESPACE --timeout=300s
-       - kubectl get pods -n $KUBERNETES_NAMESPACE
-       - kubectl get services -n $KUBERNETES_NAMESPACE
-     environment:
-       name: production
-       url: http://192.168.111.201:31560
-     only:
-       - main
-     when: manual
-     tags:
-       - kubernetes
+# Deploy to Kubernetes
+deploy:
+  stage: deploy
+  image: ubuntu:20.04
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq curl
+    - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    - chmod +x kubectl
+    - mv kubectl /usr/local/bin/
+  script:
+    - echo "Decoding KUBE_CONFIG..."
+    - echo "$KUBE_CONFIG" | base64 -d > kubeconfig || { echo "Failed to decode KUBE_CONFIG"; exit 1; }
+    - export KUBECONFIG=kubeconfig
+    - echo "Checking kubectl version..."
+    - kubectl version --client
+    - echo "Listing available contexts..."
+    - kubectl config get-contexts
+    - echo "Checking current namespace..."
+    - kubectl get pods
+    - echo "Updating backend deployment..."
+    - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE || { echo "Failed to update backend deployment"; exit 1; }
+    - echo "Updating frontend deployment..."
+    - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE || { echo "Failed to update frontend deployment"; exit 1; }
+    - echo "Waiting for backend rollout..."
+    - kubectl rollout status deployment/backend-deployment --timeout=300s
+    - echo "Waiting for frontend rollout..."
+    - kubectl rollout status deployment/frontend-deployment --timeout=300s
+    - echo "Final pod status:"
+    - kubectl get pods
+    - echo "Final service status:"
+    - kubectl get services
+  environment:
+    name: production
+    url: http://192.168.111.201:31560
+  only:
+    - main
+  when: manual 
