@@ -2,18 +2,38 @@ import sys
 import json
 import warnings
 import paramiko
+import time
 
 # Suppress deprecation warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="cryptography")
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="paramiko")
 
+def connect_with_retry(ip, username, password, max_retries=3):
+    """Connect to SSH with retry logic"""
+    for attempt in range(max_retries):
+        try:
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            client.connect(
+                ip, 
+                username=username, 
+                password=password, 
+                look_for_keys=False, 
+                allow_agent=False, 
+                timeout=30  # Use the correct timeout parameter
+            )
+            return client
+        except Exception as e:
+            print(f"SSH connection attempt {attempt + 1} failed: {e}", file=sys.stderr)
+            if attempt == max_retries - 1:
+                raise e
+            time.sleep(2)  # Wait before retry
+
 # Usage: python3 run_mac_table.py <ip> <username> <password>
 def get_mac_table(ip, username, password):
     try:
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(ip, username=username, password=password, look_for_keys=False, allow_agent=False, timeout=10)
-        stdin, stdout, stderr = client.exec_command('show mac-address-table')
+        client = connect_with_retry(ip, username, password)
+        stdin, stdout, stderr = client.exec_command('show mac-address-table', timeout=30)
         output = stdout.read().decode(errors='ignore')
         client.close()
 

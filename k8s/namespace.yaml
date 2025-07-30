@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: autoflow
   labels:
-    name: autoflow 
+    name: autoflow

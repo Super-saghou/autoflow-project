@@ -51,6 +51,11 @@ const Dashboard = () => {
   // AI Security Agent state
   const [aiPromptModalOpen, setAiPromptModalOpen] = useState(false);
   
+  // MFA state
+  const [mfaEnabled, setMfaEnabled] = useState(true);
+  const [mfaLoading, setMfaLoading] = useState(false);
+  const [mfaMessage, setMfaMessage] = useState('');
+  
   // Backup system state
   const [backupStats, setBackupStats] = useState(null);
   const [backupList, setBackupList] = useState([]);
@@ -900,10 +905,62 @@ const Dashboard = () => {
     fetchDhcpPools();
   }, []);
 
+  useEffect(() => {
+    fetchMFAStatus();
+  }, []);
+
   // After creating a new DHCP pool, call fetchDhcpPools()
   const handleCreateDhcp = async (poolData) => {
     // ... existing code to create pool ...
     await fetchDhcpPools();
+  };
+
+  // MFA functions
+  const fetchMFAStatus = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const response = await fetch(`/api/mfa/status/${user.id || 'default'}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMfaEnabled(data.requiresMFA);
+      }
+    } catch (error) {
+      console.error('Error fetching MFA status:', error);
+    }
+  };
+
+  const toggleMFA = async () => {
+    setMfaLoading(true);
+    setMfaMessage('');
+    
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const response = await fetch(`/api/mfa/toggle/${user.id || 'default'}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ enabled: !mfaEnabled })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setMfaEnabled(data.requiresMFA);
+        setMfaMessage(data.message);
+      } else {
+        setMfaMessage('Failed to update MFA settings');
+      }
+    } catch (error) {
+      console.error('Error toggling MFA:', error);
+      setMfaMessage('Error updating MFA settings');
+    } finally {
+      setMfaLoading(false);
+    }
   };
 
   return (
@@ -1040,6 +1097,44 @@ const Dashboard = () => {
                   <option value="dark">Dark Mode</option>
                 </select>
               </div>
+              
+              {/* MFA Settings */}
+              <div className="form-group" style={{ marginTop: '16px', padding: '12px', background: '#f0f9ff', borderRadius: '8px', border: '1px solid #bae6fd' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  🔐 Authentification à deux facteurs (MFA)
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={{ fontSize: '14px', color: '#374151' }}>
+                    {mfaEnabled ? '✅ Activé' : '❌ Désactivé'}
+                  </span>
+                  <button 
+                    onClick={toggleMFA}
+                    disabled={mfaLoading}
+                    style={{
+                      padding: '6px 12px',
+                      fontSize: '12px',
+                      background: mfaEnabled ? '#ef4444' : '#10b981',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: mfaLoading ? 'not-allowed' : 'pointer',
+                      opacity: mfaLoading ? 0.6 : 1
+                    }}
+                  >
+                    {mfaLoading ? '...' : (mfaEnabled ? 'Désactiver' : 'Activer')}
+                  </button>
+                </div>
+                {mfaMessage && (
+                  <div style={{ 
+                    marginTop: '8px', 
+                    fontSize: '12px', 
+                    color: mfaMessage.includes('Failed') || mfaMessage.includes('Error') ? '#ef4444' : '#10b981' 
+                  }}>
+                    {mfaMessage}
+                  </div>
+                )}
+              </div>
+              
               <button onClick={openProfileEdit} className="login-btn">Edit Profile</button>
             </div>
           )}

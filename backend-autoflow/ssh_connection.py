@@ -10,7 +10,7 @@ from netmiko import ConnectHandler
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="cryptography")
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="paramiko")
 
-# Switch configuration
+# Switch configuration with improved timeout settings
 SWITCH_CONFIG = {
     'device_type': 'cisco_ios',
     'ip': '192.168.111.198',
@@ -18,7 +18,26 @@ SWITCH_CONFIG = {
     'password': 'sarra',
     'read_timeout_override': 30,
     'fast_cli': False,
+    'conn_timeout': 30,  # Connection timeout
+    'auth_timeout': 30,  # Authentication timeout
+    'banner_timeout': 30,  # Banner timeout
+    'blocking_timeout': 30,  # Blocking timeout
+    'timeout': 30,  # General timeout
+    'global_delay_factor': 2,  # Increase delay factor for stability
 }
+
+def connect_with_retry(max_retries=3):
+    """Connect to switch with retry logic"""
+    for attempt in range(max_retries):
+        try:
+            print(f"Connection attempt {attempt + 1}/{max_retries}...", flush=True)
+            net_connect = ConnectHandler(**SWITCH_CONFIG)
+            return net_connect
+        except Exception as e:
+            print(f"Connection attempt {attempt + 1} failed: {e}", flush=True)
+            if attempt == max_retries - 1:
+                raise e
+            time.sleep(2)  # Wait before retry
 
 def clean_output(output):
     """Clean and format the output for better display"""
@@ -38,9 +57,9 @@ def clean_output(output):
 
 def main():
     try:
-        # Connect to switch
+        # Connect to switch with retry logic
         print("Connecting to switch...", flush=True)
-        net_connect = ConnectHandler(**SWITCH_CONFIG)
+        net_connect = connect_with_retry()
         print("Connected to switch successfully!", flush=True)
         
         # Get initial prompt
@@ -54,8 +73,12 @@ def main():
                 if not command:
                     continue
                     
-                # Send command to switch using timing-based method
-                output = net_connect.send_command_timing(command, strip_prompt=False)
+                # Send command to switch using timing-based method with increased timeout
+                output = net_connect.send_command_timing(
+                    command, 
+                    strip_prompt=False,
+                    read_timeout=30  # Increased read timeout
+                )
                 
                 # Clean and format the output
                 cleaned_output = clean_output(output)
@@ -66,7 +89,8 @@ def main():
                 try:
                     new_prompt = net_connect.find_prompt()
                     print(f"\n{new_prompt}", flush=True)
-                except:
+                except Exception as e:
+                    print(f"\nError getting prompt: {e}", flush=True)
                     print(f"\n{prompt}", flush=True)
                 
             except EOFError:

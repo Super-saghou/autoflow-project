@@ -1,0 +1,182 @@
+.mfa-test-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.mfa-test-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 32px;
+  border: 1px solid #e5e7eb;
+}
+
+.mfa-test-card h2 {
+  margin: 0 0 24px 0;
+  color: #111827;
+  font-size: 1.875rem;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 2px solid #f3f4f6;
+  padding-bottom: 16px;
+}
+
+.mfa-test-section {
+  margin-bottom: 32px;
+}
+
+.mfa-test-section h3 {
+  margin: 0 0 16px 0;
+  color: #374151;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.mfa-config-info {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.mfa-config-info p {
+  margin: 8px 0;
+  color: #374151;
+}
+
+.status-success {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.status-pending {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.mfa-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.mfa-test-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 200px;
+}
+
+.mfa-test-btn.primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.mfa-test-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px -3px rgba(59, 130, 246, 0.4);
+}
+
+.mfa-test-btn.secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.mfa-test-btn.secondary:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.mfa-success-message {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.mfa-success-message p {
+  margin: 0 0 12px 0;
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.mfa-instructions {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px 20px 20px 40px;
+  margin: 0;
+}
+
+.mfa-instructions li {
+  margin-bottom: 12px;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.mfa-instructions li:last-child {
+  margin-bottom: 0;
+}
+
+.mfa-features {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 20px 20px 20px 40px;
+  margin: 0;
+}
+
+.mfa-features li {
+  margin-bottom: 8px;
+  color: #0c4a6e;
+  line-height: 1.5;
+}
+
+.mfa-features li:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .mfa-test-container {
+    padding: 16px;
+  }
+  
+  .mfa-test-card {
+    padding: 24px;
+  }
+  
+  .mfa-test-card h2 {
+    font-size: 1.5rem;
+  }
+  
+  .mfa-test-btn {
+    min-width: 100%;
+  }
+}
+
+/* Animation for success message */
+.mfa-success-message {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+} 

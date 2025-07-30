@@ -77,6 +77,123 @@ initializeRoles();
 app.use('/api/auth', authRoutes);
 app.use('/api/acls', aclsRouter);
 
+// MFA routes
+app.post('/api/mfa/send-code', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email is required' });
+    }
+
+    // Import MFA config
+    const { exec } = await import('child_process');
+    const { spawn } = await import('child_process');
+    
+    // Run Python script to send verification code
+    const pythonProcess = spawn('python3', ['mfa_config.py', 'send', email]);
+    
+    let result = '';
+    let error = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        res.json({ success: true, message: 'Verification code sent successfully' });
+      } else {
+        console.error('MFA Error:', error);
+        res.status(500).json({ success: false, message: 'Failed to send verification code' });
+      }
+    });
+    
+  } catch (error) {
+    console.error('MFA send code error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+// Check if user requires MFA
+app.get('/api/mfa/status/:userId', authenticateToken, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // For now, enable MFA for all users
+    // In production, you would check user preferences from database
+    res.json({ 
+      requiresMFA: true,
+      message: 'MFA is enabled for this user'
+    });
+  } catch (error) {
+    console.error('MFA status error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+// Enable/disable MFA for user
+app.post('/api/mfa/toggle/:userId', authenticateToken, requireRole(['Admin']), async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { enabled } = req.body;
+    
+    // In production, you would update user preferences in database
+    res.json({ 
+      success: true,
+      requiresMFA: enabled,
+      message: `MFA ${enabled ? 'enabled' : 'disabled'} for user`
+    });
+  } catch (error) {
+    console.error('MFA toggle error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+app.post('/api/mfa/verify-code', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    
+    if (!email || !code) {
+      return res.status(400).json({ success: false, message: 'Email and code are required' });
+    }
+
+    // Import MFA config
+    const { spawn } = await import('child_process');
+    
+    // Run Python script to verify code
+    const pythonProcess = spawn('python3', ['mfa_config.py', 'verify', email, code]);
+    
+    let result = '';
+    let error = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        res.json({ success: true, message: 'Code verified successfully' });
+      } else {
+        console.error('MFA Verify Error:', error);
+        res.status(400).json({ success: false, message: 'Invalid or expired code' });
+      }
+    });
+    
+  } catch (error) {
+    console.error('MFA verify code error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
 // Test route to verify server is running
 app.get('/api/test', (req, res) => {
   console.log('Test route hit');

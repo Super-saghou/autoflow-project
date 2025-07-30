@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import MFATest from '../components/MFATest';
 
 const Container = styled.div`
   text-align: center;
@@ -37,6 +38,31 @@ const Subtitle = styled.p`
   line-height: 1.6;
 `;
 
+const MFASection = styled.div`
+  margin-top: 60px;
+  width: 100%;
+  max-width: 1200px;
+`;
+
+const MFATitle = styled.h2`
+  font-size: 32px;
+  color: #1e3a8a;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+`;
+
+const MFADescription = styled.p`
+  font-size: 18px;
+  color: #374151;
+  text-align: center;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+`;
+
 const HomePage = () => {
   return (
     <Container as={motion.div} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
@@ -45,6 +71,15 @@ const HomePage = () => {
         Cette plateforme permet d'automatiser, de gérer et de sécuriser les configurations réseau de manière intuitive.<br/><br/>
         Profitez d'une interface moderne, de scripts puissants, et d'une visibilité complète sur vos équipements réseau.
       </Subtitle>
+      
+      <MFASection>
+        <MFATitle>🔐 Authentification à deux facteurs (MFA)</MFATitle>
+        <MFADescription>
+          Testez notre nouveau système d'authentification à deux facteurs par email. 
+          Une couche de sécurité supplémentaire pour protéger votre compte.
+        </MFADescription>
+        <MFATest />
+      </MFASection>
     </Container>
   );
 };
