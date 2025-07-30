@@ -4,46 +4,80 @@ stages:
 
 variables:
   DOCKER_USERNAME: "sarra539"
+  BACKEND_IMAGE: "sarra539/autoflow-repo:VerifUpdate"
+  FRONTEND_IMAGE: "sarra539/autoflow-front:VersionTestKuber9"
 
-# Build Backend Image
+# Build Backend Image (on shared runners)
 build-backend:
   stage: build
-  image: docker:latest
+  image: docker:24.0
   services:
-    - docker:dind
+    - docker:24.0-dind
   before_script:
-    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - echo "Checking Docker version..."
+    - docker --version
+    - echo "Attempting Docker login..."
+    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker login failed"; exit 1; }
   script:
+    - echo "Verifying backend directory..."
+    - ls -la backend-autoflow || { echo "Directory backend-autoflow not found"; exit 1; }
     - cd backend-autoflow
-    - docker build -t $DOCKER_USERNAME/autoflow-repo:VerifUpdate .
-    - docker push $DOCKER_USERNAME/autoflow-repo:VerifUpdate
+    - echo "Building backend image..."
+    - docker build --no-cache --pull -t $BACKEND_IMAGE .
+    - echo "Pushing backend image..."
+    - docker push $BACKEND_IMAGE
+  retry:
+    max: 2
   only:
     - main
 
-# Build Frontend Image
+# Build Frontend Image (on shared runners)
 build-frontend:
   stage: build
-  image: docker:latest
+  image: docker:24.0
   services:
-    - docker:dind
+    - docker:24.0-dind
   before_script:
-    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - echo "Checking Docker version..."
+    - docker --version
+    - echo "Attempting Docker login..."
+    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker login failed"; exit 1; }
   script:
+    - echo "Verifying frontend directory..."
+    - ls -la frontend-autoflow || { echo "Directory frontend-autoflow not found"; exit 1; }
     - cd frontend-autoflow
-    - docker build -t $DOCKER_USERNAME/autoflow-front:VersionTestKuber9 .
-    - docker push $DOCKER_USERNAME/autoflow-front:VersionTestKuber9
+    - echo "Building frontend image..."
+    - docker build --no-cache --pull -t $FRONTEND_IMAGE .
+    - echo "Pushing frontend image..."
+    - docker push $FRONTEND_IMAGE
+  retry:
+    max: 2
   only:
     - main
 
-# Deploy to Kubernetes
+# Deploy to Kubernetes (on your self-hosted runner)
 deploy:
   stage: deploy
-  image: bitnami/kubectl:latest
-  script:
-    - echo "$KUBE_CONFIG" | base64 -d > kubeconfig
-    - export KUBECONFIG=kubeconfig
+  tags:
+    - production
+  before_script:
+    - echo "Running on production runner..."
     - kubectl version --client
+  script:
+    - echo "Current namespace and pods:"
     - kubectl get pods
+    - echo "Updating backend deployment..."
+    - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE
+    - echo "Updating frontend deployment..."
+    - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE
+    - echo "Waiting for backend rollout..."
+    - kubectl rollout status deployment/backend-deployment --timeout=300s
+    - echo "Waiting for frontend rollout..."
+    - kubectl rollout status deployment/frontend-deployment --timeout=300s
+    - echo "Final pod status:"
+    - kubectl get pods
+    - echo "Final service status:"
+    - kubectl get services
   environment:
     name: production
     url: http://192.168.111.201:31560
