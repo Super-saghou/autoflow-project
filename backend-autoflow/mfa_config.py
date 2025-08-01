@@ -97,6 +97,18 @@ class MFAConfig:
             # Get email configuration
             email_config = self._get_email_config()
             
+            # Debug: Print email configuration (without password)
+            print(f"DEBUG: SMTP Server: {email_config['smtp_server']}")
+            print(f"DEBUG: SMTP Port: {email_config['smtp_port']}")
+            print(f"DEBUG: Sender Email: {email_config['sender_email']}")
+            print(f"DEBUG: Sender Password: {'*' * len(email_config['sender_password']) if email_config['sender_password'] else 'NOT SET'}")
+            
+            # For testing purposes, if email config is not set, just print the code
+            if not email_config['sender_email'] or not email_config['sender_password']:
+                print(f"TEST MODE: Verification code {verification_code} for {user_email}")
+                print("To enable real email sending, configure SMTP settings in .env file")
+                return True, "Code generated successfully (test mode)"
+            
             # Validate email configuration
             if not email_config['sender_email'] or not email_config['sender_password']:
                 logger.error("Email configuration missing")
@@ -185,6 +197,12 @@ if __name__ == "__main__":
     
     # Load environment variables
     load_dotenv()
+    
+    # Debug: Check if .env is loaded
+    print(f"DEBUG: Current working directory: {os.getcwd()}")
+    print(f"DEBUG: SMTP_SERVER from env: {os.getenv('SMTP_SERVER', 'NOT SET')}")
+    print(f"DEBUG: SENDER_EMAIL from env: {os.getenv('SENDER_EMAIL', 'NOT SET')}")
+    print(f"DEBUG: SENDER_PASSWORD from env: {'*' * len(os.getenv('SENDER_PASSWORD', '')) if os.getenv('SENDER_PASSWORD') else 'NOT SET'}")
     
     # Simple file-based storage for CLI testing
     CODES_FILE = "temp_mfa_codes.json"

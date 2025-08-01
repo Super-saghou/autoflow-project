@@ -1,0 +1,147 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: autoflow
+  labels:
+    name: autoflow
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: autoflow-network-policy
+  namespace: autoflow
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: autoflow
+    ports:
+    - protocol: TCP
+      port: 5000
+    - protocol: TCP
+      port: 5010
+    - protocol: TCP
+      port: 5001
+    - protocol: TCP
+      port: 5003
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: autoflow
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+---
+apiVersion: policy/v1
+kind: PodSecurityPolicy
+metadata:
+  name: autoflow-psp
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+  - ALL
+  volumes:
+  - 'configMap'
+  - 'emptyDir'
+  - 'projected'
+  - 'secret'
+  - 'downwardAPI'
+  - 'persistentVolumeClaim'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+    - min: 1
+      max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+    - min: 1
+      max: 65535
+  readOnlyRootFilesystem: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: autoflow-security-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["networkpolicies"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: autoflow-security-binding
+subjects:
+- kind: ServiceAccount
+  name: autoflow-security-sa
+  namespace: autoflow
+roleRef:
+  kind: ClusterRole
+  name: autoflow-security-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: autoflow-security-sa
+  namespace: autoflow
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: autoflow-security-config
+  namespace: autoflow
+data:
+  security-policy.json: |
+    {
+      "allowedRegistries": ["docker.io", "quay.io"],
+      "blockedImages": ["latest"],
+      "scanOnPull": true,
+      "failOnHighVulnerabilities": true,
+      "maxVulnerabilityScore": 7.0
+    }
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: autoflow-security-webhook
+webhooks:
+- name: security.autoflow.com
+  clientConfig:
+    service:
+      namespace: autoflow
+      name: autoflow-security-webhook
+      path: "/validate"
+  rules:
+  - apiGroups: [""]
+    apiVersions: ["v1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["pods"]
+    scope: "Namespaced"
+  admissionReviewVersions: ["v1"]
+  sideEffects: None
+  timeoutSeconds: 5 

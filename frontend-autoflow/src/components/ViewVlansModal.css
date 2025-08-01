@@ -1,0 +1,295 @@
+.view-vlans-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    linear-gradient(135deg, #4052D6 0%, #667eea 100%),
+    repeating-linear-gradient(
+      0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.02) 2px, rgba(255, 255, 255, 0.02) 4px
+    ),
+    repeating-linear-gradient(
+      90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.02) 2px, rgba(255, 255, 255, 0.02) 4px
+    ),
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.04) 0%, transparent 50%),
+    linear-gradient(135deg, #4052D6 0%, #667eea 50%, #4052D6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+}
+
+.view-vlans-modal-container {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 900px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  border: 2px solid #cbd5e1;
+}
+
+.view-vlans-modal-header {
+  background: rgba(255, 249, 229, 0.95);
+  backdrop-filter: blur(12px);
+  padding: 24px 32px;
+  border-radius: 18px 18px 0 0;
+  border-bottom: 1px solid rgba(64, 82, 214, 0.1);
+  position: relative;
+  border-top: 4px solid #4052D6;
+}
+
+.view-vlans-modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.view-vlans-modal-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.view-vlans-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.view-vlans-modal-content {
+  padding: 32px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.view-vlans-info {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.view-vlans-info p {
+  margin: 8px 0;
+  color: #92400e;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.view-vlans-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #64748b;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.view-vlans-error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 1px solid #ef4444;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  color: #dc2626;
+}
+
+.retry-button {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 12px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.retry-button:hover {
+  background: #dc2626;
+}
+
+.no-vlans {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+}
+
+.no-vlans p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.vlans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.vlan-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.vlan-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.vlan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.vlan-id {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.vlan-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.vlan-status.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.vlan-details p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.vlan-details strong {
+  color: #1e293b;
+}
+
+.vlan-actions-disabled {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+  text-align: center;
+}
+
+.action-disabled {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+}
+
+.view-vlans-modal-footer {
+  background: rgba(255, 249, 229, 0.95);
+  backdrop-filter: blur(12px);
+  padding: 24px 32px;
+  border-radius: 0 0 18px 18px;
+  border-top: 1px solid rgba(64, 82, 214, 0.1);
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  position: relative;
+}
+
+.view-vlans-modal-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #4052D6, transparent);
+}
+
+.close-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.close-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .view-vlans-modal-container {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .view-vlans-modal-header {
+    padding: 16px 20px;
+  }
+  
+  .view-vlans-modal-header h2 {
+    font-size: 20px;
+  }
+  
+  .view-vlans-modal-content {
+    padding: 20px;
+  }
+  
+  .vlans-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .vlan-card {
+    padding: 16px;
+  }
+} 

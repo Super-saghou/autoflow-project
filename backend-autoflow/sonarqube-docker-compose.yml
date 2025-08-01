@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  sonarqube:
+    image: sonarqube:latest
+    container_name: autoflow-sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      - SONAR_JDBC_URL=jdbc:postgresql://sonarqube-db:5432/sonar
+      - SONAR_JDBC_USERNAME=sonar
+      - SONAR_JDBC_PASSWORD=sonar
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    depends_on:
+      - sonarqube-db
+    networks:
+      - autoflow-network
+
+  sonarqube-db:
+    image: postgres:13
+    container_name: autoflow-sonarqube-db
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+      - POSTGRES_DB=sonar
+    volumes:
+      - sonarqube_db:/var/lib/postgresql/data
+    networks:
+      - autoflow-network
+
+  sonar-scanner:
+    image: sonarqube-scanner:latest
+    container_name: autoflow-sonar-scanner
+    volumes:
+      - .:/usr/src
+    environment:
+      - SONAR_HOST_URL=http://sonarqube:9000
+      - SONAR_LOGIN=admin
+      - SONAR_PASSWORD=admin
+    command: >
+      sonar-scanner
+      -Dsonar.projectKey=autoflow
+      -Dsonar.projectName=AutoFlow
+      -Dsonar.projectVersion=1.0
+      -Dsonar.sources=.
+      -Dsonar.exclusions=node_modules/**,venv/**,__pycache__/**,*.pyc
+      -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+      -Dsonar.python.coverage.reportPaths=coverage.xml
+    depends_on:
+      - sonarqube
+    networks:
+      - autoflow-network
+
+volumes:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+  sonarqube_db:
+
+networks:
+  autoflow-network:
+    driver: bridge 

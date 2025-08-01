@@ -1,0 +1,69 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trivy-scan-autoflow
+  namespace: autoflow
+spec:
+  template:
+    spec:
+      containers:
+      - name: trivy-scanner
+        image: aquasec/trivy:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          # Scan container images
+          trivy image --format json --output /reports/container-scan.json backend-autoflow:latest
+          trivy image --format json --output /reports/frontend-scan.json frontend-autoflow:latest
+          
+          # Scan filesystem for vulnerabilities
+          trivy fs --format json --output /reports/fs-scan.json /app
+          
+          # Scan Kubernetes manifests
+          trivy k8s --format json --output /reports/k8s-scan.json --namespace autoflow
+          
+          # Scan secrets
+          trivy secret --format json --output /reports/secret-scan.json /app
+          
+          echo "Trivy scan completed"
+        volumeMounts:
+        - name: reports
+          mountPath: /reports
+        - name: app-code
+          mountPath: /app
+      volumes:
+      - name: reports
+        emptyDir: {}
+      - name: app-code
+        hostPath:
+          path: /home/sarra/autoflow-project
+      restartPolicy: Never
+  backoffLimit: 3
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trivy-config
+  namespace: autoflow
+data:
+  trivy.yaml: |
+    # Trivy configuration for AutoFlow
+    db:
+      repository: trivy-db
+      skip-update: false
+    
+    cache:
+      dir: /tmp/trivy
+    
+    security-checks:
+      - vuln
+      - secret
+      - config
+    
+    severity: CRITICAL,HIGH,MEDIUM
+    
+    scanners:
+      - vuln
+      - secret
+      - config 

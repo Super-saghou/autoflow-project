@@ -1,0 +1,87 @@
+.permission-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.permission-button:not(.button-disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.permission-lock {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+.permission-button.button-disabled {
+  position: relative;
+}
+
+.permission-button.button-disabled::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(108, 117, 125, 0.1);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Animation pour les boutons désactivés */
+.permission-button.button-disabled .permission-lock {
+  animation: lockShake 0.5s ease-in-out;
+}
+
+@keyframes lockShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+/* Styles pour différents types d'actions */
+.permission-button[data-action="delete"] {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.permission-button[data-action="delete"]:not(.button-disabled):hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+.permission-button[data-action="create"] {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.permission-button[data-action="create"]:not(.button-disabled):hover {
+  background-color: #28a745;
+  color: white;
+}
+
+.permission-button[data-action="update"] {
+  border-color: #ffc107;
+  color: #856404;
+}
+
+.permission-button[data-action="update"]:not(.button-disabled):hover {
+  background-color: #ffc107;
+  color: #856404;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .permission-button {
+    gap: 4px;
+  }
+  
+  .permission-lock {
+    font-size: 10px;
+  }
+} 

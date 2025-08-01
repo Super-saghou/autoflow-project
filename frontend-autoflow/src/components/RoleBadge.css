@@ -1,0 +1,65 @@
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  border: 1px solid;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.role-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.role-badge-small {
+  padding: 2px 6px;
+  font-size: 10px;
+  border-radius: 8px;
+}
+
+.role-badge-medium {
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 12px;
+}
+
+.role-badge-large {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 16px;
+}
+
+.role-icon {
+  font-size: 14px;
+}
+
+.role-badge-small .role-icon {
+  font-size: 12px;
+}
+
+.role-badge-large .role-icon {
+  font-size: 16px;
+}
+
+.role-text {
+  font-weight: 600;
+}
+
+/* Animation pour les nouveaux badges */
+@keyframes badgePulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.role-badge-new {
+  animation: badgePulse 2s ease-in-out;
+} 
