@@ -77,12 +77,218 @@ initializeRoles();
 app.use('/api/auth', authRoutes);
 app.use('/api/acls', aclsRouter);
 
+// FortiGate endpoints
+app.get('/api/fortigate/status', async (req, res) => {
+  try {
+    const { spawn } = require('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_api.py', 'status']);
+    
+    let result = '';
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      console.error(`FortiGate status error: ${data}`);
+    });
+    
+    pythonProcess.on('close', (code) => {
+      try {
+        const status = JSON.parse(result);
+        res.json(status);
+      } catch (e) {
+        res.json({ status: 'disconnected', message: 'FortiGate not connected' });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate status error:', error);
+    res.status(500).json({ error: 'Failed to get FortiGate status' });
+  }
+});
+
+app.post('/api/fortigate/connect', async (req, res) => {
+  try {
+    const { host, port, username, apiToken } = req.body;
+    const { spawn } = require('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_api.py', 'connect', host, port, username, apiToken]);
+    
+    let result = '';
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      console.error(`FortiGate connect error: ${data}`);
+    });
+    
+    pythonProcess.on('close', (code) => {
+      try {
+        const response = JSON.parse(result);
+        res.json(response);
+      } catch (e) {
+        res.status(500).json({ error: 'Failed to connect to FortiGate' });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate connect error:', error);
+    res.status(500).json({ error: 'Failed to connect to FortiGate' });
+  }
+});
+
+app.get('/api/fortigate/firewall-rules', async (req, res) => {
+  try {
+    const { spawn } = require('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_api.py', 'get-rules']);
+    
+    let result = '';
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      console.error(`FortiGate rules error: ${data}`);
+    });
+    
+    pythonProcess.on('close', (code) => {
+      try {
+        const response = JSON.parse(result);
+        res.json(response);
+      } catch (e) {
+        res.json({ status: 'error', message: 'Failed to get firewall rules', rules: [] });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate rules error:', error);
+    res.status(500).json({ error: 'Failed to get firewall rules' });
+  }
+});
+
+app.post('/api/fortigate/firewall-rules', async (req, res) => {
+  try {
+    const ruleData = req.body;
+    const { spawn } = require('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_api.py', 'create-rule'], {
+      input: JSON.stringify(ruleData)
+    });
+    
+    let result = '';
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      console.error(`FortiGate create rule error: ${data}`);
+    });
+    
+    pythonProcess.on('close', (code) => {
+      try {
+        const response = JSON.parse(result);
+        res.json(response);
+      } catch (e) {
+        res.status(500).json({ error: 'Failed to create firewall rule' });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate create rule error:', error);
+    res.status(500).json({ error: 'Failed to create firewall rule' });
+  }
+});
+
+app.delete('/api/fortigate/firewall-rules/:id', async (req, res) => {
+  try {
+    const ruleId = req.params.id;
+    const { spawn } = require('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_api.py', 'delete-rule', ruleId]);
+    
+    let result = '';
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      console.error(`FortiGate delete rule error: ${data}`);
+    });
+    
+    pythonProcess.on('close', (code) => {
+      try {
+        const response = JSON.parse(result);
+        res.json(response);
+      } catch (e) {
+        res.status(500).json({ error: 'Failed to delete firewall rule' });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate delete rule error:', error);
+    res.status(500).json({ error: 'Failed to delete firewall rule' });
+  }
+});
+
+app.get('/api/fortigate/vpn-connections', async (req, res) => {
+  try {
+    const { spawn } = require('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_api.py', 'get-vpn']);
+    
+    let result = '';
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      console.error(`FortiGate VPN error: ${data}`);
+    });
+    
+    pythonProcess.on('close', (code) => {
+      try {
+        const response = JSON.parse(result);
+        res.json(response);
+      } catch (e) {
+        res.json({ status: 'error', message: 'Failed to get VPN connections', connections: [] });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate VPN error:', error);
+    res.status(500).json({ error: 'Failed to get VPN connections' });
+  }
+});
+
+app.get('/api/fortigate/security-profiles', async (req, res) => {
+  try {
+    const { spawn } = require('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_api.py', 'get-profiles']);
+    
+    let result = '';
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      console.error(`FortiGate profiles error: ${data}`);
+    });
+    
+    pythonProcess.on('close', (code) => {
+      try {
+        const response = JSON.parse(result);
+        res.json(response);
+      } catch (e) {
+        res.json({ status: 'error', message: 'Failed to get security profiles', profiles: [] });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate profiles error:', error);
+    res.status(500).json({ error: 'Failed to get security profiles' });
+  }
+});
+
 // MFA routes
 app.post('/api/mfa/send-code', async (req, res) => {
   try {
+    console.log('MFA send-code request body:', req.body);
     const { email } = req.body;
     
+    console.log('Extracted email:', email);
+    
     if (!email) {
+      console.log('Email is missing from request');
       return res.status(400).json({ success: false, message: 'Email is required' });
     }
 
@@ -109,7 +315,17 @@ app.post('/api/mfa/send-code', async (req, res) => {
         res.json({ success: true, message: 'Verification code sent successfully' });
       } else {
         console.error('MFA Error:', error);
-        res.status(500).json({ success: false, message: 'Failed to send verification code' });
+        console.error('MFA Result:', result);
+        
+        // Check if it's a configuration error
+        if (error.includes('Email configuration not set') || error.includes('SMTP')) {
+          res.status(500).json({ 
+            success: false, 
+            message: 'Email configuration not set. Please configure SMTP settings in .env file.' 
+          });
+        } else {
+          res.status(500).json({ success: false, message: 'Failed to send verification code' });
+        }
       }
     });
     
@@ -280,7 +496,7 @@ app.post('/api/login', async (req, res) => {
         user: {
           id: "legacy-sarra",
           username: "sarra",
-          email: "",
+          email: "sarra.bngharbia@gmail.com",
           role: "Admin",
           permissions: ["write_vlans", "read_devices", "write_devices"]
         }

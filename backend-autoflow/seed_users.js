@@ -68,7 +68,7 @@ async function seed() {
 
   const sarraUsername = 'sarra';
   const sarraPassword = 'sarra123';
-  const sarraEmail = 'sarra@example.com';
+  const sarraEmail = 'sarra.bngharbia@gmail.com';
   const sarraRole = 'Admin';
 
   // Sarra user
@@ -82,9 +82,12 @@ async function seed() {
     sarra.password = hashed;
     sarra.permissions = permissions;
     sarra.role = sarraRole;
-    sarra.email = sarraEmail;
+    // Don't update email if it already exists to avoid conflicts
+    if (!sarra.email) {
+      sarra.email = sarraEmail;
+    }
     await sarra.save();
-    console.log('Sarra user updated with new password and permissions.');
+    console.log('Sarra user updated with new password and permissions (email unchanged).');
   }
 
   await mongoose.disconnect();

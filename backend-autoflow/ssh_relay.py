@@ -34,31 +34,31 @@ def connect_with_retry(max_retries=3):
 async def relay(websocket):
     try:
         client = connect_with_retry()
-        chan = client.invoke_shell(term='vt100', width=120, height=40)
+    chan = client.invoke_shell(term='vt100', width=120, height=40)
         chan.settimeout(30.0)  # Increased timeout
 
-        def read_from_ssh():
-            while True:
-                try:
-                    data = chan.recv(1024)
-                    if not data:
-                        break
-                    asyncio.run_coroutine_threadsafe(
-                        websocket.send(data.decode(errors='ignore')),
-                        asyncio.get_event_loop()
-                    )
+    def read_from_ssh():
+        while True:
+            try:
+                data = chan.recv(1024)
+                if not data:
+                    break
+                asyncio.run_coroutine_threadsafe(
+                    websocket.send(data.decode(errors='ignore')),
+                    asyncio.get_event_loop()
+                )
                 except Exception as e:
                     print(f"SSH read error: {e}")
                     break
 
-        threading.Thread(target=read_from_ssh, daemon=True).start()
+    threading.Thread(target=read_from_ssh, daemon=True).start()
 
-        try:
-            async for message in websocket:
-                chan.send(message)
-        finally:
-            chan.close()
-            client.close()
+    try:
+        async for message in websocket:
+            chan.send(message)
+    finally:
+        chan.close()
+        client.close()
     except Exception as e:
         print(f"SSH relay error: {e}")
         await websocket.close()

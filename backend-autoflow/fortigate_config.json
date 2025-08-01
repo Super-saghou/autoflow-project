@@ -1,0 +1,87 @@
+{
+  "fortigate": {
+    "host": "192.168.1.99",
+    "port": 443,
+    "username": "admin",
+    "api_token": "",
+    "verify_ssl": false,
+    "timeout": 30
+  },
+  "network": {
+    "management_subnet": "192.168.1.0/24",
+    "lan_subnet": "192.168.10.0/24",
+    "wan_interface": "port3",
+    "lan_interface": "port2",
+    "mgmt_interface": "port1"
+  },
+  "api": {
+    "base_url": "https://192.168.1.99:443/api/v2",
+    "endpoints": {
+      "status": "/monitor/system/status",
+      "firewall_rules": "/cmdb/firewall/policy",
+      "vpn_connections": "/monitor/vpn/ipsec",
+      "antivirus_profiles": "/cmdb/antivirus/profile",
+      "webfilter_profiles": "/cmdb/webfilter/profile"
+    }
+  },
+  "default_rules": [
+    {
+      "name": "AutoFlow-Management",
+      "source": "192.168.10.0/24",
+      "destination": "192.168.1.99",
+      "service": "HTTPS",
+      "action": "accept",
+      "status": "enabled",
+      "comments": "Allow AutoFlow platform management access"
+    },
+    {
+      "name": "AutoFlow-API",
+      "source": "192.168.10.0/24",
+      "destination": "192.168.1.99",
+      "service": "HTTPS",
+      "action": "accept",
+      "status": "enabled",
+      "comments": "Allow AutoFlow API access"
+    },
+    {
+      "name": "AutoFlow-SSH",
+      "source": "192.168.10.0/24",
+      "destination": "192.168.1.99",
+      "service": "SSH",
+      "action": "accept",
+      "status": "enabled",
+      "comments": "Allow AutoFlow SSH access"
+    }
+  ],
+  "security_profiles": {
+    "antivirus": {
+      "default": {
+        "name": "AutoFlow-AV-Default",
+        "scan_mode": "quick",
+        "quarantine": "enable",
+        "quarantine_expiry": "1",
+        "quarantine_log": "enable"
+      }
+    },
+    "webfilter": {
+      "default": {
+        "name": "AutoFlow-WebFilter-Default",
+        "mode": "proxy",
+        "log_all_url": "enable",
+        "safe_search": "enable"
+      }
+    }
+  },
+  "vpn_settings": {
+    "ike_version": "2",
+    "encryption": "aes256",
+    "authentication": "sha256",
+    "dh_group": "14"
+  },
+  "logging": {
+    "level": "information",
+    "forward": "enable",
+    "local": "enable",
+    "syslog": "disable"
+  }
+} 

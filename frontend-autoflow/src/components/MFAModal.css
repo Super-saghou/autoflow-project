@@ -6,7 +6,7 @@
   bottom: 0;
   background: 
     /* Modern geometric patterns matching login page */
-    linear-gradient(135deg, #667eea 0%, #764ba2 100%),
+    linear-gradient(135deg, #4052D6 0%, #667eea 100%),
     /* Subtle grid overlay */
     repeating-linear-gradient(
       0deg,
@@ -28,7 +28,7 @@
     radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
     radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.04) 0%, transparent 50%),
     /* Modern gradient base */
-    linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    linear-gradient(135deg, #4052D6 0%, #667eea 50%, #4052D6 100%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,12 +81,12 @@
 }
 
 .mfa-modal {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 249, 255, 0.8) 50%, rgba(254, 252, 232, 0.7) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 249, 255, 0.8) 50%, rgba(248, 250, 252, 0.7) 100%);
   backdrop-filter: blur(25px) saturate(1.4);
   border-radius: 28px;
   box-shadow: 
-    0 32px 64px -12px rgba(59, 130, 246, 0.15),
-    0 16px 32px -8px rgba(251, 191, 36, 0.1),
+    0 32px 64px -12px rgba(64, 82, 214, 0.15),
+    0 16px 32px -8px rgba(102, 126, 234, 0.1),
     0 0 0 1px rgba(255, 255, 255, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   width: 90%;
@@ -95,7 +95,7 @@
   overflow-y: auto;
   animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
-  border: 2px solid rgba(59, 130, 246, 0.2);
+  border: 2px solid rgba(64, 82, 214, 0.2);
   z-index: 1;
 }
 
@@ -106,7 +106,7 @@
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, rgba(59, 130, 246, 0.3), rgba(251, 191, 36, 0.2), rgba(34, 211, 238, 0.3));
+  background: linear-gradient(45deg, rgba(64, 82, 214, 0.3), rgba(102, 126, 234, 0.2), rgba(64, 82, 214, 0.3));
   border-radius: 28px;
   z-index: -1;
   opacity: 0.6;
@@ -134,8 +134,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 32px 32px 20px 32px;
-  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(251, 191, 36, 0.03) 100%);
+  border-bottom: 1px solid rgba(64, 82, 214, 0.2);
+  background: linear-gradient(135deg, rgba(64, 82, 214, 0.05) 0%, rgba(102, 126, 234, 0.03) 100%);
   border-radius: 28px 28px 0 0;
   position: relative;
 }
@@ -147,14 +147,14 @@
   left: 20px;
   right: 20px;
   height: 2px;
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.3) 0%, rgba(251, 191, 36, 0.4) 50%, rgba(34, 211, 238, 0.3) 100%);
+  background: linear-gradient(90deg, rgba(64, 82, 214, 0.3) 0%, rgba(102, 126, 234, 0.4) 50%, rgba(64, 82, 214, 0.3) 100%);
 }
 
 .mfa-modal-header h2 {
   margin: 0;
   font-size: 1.75rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #fbbf24 100%);
+  background: linear-gradient(135deg, #4052D6 0%, #667eea 50%, #4052D6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -175,7 +175,7 @@
 }
 
 .mfa-close-btn:hover {
-  background-color: rgba(59, 130, 246, 0.1);
+  background-color: rgba(64, 82, 214, 0.1);
   color: #374151;
 }
 
@@ -191,7 +191,7 @@
   right: 20px;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(64, 82, 214, 0.1) 0%, rgba(102, 126, 234, 0.05) 100%);
   border-radius: 50%;
   opacity: 0.4;
 }
@@ -203,7 +203,7 @@
   left: 20px;
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(64, 82, 214, 0.05) 100%);
   border-radius: 50%;
   opacity: 0.3;
 }
@@ -221,7 +221,7 @@
 }
 
 .mfa-step p strong {
-  color: #1e40af;
+  color: #4052D6;
   font-weight: 600;
 }
 
@@ -239,7 +239,7 @@
 
 .mfa-input-group input {
   padding: 16px 20px;
-  border: 2px solid rgba(59, 130, 246, 0.2);
+  border: 2px solid rgba(64, 82, 214, 0.2);
   border-radius: 16px;
   font-size: 1.1rem;
   font-weight: 500;
@@ -257,11 +257,11 @@
 
 .mfa-input-group input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #4052D6;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.8) 100%);
   box-shadow: 
-    0 0 0 4px rgba(59, 130, 246, 0.1),
-    0 8px 25px -8px rgba(59, 130, 246, 0.3),
+    0 0 0 4px rgba(64, 82, 214, 0.1),
+    0 8px 25px -8px rgba(64, 82, 214, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   transform: translateY(-2px);
 }
@@ -273,7 +273,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.05), transparent);
+  background: linear-gradient(90deg, transparent, rgba(64, 82, 214, 0.05), transparent);
   animation: shimmer 1.5s infinite;
 }
 
@@ -350,11 +350,11 @@
 }
 
 .mfa-btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  background: linear-gradient(135deg, #4052D6 0%, #667eea 100%);
   color: white;
   font-weight: 600;
   letter-spacing: 0.5px;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 15px rgba(64, 82, 214, 0.3);
 }
 
 .mfa-btn-primary::before {
@@ -369,9 +369,9 @@
 }
 
 .mfa-btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+  background: linear-gradient(135deg, #374151 0%, #4052D6 100%);
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 8px 25px rgba(64, 82, 214, 0.4);
 }
 
 .mfa-btn-primary:hover:not(:disabled)::before {
@@ -381,12 +381,12 @@
 .mfa-btn-secondary {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 250, 252, 0.6) 100%);
   color: #374151;
-  border: 2px solid rgba(59, 130, 246, 0.2);
+  border: 2px solid rgba(64, 82, 214, 0.2);
 }
 
 .mfa-btn-secondary:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.8) 100%);
-  border-color: rgba(59, 130, 246, 0.4);
+  border-color: rgba(64, 82, 214, 0.4);
   transform: translateY(-1px);
 }
 

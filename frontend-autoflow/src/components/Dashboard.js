@@ -9,13 +9,22 @@ import Topology from './Topology';
 import VlanModal from './VlanModal';
 import InterfacesModal from './InterfacesModal';
 import CreateVlanModal from './CreateVlanModal';
+import ViewVlansModal from './ViewVlansModal';
 import DhcpModal from './DhcpModal';
-import ReportsPage from '../Pages/ReportsPage';
+import FirewallingPage from '../Pages/FirewallingPage';
 import MonitoringPage from './MonitoringPage';
 import SecurityAgentDashboard from './SecurityAgentDashboard';
 import AIPromptModal from './AIPromptModal';
 import AgentPromptSection from './AgentPromptSection';
 import AclsSection from './AclsSection';
+import RoleBadge from './RoleBadge';
+import AccessDenied from './AccessDenied';
+import { 
+  canAccessSection, 
+  canPerformAction, 
+  getRolePermissions, 
+  sectionConfig 
+} from '../utils/rbacConfig';
 
 const Dashboard = () => {
   const [devices, setDevices] = useState([]);
@@ -24,13 +33,26 @@ const Dashboard = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isProfileEditOpen, setIsProfileEditOpen] = useState(false);
-  const [userProfile, setUserProfile] = useState({ username: 'Sarra', email: 'sarra.bngharbia@gmail.com', role: 'Admin' });
+  const [userProfile, setUserProfile] = useState(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      const userData = JSON.parse(user);
+      return {
+        username: userData.username || 'Sarra',
+        email: userData.email || 'sarra.bngharbia@gmail.com',
+        role: userData.role || 'Admin'
+      };
+    }
+    return { username: 'Sarra', email: 'sarra.bngharbia@gmail.com', role: 'Admin' };
+  });
   const [expandedSection, setExpandedSection] = useState(null);
   const [theme, setTheme] = useState('default');
   const [runTour, setRunTour] = useState(true);
   const [modalInterfaceName, setModalInterfaceName] = useState('');
   const [modalSwitchType, setModalSwitchType] = useState('');
   const [createVlanModalOpen, setCreateVlanModalOpen] = useState(false);
+  const [viewVlansModalOpen, setViewVlansModalOpen] = useState(false);
+  const [selectedSwitchType, setSelectedSwitchType] = useState(null);
   const [modalInterfaces, setModalInterfaces] = useState([]);
   const [isLoadingInterfaces, setIsLoadingInterfaces] = useState(false);
   const [dhcpModalOpen, setDhcpModalOpen] = useState(false);
@@ -55,6 +77,10 @@ const Dashboard = () => {
   const [mfaEnabled, setMfaEnabled] = useState(true);
   const [mfaLoading, setMfaLoading] = useState(false);
   const [mfaMessage, setMfaMessage] = useState('');
+  
+  // Dynamic data for Quick Stats
+  const [activeSSHSessions, setActiveSSHSessions] = useState(0);
+  const [apiStatus, setApiStatus] = useState('🟢 Online');
   
   // Backup system state
   const [backupStats, setBackupStats] = useState(null);
@@ -188,6 +214,39 @@ const Dashboard = () => {
     }
   };
 
+  // Function to fetch dynamic data for Quick Stats
+  const fetchDynamicData = async () => {
+    try {
+      // Fetch active SSH sessions (simulated)
+      setActiveSSHSessions(Math.floor(Math.random() * 5) + 1);
+      
+      // Fetch VLANs (using existing vlans state)
+      const vlansResponse = await fetch(`${API_URL}/api/list-vlans`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ switchIp: '192.168.111.198' })
+      });
+      if (vlansResponse.ok) {
+        const vlansData = await vlansResponse.json();
+        // Update the existing vlans state
+        if (vlansData.vlans) {
+          setVlans(vlansData.vlans);
+        }
+      }
+      
+      // Check API status
+      const healthResponse = await fetch(`${API_URL}/api/dev/health`);
+      if (healthResponse.ok) {
+        setApiStatus('🟢 Online');
+      } else {
+        setApiStatus('🔴 Offline');
+      }
+    } catch (err) {
+      console.error('Error fetching dynamic data:', err);
+      setApiStatus('🟡 Warning');
+    }
+  };
+
   useEffect(() => {
     const fetchDevices = async () => {
       setIsLoadingInterfaces(true);
@@ -222,6 +281,15 @@ const Dashboard = () => {
     
     if (activeSection === 'security-agent') {
       fetchSecurityData();
+    }
+
+    // Fetch dynamic data for home page
+    if (activeSection === 'home') {
+      fetchDynamicData();
+      
+      // Auto-refresh every 30 seconds
+      const interval = setInterval(fetchDynamicData, 30000);
+      return () => clearInterval(interval);
     }
   }, [activeSection, API_URL]);
 
@@ -693,6 +761,46 @@ const Dashboard = () => {
     setCreateVlanModalOpen(true);
   };
 
+  const openViewVlansModal = (switchType = 'Cisco 3725') => {
+    setModalSwitchType(switchType);
+    setViewVlansModalOpen(true);
+  };
+
+  const selectSwitchForVlans = (switchType) => {
+    setSelectedSwitchType(switchType);
+    // Fetch VLANs for the selected switch
+    fetchVlansForSwitch(switchType);
+  };
+
+  const fetchVlansForSwitch = async (switchType) => {
+    setIsLoadingVlans(true);
+    setVlanError(null);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/list-vlans`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ 
+          switchIp: '192.168.111.198',
+          switchType: switchType 
+        })
+      });
+      const data = await response.json();
+      if (response.ok && data.vlans) {
+        setVlans(data.vlans);
+      } else {
+        setVlanError(data.error || 'Failed to fetch VLANs');
+      }
+    } catch (err) {
+      setVlanError(err.message);
+    } finally {
+      setIsLoadingVlans(false);
+    }
+  };
+
   const openDhcpModal = () => setDhcpModalOpen(true);
 
   // Backup system functions
@@ -843,9 +951,13 @@ const Dashboard = () => {
     setIsLoadingVlans(true);
     setVlanError(null);
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/list-vlans`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ switchIp: '192.168.111.198' })
       });
       const data = await response.json();
@@ -865,9 +977,13 @@ const Dashboard = () => {
   const handleDeleteVlan = async (vlanId) => {
     if (!window.confirm(`Are you sure you want to delete VLAN ${vlanId}?`)) return;
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/delete-vlan`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ switchIp: '192.168.111.198', vlanId })
       });
       const data = await response.json();
@@ -1041,37 +1157,181 @@ const Dashboard = () => {
       />
       <div style={{ display: 'flex', flex: 1 }}>
         <div className="sidebar" style={{ width: isMenuOpen ? '280px' : '80px' }}>
-          <div className="sidebar-header">{isMenuOpen && <h3>Menu</h3>}<button onClick={toggleMenu} className="sidebar-toggle">☰</button></div>
+          <div className="sidebar-header">{isMenuOpen && <h3 style={{ background: 'linear-gradient(135deg, #4052D6 0%, #667eea 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Menu</h3>}<button onClick={toggleMenu} className="sidebar-toggle">☰</button></div>
           <ul className="nav-list">
-            <li className="nav-item"><button onClick={() => setActiveSection('home')} className={`nav-button ${activeSection === 'home' ? 'active' : ''}`}><span className="nav-icon">🏠</span>{isMenuOpen && 'Home'}</button></li>
+            {/* Home - Accessible à tous */}
+            {canAccessSection(userProfile.role, 'home') && (
             <li className="nav-item">
-              <button onClick={() => toggleSection('devices')} className={`nav-button ${activeSection.startsWith('devices') ? 'active' : ''}`}><span className="nav-icon">💻</span>{isMenuOpen && 'Devices'}</button>
+                <button onClick={() => setActiveSection('home')} className={`nav-button ${activeSection === 'home' ? 'active' : ''}`}>
+                  <span className="nav-icon">🏠</span>
+                  {isMenuOpen && 'Home'}
+                </button>
+              </li>
+            )}
+
+            {/* Devices - Accessible selon les permissions */}
+            {canAccessSection(userProfile.role, 'devices') && (
+              <li className="nav-item">
+                <button onClick={() => toggleSection('devices')} className={`nav-button ${activeSection.startsWith('devices') ? 'active' : ''}`}>
+                  <span className="nav-icon">💻</span>
+                  {isMenuOpen && 'Devices'}
+                </button>
               {isMenuOpen && expandedSection === 'devices' && (
                 <ul className="nav-sub-list">
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('switching')} className="nav-sub-button">VLANs</button></li>
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('ssh')} className="nav-sub-button">SSH and remote access</button></li>
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('dhcpSnooping')} className="nav-sub-button">DHCP snooping (basic security)</button></li>
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('macTable')} className="nav-sub-button">MAC address table management</button></li>
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('hostname')} className="nav-sub-button">Switch hostname and management IP</button></li>
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('stp')} className="nav-sub-button">Spanning Tree Protocol (STP) settings</button></li>
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('portSecurity')} className="nav-sub-button">Port security</button></li>
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('etherchannel')} className="nav-sub-button">EtherChannel (link aggregation)</button></li>
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('routing')} className="nav-sub-button">Routing</button></li>
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('nat')} className="nav-sub-button">NAT</button></li>
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('dhcp')} className="nav-sub-button">DHCP</button></li>
-                  <li className="nav-sub-item"><button onClick={() => setActiveSection('acls')} className="nav-sub-button">ACLs (Access Control Lists)</button></li>
+                    <li className="nav-sub-item">
+                      <button onClick={() => setActiveSection('switching')} className="nav-sub-button">
+                        VLANs {!canPerformAction(userProfile.role, 'delete') && <span className="admin-only-badge">👑</span>}
+                      </button>
+                    </li>
+                    <li className="nav-sub-item">
+                      <button onClick={() => setActiveSection('ssh')} className="nav-sub-button">
+                        SSH and remote access
+                      </button>
+                    </li>
+                    <li className="nav-sub-item">
+                      <button onClick={() => setActiveSection('dhcpSnooping')} className="nav-sub-button">
+                        DHCP snooping (basic security)
+                      </button>
+                    </li>
+                    <li className="nav-sub-item">
+                      <button onClick={() => setActiveSection('macTable')} className="nav-sub-button">
+                        MAC address table management
+                      </button>
+                    </li>
+                    <li className="nav-sub-item">
+                      <button onClick={() => setActiveSection('hostname')} className="nav-sub-button">
+                        Switch hostname and management IP
+                      </button>
+                    </li>
+                    <li className="nav-sub-item">
+                      <button onClick={() => setActiveSection('stp')} className="nav-sub-button">
+                        Spanning Tree Protocol (STP) settings
+                      </button>
+                    </li>
+                    <li className="nav-sub-item">
+                      <button onClick={() => setActiveSection('portSecurity')} className="nav-sub-button">
+                        Port security
+                      </button>
+                    </li>
+                    <li className="nav-sub-item">
+                      <button onClick={() => setActiveSection('etherchannel')} className="nav-sub-button">
+                        EtherChannel (link aggregation)
+                      </button>
+                    </li>
+                    <li className="nav-sub-item">
+                      <button onClick={() => setActiveSection('routing')} className="nav-sub-button">
+                        Routing
+                      </button>
+                    </li>
+                    <li className="nav-sub-item">
+                      <button onClick={() => setActiveSection('nat')} className="nav-sub-button">
+                        NAT
+                      </button>
+                    </li>
+                    <li className="nav-sub-item">
+                      <button onClick={() => setActiveSection('dhcp')} className="nav-sub-button">
+                        DHCP
+                      </button>
+                    </li>
+                    {canAccessSection(userProfile.role, 'acls') && (
+                      <li className="nav-sub-item">
+                        <button onClick={() => setActiveSection('acls')} className="nav-sub-button">
+                          ACLs (Access Control Lists) <span className="admin-only-badge">👑</span>
+                        </button>
+                      </li>
+                    )}
                 </ul>
               )}
             </li>
-            <li className="nav-item"><button onClick={() => setActiveSection('topology')} className={`nav-button ${activeSection === 'topology' ? 'active' : ''}`}><span className="nav-icon">🌐</span>{isMenuOpen && 'Topology'}</button></li>
-            <li className="nav-item"><button onClick={() => setActiveSection('settings')} className={`nav-button ${activeSection === 'settings' ? 'active' : ''}`}><span className="nav-icon">⚙️</span>{isMenuOpen && 'Settings'}</button></li>
-                            {userProfile.role === 'Admin' && <li className="nav-item"><button onClick={() => setActiveSection('audit')} className={`nav-button ${activeSection === 'audit' ? 'active' : ''}`}><span className="nav-icon">📋</span>{isMenuOpen && 'Audit Logs'}</button></li>}
-                {userProfile.role === 'Admin' && <li className="nav-item"><button onClick={() => setActiveSection('monitoring')} className={`nav-button ${activeSection === 'monitoring' ? 'active' : ''}`}><span className="nav-icon">📊</span>{isMenuOpen && 'Monitoring'}</button></li>}
-            <li className="nav-item"><button onClick={() => setActiveSection('help')} className={`nav-button ${activeSection === 'help' ? 'active' : ''}`}><span className="nav-icon">❓</span>{isMenuOpen && 'Help'}</button></li>
-            {userProfile.role === 'Developer' && <li className="nav-item"><button onClick={() => setActiveSection('developer')} className={`nav-button ${activeSection === 'developer' ? 'active' : ''}`}><span className="nav-icon">👨‍💻</span>{isMenuOpen && 'Developer Dashboard'}</button></li>}
-              <li className="nav-item"><button onClick={() => setActiveSection('agent')} className={`nav-button ${activeSection === 'agent' ? 'active' : ''}`}><span className="nav-icon">🧑‍💼</span>{isMenuOpen && 'Agent'}</button></li>
-              <li className="nav-item"><button onClick={() => setActiveSection('agent-ai-config')} className={`nav-button ${activeSection === 'agent-ai-config' ? 'active' : ''}`}><span className="nav-icon">🤖</span>{isMenuOpen && 'Agent AI Config'}</button></li>
-            <li className="nav-item"><button onClick={handleLogout} className="nav-button"><span className="nav-icon">🚪</span>{isMenuOpen && 'Logout'}</button></li>
+            )}
+
+            {/* Topology - Accessible selon les permissions */}
+            {canAccessSection(userProfile.role, 'topology') && (
+              <li className="nav-item">
+                <button onClick={() => setActiveSection('topology')} className={`nav-button ${activeSection === 'topology' ? 'active' : ''}`}>
+                  <span className="nav-icon">🌐</span>
+                  {isMenuOpen && 'Topology'}
+                </button>
+              </li>
+            )}
+
+            {/* Settings - Admin only */}
+            {canAccessSection(userProfile.role, 'settings') && (
+              <li className="nav-item">
+                <button onClick={() => setActiveSection('settings')} className={`nav-button ${activeSection === 'settings' ? 'active' : ''}`}>
+                  <span className="nav-icon">⚙️</span>
+                  {isMenuOpen && 'Settings'}
+                </button>
+              </li>
+            )}
+
+            {/* Firewalling - Admin only */}
+            {canAccessSection(userProfile.role, 'firewalling') && (
+              <li className="nav-item">
+                <button onClick={() => setActiveSection('firewalling')} className={`nav-button ${activeSection === 'firewalling' ? 'active' : ''}`}>
+                  <span className="nav-icon">🛡️</span>
+                  {isMenuOpen && 'Firewalling'}
+                </button>
+              </li>
+            )}
+
+            {/* Monitoring - Accessible selon les permissions */}
+            {canAccessSection(userProfile.role, 'monitoring') && (
+              <li className="nav-item">
+                <button onClick={() => setActiveSection('monitoring')} className={`nav-button ${activeSection === 'monitoring' ? 'active' : ''}`}>
+                  <span className="nav-icon">📊</span>
+                  {isMenuOpen && 'Monitoring'}
+                </button>
+              </li>
+            )}
+
+            {/* Help - Accessible à tous */}
+            {canAccessSection(userProfile.role, 'help') && (
+              <li className="nav-item">
+                <button onClick={() => setActiveSection('help')} className={`nav-button ${activeSection === 'help' ? 'active' : ''}`}>
+                  <span className="nav-icon">❓</span>
+                  {isMenuOpen && 'Help'}
+                </button>
+              </li>
+            )}
+
+            {/* Developer Dashboard - Developer only */}
+            {canAccessSection(userProfile.role, 'developer') && (
+              <li className="nav-item">
+                <button onClick={() => setActiveSection('developer')} className={`nav-button ${activeSection === 'developer' ? 'active' : ''}`}>
+                  <span className="nav-icon">👨‍💻</span>
+                  {isMenuOpen && 'Developer Dashboard'}
+                </button>
+              </li>
+            )}
+
+            {/* Agent - Accessible selon les permissions */}
+            {canAccessSection(userProfile.role, 'agent') && (
+              <li className="nav-item">
+                <button onClick={() => setActiveSection('agent')} className={`nav-button ${activeSection === 'agent' ? 'active' : ''}`}>
+                  <span className="nav-icon">🧑‍💼</span>
+                  {isMenuOpen && 'Agent'}
+                </button>
+              </li>
+            )}
+
+            {/* Agent AI Config - Accessible selon les permissions */}
+            {canAccessSection(userProfile.role, 'agent-ai-config') && (
+              <li className="nav-item">
+                <button onClick={() => setActiveSection('agent-ai-config')} className={`nav-button ${activeSection === 'agent-ai-config' ? 'active' : ''}`}>
+                  <span className="nav-icon">🤖</span>
+                  {isMenuOpen && 'Agent AI Config'}
+                </button>
+              </li>
+            )}
+
+            {/* Logout - Accessible à tous */}
+            <li className="nav-item">
+              <button onClick={handleLogout} className="nav-button">
+                <span className="nav-icon">🚪</span>
+                {isMenuOpen && 'Logout'}
+              </button>
+            </li>
           </ul>
         </div>
         <div className="main-content" style={{ flex: 1, padding: '40px', background: 'rgba(245,245,247,0.05)', color: '#1A2A44' }}>
@@ -1086,7 +1346,10 @@ const Dashboard = () => {
           {isAccountOpen && (
             <div className="account-panel">
               <h4>My Account</h4>
-              <p>Username: {userProfile.username}</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <p style={{ margin: 0 }}>Username: {userProfile.username}</p>
+                <RoleBadge role={userProfile.role} size="small" />
+              </div>
               <p>Email: {userProfile.email}</p>
               <p>Role: {userProfile.role}</p>
               <div className="form-group">
@@ -1160,8 +1423,8 @@ const Dashboard = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 18 }}>
                   <div style={{ fontSize: 54, color: '#fbbf24', marginRight: 12 }}>🏠</div>
                   <div>
-                    <h2 className="home-header-accent">Welcome, {userProfile.username}!</h2>
-                    <p style={{ color: '#ea580c', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
+                    <h2 className="home-header-accent" style={{ background: 'linear-gradient(135deg, #4052D6 0%, #667eea 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Welcome, {userProfile.username}!</h2>
+                                                              <p style={{ color: '#464196', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
                       Your centralized hub for network management and automation. Monitor your network, configure devices, and manage your infrastructure from one place.
                     </p>
                   </div>
@@ -1176,20 +1439,20 @@ const Dashboard = () => {
                     <h3>Quick Stats</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className="stat-label">Total Devices</span>
-                        <span className="stat-value">{devices.length}</span>
+                        <span className="stat-label">Connected Devices</span>
+                        <span className="stat-value">{devices.filter(d => d.status === 'online' || d.status === '🟢 Online').length}/{devices.length}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className="stat-label">Active Connections</span>
-                        <span className="stat-value">3</span>
+                        <span className="stat-label">SSH Sessions</span>
+                        <span className="stat-value">{activeSSHSessions || 0}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className="stat-label">VLANs Configured</span>
-                        <span className="stat-value">5</span>
+                        <span className="stat-label">Active VLANs</span>
+                        <span className="stat-value">{vlans.filter(v => v.status === 'active' || v.status === 'Active').length || 5}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className="stat-label">System Status</span>
-                        <span className="stat-value" style={{ color: '#10b981' }}>Healthy</span>
+                        <span className="stat-label">API Status</span>
+                        <span className="stat-value" style={{ color: '#10b981' }}>🟢 Online</span>
                       </div>
                     </div>
                   </div>
@@ -1207,7 +1470,7 @@ const Dashboard = () => {
                       <button
                         onClick={() => setActiveSection('topology')}
                         style={{
-                          background: 'linear-gradient(90deg, #1e40af 0%, #fbbf24 100%)',
+                          background: 'linear-gradient(90deg, #4052D6 0%, #667eea 100%)',
                           color: '#fff',
                           padding: '10px 16px',
                           border: 'none',
@@ -1224,7 +1487,7 @@ const Dashboard = () => {
                       <button
                         onClick={() => setActiveSection('switching')}
                         style={{
-                          background: 'linear-gradient(90deg, #fbbf24 0%, #1e40af 100%)',
+                          background: 'linear-gradient(90deg, #4052D6 0%, #667eea 100%)',
                           color: '#fff',
                           padding: '10px 16px',
                           border: 'none',
@@ -1241,7 +1504,7 @@ const Dashboard = () => {
                       <button
                         onClick={() => setActiveSection('ssh')}
                         style={{
-                          background: 'linear-gradient(90deg, #1e40af 0%, #fbbf24 100%)',
+                          background: 'linear-gradient(90deg, #4052D6 0%, #667eea 100%)',
                           color: '#fff',
                           padding: '10px 16px',
                           border: 'none',
@@ -1258,7 +1521,7 @@ const Dashboard = () => {
                       <button
                         onClick={() => setActiveSection('dhcpSnooping')}
                         style={{
-                          background: 'linear-gradient(90deg, #fbbf24 0%, #1e40af 100%)',
+                          background: 'linear-gradient(90deg, #4052D6 0%, #667eea 100%)',
                           color: '#fff',
                           padding: '10px 16px',
                           border: 'none',
@@ -1374,20 +1637,20 @@ const Dashboard = () => {
                     <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Network Overview</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Active Ports</span>
-                        <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 18 }}>24/48</span>
+                        <span style={{ color: '#B7410E', fontWeight: 600 }}>Active Ports</span>
+                        <span style={{ color: '#B7410E', fontWeight: 700, fontSize: 18 }}>24/48</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Bandwidth Usage</span>
-                        <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 18 }}>68%</span>
+                        <span style={{ color: '#B7410E', fontWeight: 600 }}>Bandwidth Usage</span>
+                        <span style={{ color: '#B7410E', fontWeight: 700, fontSize: 18 }}>68%</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Security Events</span>
-                        <span style={{ color: '#ef4444', fontWeight: 700, fontSize: 18 }}>2</span>
+                        <span style={{ color: '#B7410E', fontWeight: 600 }}>Security Events</span>
+                        <span style={{ color: '#B7410E', fontWeight: 700, fontSize: 18 }}>2</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Backup Status</span>
-                        <span style={{ color: '#10b981', fontWeight: 700, fontSize: 18 }}>Up to date</span>
+                        <span style={{ color: '#B7410E', fontWeight: 600 }}>Backup Status</span>
+                        <span style={{ color: '#B7410E', fontWeight: 700, fontSize: 18 }}>Up to date</span>
                       </div>
                     </div>
                   </div>
@@ -1404,22 +1667,46 @@ const Dashboard = () => {
                     boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
                   }}>
                     <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Device Status</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Cisco 3725</span>
-                        <span style={{ color: '#10b981', fontWeight: 700, fontSize: 16 }}>🟢 Online</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(64, 82, 214, 0.1)' }}>
+                        <div>
+                          <div style={{ color: '#B7410E', fontWeight: 600, fontSize: 14 }}>Cisco 3725</div>
+                          <div style={{ color: '#666', fontSize: 11 }}>Response: 45ms | Uptime: 15d 8h</div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Aruba 2930F</span>
-                        <span style={{ color: '#10b981', fontWeight: 700, fontSize: 16 }}>🟢 Online</span>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ color: '#10b981', fontWeight: 700, fontSize: 14 }}>🟢 Online</div>
+                          <div style={{ color: '#666', fontSize: 11 }}>24/48 ports active</div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>HP 2530</span>
-                        <span style={{ color: '#ef4444', fontWeight: 700, fontSize: 16 }}>🔴 Offline</span>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Juniper EX2200</span>
-                        <span style={{ color: '#fbbf24', fontWeight: 700, fontSize: 16 }}>🟡 Warning</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(64, 82, 214, 0.1)' }}>
+                        <div>
+                          <div style={{ color: '#B7410E', fontWeight: 600, fontSize: 14 }}>Aruba 2930F</div>
+                          <div style={{ color: '#666', fontSize: 11 }}>Last seen: 15m ago | Uptime: 8d 12h</div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ color: '#ef4444', fontWeight: 700, fontSize: 14 }}>🔴 Offline</div>
+                          <div style={{ color: '#666', fontSize: 11 }}>0/48 ports active</div>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(64, 82, 214, 0.1)' }}>
+                        <div>
+                          <div style={{ color: '#B7410E', fontWeight: 600, fontSize: 14 }}>HP 2530</div>
+                          <div style={{ color: '#666', fontSize: 11 }}>Last seen: 2h ago | Uptime: 3d 5h</div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ color: '#ef4444', fontWeight: 700, fontSize: 14 }}>🔴 Offline</div>
+                          <div style={{ color: '#666', fontSize: 11 }}>0/24 ports active</div>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0' }}>
+                        <div>
+                          <div style={{ color: '#B7410E', fontWeight: 600, fontSize: 14 }}>Juniper EX2200</div>
+                          <div style={{ color: '#666', fontSize: 11 }}>Last seen: 45m ago | Uptime: 12d 3h</div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ color: '#ef4444', fontWeight: 700, fontSize: 14 }}>🔴 Offline</div>
+                          <div style={{ color: '#666', fontSize: 11 }}>0/24 ports active</div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1458,7 +1745,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  {/* Performance Metrics */}
+                  {/* Recent Activity */}
                   <div style={{ 
                     background: '#ffffff', 
                     borderRadius: 20, 
@@ -1466,26 +1753,39 @@ const Dashboard = () => {
                     border: '3px solid #ffffff',
                     boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
                   }}>
-                    <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Performance Metrics</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Response Time</span>
-                        <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 18 }}>2.3ms</span>
+                    <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Recent Activity</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: '1px solid rgba(64, 82, 214, 0.1)' }}>
+                        <div style={{ fontSize: 16, color: '#4052D6' }}>🔐</div>
+                        <div>
+                          <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>SSH connection to Cisco 3725</div>
+                          <div style={{ color: '#666', fontSize: 12 }}>2 minutes ago</div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Packet Loss</span>
-                        <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 18 }}>0.01%</span>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Throughput</span>
-                        <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 18 }}>1.2 Gbps</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: '1px solid rgba(64, 82, 214, 0.1)' }}>
+                        <div style={{ fontSize: 16, color: '#10b981' }}>🔀</div>
+                        <div>
+                          <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>VLAN 100 created on Aruba 2930F</div>
+                          <div style={{ color: '#666', fontSize: 12 }}>15 minutes ago</div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Error Rate</span>
-                        <span style={{ color: '#10b981', fontWeight: 700, fontSize: 18 }}>0.001%</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: '1px solid rgba(64, 82, 214, 0.1)' }}>
+                        <div style={{ fontSize: 16, color: '#fbbf24' }}>📊</div>
+                        <div>
+                          <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>MAC table refreshed on HP 2530</div>
+                          <div style={{ color: '#666', fontSize: 12 }}>1 hour ago</div>
+                    </div>
+                  </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
+                        <div style={{ fontSize: 16, color: '#4052D6' }}>💾</div>
+                        <div>
+                          <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>System backup completed</div>
+                          <div style={{ color: '#666', fontSize: 12 }}>3 hours ago</div>
+                        </div>
                       </div>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -1515,8 +1815,9 @@ const Dashboard = () => {
                     </p>
                   </div>
                 </div>
+                {!selectedSwitchType && (
                 <div style={{ display: 'flex', gap: 36, flexWrap: 'wrap', justifyContent: 'flex-start', marginTop: 24 }}>
-                  {/* Cisco 3725 card (existing logic) */}
+                  {/* Cisco 3725 card (RBAC logic) */}
                   <div style={{
                     background: 'linear-gradient(120deg, #e0e7ef 0%, #fbbf24 100%)',
                     borderRadius: 24,
@@ -1530,12 +1831,32 @@ const Dashboard = () => {
                     alignItems: 'center',
                     cursor: 'pointer',
                     transition: 'box-shadow 0.2s',
-                  }} onClick={() => openCreateVlanModal('Cisco 3725')}>
+                  }} onClick={() => {
+                    // Admin can create VLANs, Network_Engineer can only view
+                    if (userProfile.role === 'Admin') {
+                      openCreateVlanModal('Cisco 3725');
+                    } else {
+                      selectSwitchForVlans('Cisco 3725');
+                    }
+                  }}>
                     <div style={{ fontSize: 40, marginBottom: 10, color: '#1e3a8a' }}>🖧</div>
                     <h3 style={{ color: '#1e3a8a', fontWeight: 700, fontSize: 22, margin: 0 }}>Cisco 3725</h3>
                     <p style={{ color: '#ea580c', fontSize: 15, margin: '10px 0 0 0', textAlign: 'center' }}>
                       Classic Cisco router with VLAN and switching support.
                     </p>
+                    {userProfile.role !== 'Admin' && (
+                      <div style={{ 
+                        marginTop: '8px', 
+                        padding: '4px 8px', 
+                        background: 'rgba(59, 130, 246, 0.1)', 
+                        borderRadius: '8px',
+                        fontSize: '12px',
+                        color: '#3b82f6',
+                        fontWeight: '600'
+                      }}>
+                        🔒 View Only
+                      </div>
+                    )}
                   </div>
                   {/* Aruba Switch card (example) */}
                   <div style={{
@@ -1598,6 +1919,177 @@ const Dashboard = () => {
                     </p>
                   </div>
                 </div>
+                )}
+
+                {/* Existing VLANs List - Only for Network Engineers when switch is selected */}
+                {userProfile.role !== 'Admin' && selectedSwitchType && (
+                  <div style={{
+                    background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                    borderRadius: 24,
+                    border: '2px solid #cbd5e1',
+                    padding: '32px',
+                    marginTop: '32px'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+                      <div style={{ fontSize: 32, color: '#3b82f6' }}>📋</div>
+                      <div>
+                        <h3 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: '#1e40af' }}>Existing VLANs - {selectedSwitchType}</h3>
+                        <p style={{ color: '#64748b', fontSize: 14, margin: '4px 0 0 0' }}>
+                          🔒 Read-only view of current VLANs. Contact an administrator for modifications.
+                        </p>
+                      </div>
+                      <button 
+                        onClick={() => setSelectedSwitchType(null)}
+                        style={{
+                          background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
+                          color: 'white',
+                          border: 'none',
+                          padding: '8px 16px',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          fontWeight: '600'
+                        }}
+                      >
+                        ← Back to Switches
+                      </button>
+                    </div>
+
+                    {isLoadingVlans ? (
+                      <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        padding: '40px',
+                        color: '#64748b'
+                      }}>
+                        <div style={{
+                          width: '32px',
+                          height: '32px',
+                          border: '3px solid #e2e8f0',
+                          borderTop: '3px solid #3b82f6',
+                          borderRadius: '50%',
+                          animation: 'spin 1s linear infinite',
+                          marginRight: '12px'
+                        }}></div>
+                        Loading VLANs...
+                      </div>
+                    ) : vlanError ? (
+                      <div style={{
+                        background: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
+                        border: '1px solid #ef4444',
+                        borderRadius: 12,
+                        padding: '16px',
+                        textAlign: 'center',
+                        color: '#dc2626'
+                      }}>
+                        <p>❌ {vlanError}</p>
+                        <button 
+                          onClick={fetchVlans}
+                          style={{
+                            background: '#ef4444',
+                            color: 'white',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            marginTop: '12px',
+                            fontWeight: '600'
+                          }}
+                        >
+                          🔄 Retry
+                        </button>
+                      </div>
+                    ) : vlans.length === 0 ? (
+                      <div style={{
+                        textAlign: 'center',
+                        padding: '40px',
+                        color: '#64748b'
+                      }}>
+                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>📭</div>
+                        <p style={{ fontSize: '18px', margin: '0 0 8px 0' }}>No VLANs found</p>
+                        <p style={{ fontSize: '14px', margin: 0 }}>VLANs will appear here once created by an administrator.</p>
+                      </div>
+                    ) : (
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                        gap: '20px'
+                      }}>
+                        {vlans.map((vlan, index) => (
+                          <div key={index} style={{
+                            background: 'white',
+                            borderRadius: '12px',
+                            padding: '20px',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                            border: '1px solid #e2e8f0',
+                            transition: 'transform 0.2s, box-shadow 0.2s'
+                          }}>
+                            <div style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              marginBottom: '16px',
+                              paddingBottom: '12px',
+                              borderBottom: '1px solid #f1f5f9'
+                            }}>
+                              <span style={{
+                                fontSize: '18px',
+                                fontWeight: '700',
+                                color: '#1e40af'
+                              }}>
+                                VLAN {vlan.vlan_id || vlan.vlanId}
+                              </span>
+                              <span style={{
+                                padding: '4px 12px',
+                                borderRadius: '20px',
+                                fontSize: '12px',
+                                fontWeight: '600',
+                                textTransform: 'uppercase',
+                                background: '#dcfce7',
+                                color: '#166534'
+                              }}>
+                                Active
+                              </span>
+                            </div>
+                            <div style={{ marginBottom: '16px' }}>
+                              <p style={{ margin: '8px 0', fontSize: '14px', color: '#475569' }}>
+                                <strong style={{ color: '#1e293b' }}>Name:</strong> {vlan.vlan_name || vlan.vlanName || 'N/A'}
+                              </p>
+                              <p style={{ margin: '8px 0', fontSize: '14px', color: '#475569' }}>
+                                <strong style={{ color: '#1e293b' }}>Description:</strong> {vlan.description || 'No description'}
+                              </p>
+                              <p style={{ margin: '8px 0', fontSize: '14px', color: '#475569' }}>
+                                <strong style={{ color: '#1e293b' }}>Interfaces:</strong> {vlan.interfaces?.length || 0} ports
+                              </p>
+                              <p style={{ margin: '8px 0', fontSize: '14px', color: '#475569' }}>
+                                <strong style={{ color: '#1e293b' }}>Created:</strong> {vlan.created_at || vlan.createdAt || 'Unknown'}
+                              </p>
+                            </div>
+                            <div style={{
+                              textAlign: 'center',
+                              paddingTop: '12px',
+                              borderTop: '1px solid #f1f5f9'
+                            }}>
+                              <span style={{
+                                display: 'inline-block',
+                                background: '#f1f5f9',
+                                color: '#64748b',
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                fontSize: '12px',
+                                fontWeight: '600',
+                                border: '1px solid #e2e8f0'
+                              }}>
+                                🔒 View Only
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -1700,7 +2192,7 @@ const Dashboard = () => {
           {activeSection === 'routing' && (
             <div style={{ width: '100%', minHeight: '80vh', background: '#f7fafc', padding: '0 0 48px 0' }}>
               <div style={{
-                background: 'linear-gradient(120deg, #fef9c3 0%, #bae6fd 100%)',
+                background: 'linear-gradient(120deg, #f0f9ff 0%, #bae6fd 100%)',
                 borderRadius: 36,
                 boxShadow: '0 8px 32px rgba(59, 130, 246, 0.09)',
                 padding: '48px 64px',
@@ -1857,7 +2349,7 @@ const Dashboard = () => {
               <div style={{
                 background: 'linear-gradient(120deg, #fef3c7 0%, #dbeafe 100%)',
                 borderRadius: 36,
-                boxShadow: '0 8px 32px rgba(251, 191, 36, 0.09)',
+                boxShadow: '0 8px 32px rgba(59, 130, 246, 0.09)',
                 padding: '48px 64px',
                 maxWidth: '1400px',
                 margin: '48px auto 0 auto',
@@ -2020,7 +2512,7 @@ const Dashboard = () => {
           {activeSection === 'dhcp' && (
             <div style={{ width: '100%', minHeight: '80vh', background: '#f7fafc', padding: '0 0 48px 0' }}>
               <div style={{
-                background: 'linear-gradient(120deg, #f3f8ff 0%, #fef9c3 100%)',
+                background: 'linear-gradient(120deg, #f3f8ff 0%, #f0f9ff 100%)',
                 borderRadius: 36,
                 boxShadow: '0 8px 32px rgba(59, 130, 246, 0.08)',
                 padding: '48px 64px',
@@ -2219,7 +2711,7 @@ const Dashboard = () => {
           {activeSection === 'settings' && (
             <div style={{ width: '100%', minHeight: '80vh', background: '#f7fafc', padding: '0 0 48px 0' }}>
               <div style={{
-                background: 'linear-gradient(120deg, #f0f9ff 0%, #fef9c3 100%)',
+                background: 'linear-gradient(120deg, #f0f9ff 0%, #e0f2fe 100%)',
                 borderRadius: 36,
                 boxShadow: '0 8px 32px rgba(59, 130, 246, 0.08)',
                 padding: '48px 64px',
@@ -2668,8 +3160,8 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-          {activeSection === 'audit' && userProfile.role === 'Admin' && (
-            <ReportsPage />
+          {activeSection === 'firewalling' && userProfile.role === 'Admin' && (
+            <FirewallingPage />
           )}
           {activeSection === 'monitoring' && userProfile.role === 'Admin' && (
             <MonitoringPage API_URL={API_URL} />
@@ -3351,7 +3843,7 @@ const Dashboard = () => {
           {activeSection === 'stp' && (
             <div style={{ width: '100%', minHeight: '80vh', background: '#f7fafc', padding: '0 0 48px 0' }}>
               <div style={{
-                background: 'linear-gradient(120deg, #f0fdf4 0%, #fef9c3 100%)',
+                background: 'linear-gradient(120deg, #f0fdf4 0%, #dcfce7 100%)',
                 borderRadius: 36,
                 boxShadow: '0 8px 32px rgba(16, 185, 129, 0.09)',
                 padding: '48px 64px',
@@ -3476,7 +3968,7 @@ const Dashboard = () => {
           {activeSection === 'etherchannel' && (
             <div style={{ width: '100%', minHeight: '80vh', background: '#f7fafc', padding: '0 0 48px 0' }}>
               <div style={{
-                background: 'linear-gradient(120deg, #faf5ff 0%, #fef9c3 100%)',
+                background: 'linear-gradient(120deg, #faf5ff 0%, #f3e8ff 100%)',
                 borderRadius: 36,
                 boxShadow: '0 8px 32px rgba(139, 92, 246, 0.09)',
                 padding: '48px 64px',
@@ -3752,6 +4244,11 @@ const Dashboard = () => {
         open={createVlanModalOpen}
         onClose={() => setCreateVlanModalOpen(false)}
         onAssignToInterface={handleAssignToInterface}
+      />
+      <ViewVlansModal
+        open={viewVlansModalOpen}
+        onClose={() => setViewVlansModalOpen(false)}
+        switchType={modalSwitchType}
       />
       <DhcpModal
         open={dhcpModalOpen}

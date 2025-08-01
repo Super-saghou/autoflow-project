@@ -31,16 +31,57 @@ const Login = () => {
       }
 
       const data = await response.json();
+      console.log('Login response:', data); // Debug log
+      
       if (data.message === 'Login successful') {
         // Store login data for MFA verification
         setLoginData(data);
         
         // Get user email from login response or use a default
-        const email = data.user?.email || `${username}@autoflow.local`;
+        let email = data.user?.email;
+        console.log('Extracted email from login response:', email); // Debug log
+        
+        // For the legacy user "sarra", always use the configured email
+        if (username === 'sarra') {
+          email = 'sarra.bngharbia@gmail.com';
+          console.log('Using configured email for sarra:', email); // Debug log
+        }
+        // If email is empty or not provided, use a default based on username
+        else if (!email || email.trim() === '') {
+          email = `${username}@autoflow.local`;
+          console.log('Using default email:', email); // Debug log
+        }
+        
         setUserEmail(email);
         
-        // Show MFA modal for verification
-        setShowMFAModal(true);
+        // Automatically send MFA code to user's email
+        try {
+          console.log('Sending MFA code to:', email); // Debug log
+          console.log('MFA request body:', { email: email }); // Debug log
+          
+          const mfaResponse = await fetch('/api/mfa/send-code', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              email: email
+            }),
+          });
+
+          const mfaData = await mfaResponse.json();
+          console.log('MFA response:', mfaData); // Debug log
+
+          if (mfaResponse.ok && mfaData.success) {
+            // Show MFA modal for verification
+            setShowMFAModal(true);
+          } else {
+            throw new Error(mfaData.message || 'Erreur lors de l\'envoi du code MFA');
+          }
+        } catch (mfaError) {
+          console.error('MFA error:', mfaError); // Debug log
+          setError(mfaError.message || 'Erreur lors de l\'envoi du code MFA');
+        }
       }
     } catch (error) {
       setError(error.message || 'Erreur réseau, veuillez vérifier votre connexion');
@@ -117,6 +158,7 @@ const Login = () => {
         onSuccess={handleMFASuccess}
         userEmail={userEmail}
       />
+      {showMFAModal && console.log('Login: Rendering MFAModal with userEmail:', userEmail)}
     </div>
   );
 };
