@@ -15,10 +15,10 @@ def test_fortigate_integration():
     
     # Test configuration
     test_config = {
-        'host': '192.168.1.99',
+        'host': '192.168.111.204',
         'port': 443,
         'username': 'admin',
-        'api_token': 'test-token'  # Replace with actual token
+        'api_token': 'AutoFlow123!'  # API key from setup
     }
     
     print(f"📋 Test Configuration:")

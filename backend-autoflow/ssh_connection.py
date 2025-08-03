@@ -26,12 +26,51 @@ SWITCH_CONFIG = {
     'global_delay_factor': 2,  # Increase delay factor for stability
 }
 
+# Telnet configuration as fallback
+TELNET_CONFIG = {
+    'device_type': 'cisco_ios_telnet',
+    'ip': '192.168.111.198',
+    'username': 'sarra',
+    'password': 'sarra',
+    'read_timeout_override': 30,
+    'fast_cli': False,
+    'conn_timeout': 30,
+    'auth_timeout': 30,
+    'banner_timeout': 30,
+    'blocking_timeout': 30,
+    'timeout': 30,
+    'global_delay_factor': 2,
+}
+
+def test_connection(config, connection_type):
+    """Test if a connection type is available"""
+    try:
+        print(f"Testing {connection_type} connection...", flush=True)
+        net_connect = ConnectHandler(**config)
+        net_connect.disconnect()
+        return True
+    except Exception as e:
+        print(f"{connection_type} connection failed: {e}", flush=True)
+        return False
+
 def connect_with_retry(max_retries=3):
-    """Connect to switch with retry logic"""
+    """Connect to switch with retry logic, trying SSH first, then Telnet"""
+    # First, test SSH
+    if test_connection(SWITCH_CONFIG, "SSH"):
+        print("SSH is available, using SSH connection...", flush=True)
+        config = SWITCH_CONFIG
+    else:
+        print("SSH not available, trying Telnet...", flush=True)
+        if test_connection(TELNET_CONFIG, "Telnet"):
+            print("Telnet is available, using Telnet connection...", flush=True)
+            config = TELNET_CONFIG
+        else:
+            raise Exception("Neither SSH nor Telnet is available on the switch")
+    
     for attempt in range(max_retries):
         try:
             print(f"Connection attempt {attempt + 1}/{max_retries}...", flush=True)
-            net_connect = ConnectHandler(**SWITCH_CONFIG)
+            net_connect = ConnectHandler(**config)
             return net_connect
         except Exception as e:
             print(f"Connection attempt {attempt + 1} failed: {e}", flush=True)

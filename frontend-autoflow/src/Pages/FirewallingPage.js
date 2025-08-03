@@ -145,25 +145,41 @@ const FirewallingPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [fortigateStatus, setFortigateStatus] = useState('disconnected');
   const [fortigateConfig, setFortigateConfig] = useState({
-    host: '192.168.1.99',
-    port: 443,
+    host: '192.168.111.204',
+    port: 22,
     username: 'admin',
-    apiToken: ''
+    password: 'admin'
   });
   const [firewallRules, setFirewallRules] = useState([]);
   const [vpnConnections, setVpnConnections] = useState([]);
   const [securityProfiles, setSecurityProfiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showCreateRuleModal, setShowCreateRuleModal] = useState(false);
+  const [newRule, setNewRule] = useState({
+    name: '',
+    source: 'all',
+    destination: 'all',
+    schedule: 'always',
+    service: 'ALL',
+    action: 'accept',
+    nat: 'disable',
+    securityProfiles: [],
+    log: 'enable'
+  });
 
   // Fetch FortiGate status
   const fetchFortigateStatus = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/fortigate/status');
+      const response = await fetch('/api/fortigate/ssh/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fortigateConfig)
+      });
       if (response.ok) {
         const data = await response.json();
-        setFortigateStatus(data.status);
+        setFortigateStatus(data.status === 'success' ? 'connected' : 'disconnected');
       } else {
         setFortigateStatus('disconnected');
       }
@@ -180,7 +196,7 @@ const FirewallingPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/fortigate/connect', {
+      const response = await fetch('/api/fortigate/ssh/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(fortigateConfig)
@@ -207,7 +223,11 @@ const FirewallingPage = () => {
   // Fetch firewall rules
   const fetchFirewallRules = async () => {
     try {
-      const response = await fetch('/api/fortigate/firewall-rules');
+      const response = await fetch('/api/fortigate/ssh/firewall-rules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fortigateConfig)
+      });
       if (response.ok) {
         const data = await response.json();
         setFirewallRules(data.rules || []);
@@ -220,7 +240,11 @@ const FirewallingPage = () => {
   // Fetch VPN connections
   const fetchVpnConnections = async () => {
     try {
-      const response = await fetch('/api/fortigate/vpn-connections');
+      const response = await fetch('/api/fortigate/ssh/vpn-connections', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fortigateConfig)
+      });
       if (response.ok) {
         const data = await response.json();
         setVpnConnections(data.connections || []);
@@ -233,7 +257,11 @@ const FirewallingPage = () => {
   // Fetch security profiles
   const fetchSecurityProfiles = async () => {
     try {
-      const response = await fetch('/api/fortigate/security-profiles');
+      const response = await fetch('/api/fortigate/ssh/security-profiles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fortigateConfig)
+      });
       if (response.ok) {
         const data = await response.json();
         setSecurityProfiles(data.profiles || []);
@@ -246,27 +274,81 @@ const FirewallingPage = () => {
   // Create new firewall rule
   const createFirewallRule = async (ruleData) => {
     try {
-      const response = await fetch('/api/fortigate/firewall-rules', {
+      console.log('Creating firewall rule with data:', ruleData);
+      console.log('FortiGate config:', fortigateConfig);
+      
+      const requestBody = {
+        ...fortigateConfig,
+        rule: ruleData
+      };
+      console.log('Request body:', requestBody);
+      
+      const response = await fetch('/api/fortigate/ssh/firewall-rules/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(ruleData)
+        body: JSON.stringify(requestBody)
       });
       
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
-        fetchFirewallRules();
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.status === 'success') {
+          setShowCreateRuleModal(false);
+          setNewRule({
+            name: '',
+            source: 'all',
+            destination: 'all',
+            schedule: 'always',
+            service: 'ALL',
+            action: 'accept',
+            nat: 'disable',
+            securityProfiles: [],
+            log: 'enable'
+          });
+          fetchFirewallRules();
+          setError(null); // Clear any previous errors
+        } else {
+          throw new Error(data.message || 'Failed to create firewall rule');
+        }
       } else {
-        throw new Error('Failed to create firewall rule');
+        const errorText = await response.text();
+        console.error('Response error:', errorText);
+        throw new Error(`Failed to create firewall rule: ${response.status} ${errorText}`);
       }
     } catch (err) {
+      console.error('Error creating firewall rule:', err);
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleCreateRule = () => {
+    console.log('handleCreateRule called with newRule:', newRule);
+    
+    if (!newRule.name.trim()) {
+      setError('Rule name is required');
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    createFirewallRule(newRule);
   };
 
   // Delete firewall rule
   const deleteFirewallRule = async (ruleId) => {
     try {
-      const response = await fetch(`/api/fortigate/firewall-rules/${ruleId}`, {
-        method: 'DELETE'
+      const response = await fetch('/api/fortigate/ssh/firewall-rules/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...fortigateConfig,
+          rule_id: ruleId
+        })
       });
       
       if (response.ok) {
@@ -338,13 +420,13 @@ const FirewallingPage = () => {
               />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '4px', fontWeight: '600' }}>API Token:</label>
+              <label style={{ display: 'block', marginBottom: '4px', fontWeight: '600' }}>Password:</label>
               <input
                 type="password"
-                value={fortigateConfig.apiToken}
-                onChange={(e) => setFortigateConfig({...fortigateConfig, apiToken: e.target.value})}
+                value={fortigateConfig.password}
+                onChange={(e) => setFortigateConfig({...fortigateConfig, password: e.target.value})}
                 style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '8px' }}
-                placeholder="Enter API token"
+                placeholder="Enter password"
               />
             </div>
           </div>
@@ -386,7 +468,7 @@ const FirewallingPage = () => {
     <Section>
       <SectionTitle>🛡️ Firewall Rules Management</SectionTitle>
       <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
-        <Button onClick={() => setActiveTab('create-rule')}>Create New Rule</Button>
+        <Button onClick={() => setShowCreateRuleModal(true)}>Create New Rule</Button>
         <Button onClick={fetchFirewallRules}>Refresh Rules</Button>
       </div>
 
@@ -576,6 +658,243 @@ const FirewallingPage = () => {
     </Section>
   );
 
+  // Create Rule Modal
+  const renderCreateRuleModal = () => {
+    if (!showCreateRuleModal) return null;
+
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000
+      }}>
+        <div style={{
+          background: 'white',
+          borderRadius: '16px',
+          padding: '32px',
+          maxWidth: '600px',
+          width: '90%',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <h2 style={{ margin: 0, color: '#1e3a8a', fontSize: '24px' }}>🛡️ Create Firewall Rule</h2>
+            <button
+              onClick={() => setShowCreateRuleModal(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                color: '#6b7280'
+              }}
+            >
+              ×
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                Rule Name *
+              </label>
+              <input
+                type="text"
+                value={newRule.name}
+                onChange={(e) => setNewRule({...newRule, name: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '14px'
+                }}
+                placeholder="Enter rule name"
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                Action
+              </label>
+              <select
+                value={newRule.action}
+                onChange={(e) => setNewRule({...newRule, action: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '14px'
+                }}
+              >
+                <option value="accept">Accept</option>
+                <option value="deny">Deny</option>
+                <option value="drop">Drop</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                Source Address
+              </label>
+              <input
+                type="text"
+                value={newRule.source}
+                onChange={(e) => setNewRule({...newRule, source: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '14px'
+                }}
+                placeholder="e.g., 192.168.1.0/24, all"
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                Destination Address
+              </label>
+              <input
+                type="text"
+                value={newRule.destination}
+                onChange={(e) => setNewRule({...newRule, destination: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '14px'
+                }}
+                placeholder="e.g., 10.0.0.0/8, any"
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                Service
+              </label>
+              <input
+                type="text"
+                value={newRule.service}
+                onChange={(e) => setNewRule({...newRule, service: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '14px'
+                }}
+                placeholder="e.g., HTTP, HTTPS, ALL"
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                Schedule
+              </label>
+              <select
+                value={newRule.schedule}
+                onChange={(e) => setNewRule({...newRule, schedule: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '14px'
+                }}
+              >
+                <option value="always">Always</option>
+                <option value="business-hours">Business Hours</option>
+                <option value="weekend">Weekend</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                NAT
+              </label>
+              <select
+                value={newRule.nat}
+                onChange={(e) => setNewRule({...newRule, nat: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '14px'
+                }}
+              >
+                <option value="disable">Disable</option>
+                <option value="enable">Enable</option>
+                <option value="source-nat">Source NAT</option>
+                <option value="destination-nat">Destination NAT</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+                Logging
+              </label>
+              <select
+                value={newRule.log}
+                onChange={(e) => setNewRule({...newRule, log: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '14px'
+                }}
+              >
+                <option value="enable">Enable</option>
+                <option value="disable">Disable</option>
+                <option value="all">Log All</option>
+                <option value="security">Security Events Only</option>
+              </select>
+            </div>
+          </div>
+
+          {error && (
+            <div style={{ 
+              background: 'rgba(239, 68, 68, 0.1)', 
+              border: '1px solid rgba(239, 68, 68, 0.3)', 
+              color: '#dc2626', 
+              padding: '12px', 
+              borderRadius: '8px', 
+              marginBottom: '16px' 
+            }}>
+              {error}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <Button
+              onClick={() => setShowCreateRuleModal(false)}
+              style={{ background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)' }}
+            >
+              Cancel
+            </Button>
+            <SuccessButton onClick={handleCreateRule} disabled={loading}>
+              {loading ? 'Creating...' : 'Create Rule'}
+            </SuccessButton>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <FirewallingPageContainer>
       <FirewallingPageTitle>Firewalling with FortiGate</FirewallingPageTitle>
@@ -612,6 +931,7 @@ const FirewallingPage = () => {
         {activeTab === 'vpn-connections' && renderVpnConnections()}
         {activeTab === 'security-profiles' && renderSecurityProfiles()}
       </FirewallingCard>
+      {renderCreateRuleModal()}
     </FirewallingPageContainer>
   );
 };

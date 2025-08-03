@@ -1,9 +1,9 @@
 {
   "fortigate": {
-    "host": "192.168.1.99",
+    "host": "192.168.111.204",
     "port": 443,
     "username": "admin",
-    "api_token": "",
+    "api_token": "AutoFlow123!",
     "verify_ssl": false,
     "timeout": 30
   },
@@ -15,7 +15,7 @@
     "mgmt_interface": "port1"
   },
   "api": {
-    "base_url": "https://192.168.1.99:443/api/v2",
+    "base_url": "https://192.168.111.204:443/api/v2",
     "endpoints": {
       "status": "/monitor/system/status",
       "firewall_rules": "/cmdb/firewall/policy",
@@ -27,8 +27,8 @@
   "default_rules": [
     {
       "name": "AutoFlow-Management",
-      "source": "192.168.10.0/24",
-      "destination": "192.168.1.99",
+      "source": "192.168.111.0/24",
+      "destination": "192.168.111.204",
       "service": "HTTPS",
       "action": "accept",
       "status": "enabled",
@@ -36,8 +36,8 @@
     },
     {
       "name": "AutoFlow-API",
-      "source": "192.168.10.0/24",
-      "destination": "192.168.1.99",
+      "source": "192.168.111.0/24",
+      "destination": "192.168.111.204",
       "service": "HTTPS",
       "action": "accept",
       "status": "enabled",
@@ -45,8 +45,8 @@
     },
     {
       "name": "AutoFlow-SSH",
-      "source": "192.168.10.0/24",
-      "destination": "192.168.1.99",
+      "source": "192.168.111.0/24",
+      "destination": "192.168.111.204",
       "service": "SSH",
       "action": "accept",
       "status": "enabled",

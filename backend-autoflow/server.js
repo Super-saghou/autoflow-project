@@ -279,6 +279,304 @@ app.get('/api/fortigate/security-profiles', async (req, res) => {
   }
 });
 
+// FortiGate SSH-based endpoints
+app.post('/api/fortigate/ssh/status', async (req, res) => {
+  try {
+    const { host, port, username, password } = req.body;
+    
+    if (!host || !port || !username || !password) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    const { spawn } = await import('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_ssh_api.py', 'status', host, port, username, password]);
+    
+    let result = '';
+    let error = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        try {
+          const response = JSON.parse(result);
+          res.json(response);
+        } catch (e) {
+          res.json({ status: 'error', message: 'Failed to parse response' });
+        }
+      } else {
+        console.error('FortiGate SSH status error:', error);
+        res.json({ status: 'error', message: 'Failed to connect to FortiGate' });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate SSH status error:', error);
+    res.status(500).json({ error: 'Failed to get FortiGate status' });
+  }
+});
+
+app.post('/api/fortigate/ssh/connect', async (req, res) => {
+  try {
+    const { host, port, username, password } = req.body;
+    
+    if (!host || !port || !username || !password) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    const { spawn } = await import('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_ssh_api.py', 'connect', host, port, username, password]);
+    
+    let result = '';
+    let error = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        try {
+          const response = JSON.parse(result);
+          res.json(response);
+        } catch (e) {
+          res.json({ status: 'success', message: 'Connected to FortiGate' });
+        }
+      } else {
+        console.error('FortiGate SSH connect error:', error);
+        res.status(500).json({ error: 'Failed to connect to FortiGate' });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate SSH connect error:', error);
+    res.status(500).json({ error: 'Failed to connect to FortiGate' });
+  }
+});
+
+app.post('/api/fortigate/ssh/firewall-rules', async (req, res) => {
+  try {
+    const { host, port, username, password, rule } = req.body;
+    
+    if (!host || !port || !username || !password) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    const { spawn } = await import('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_ssh_api.py', 'get-rules', host, port, username, password]);
+    
+    let result = '';
+    let error = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        try {
+          const response = JSON.parse(result);
+          res.json(response);
+        } catch (e) {
+          res.json({ status: 'error', message: 'Failed to parse response', rules: [] });
+        }
+      } else {
+        console.error('FortiGate SSH rules error:', error);
+        res.json({ status: 'error', message: 'Failed to get firewall rules', rules: [] });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate SSH rules error:', error);
+    res.status(500).json({ error: 'Failed to get firewall rules' });
+  }
+});
+
+app.post('/api/fortigate/ssh/firewall-rules/create', async (req, res) => {
+  try {
+    console.log('Received create rule request:', req.body);
+    const { host, port, username, password, rule } = req.body;
+    
+    if (!host || !port || !username || !password || !rule) {
+      console.log('Missing parameters:', { host, port, username, password: !!password, rule: !!rule });
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    const { spawn } = await import('child_process');
+    const ruleData = JSON.stringify(rule);
+    console.log('Calling Python script with rule data:', ruleData);
+    const pythonProcess = spawn('python3', ['fortigate_ssh_api_fixed.py', 'create-rule', host, port, username, password, ruleData]);
+    
+    let result = '';
+    let error = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      console.log('Python process closed with code:', code);
+      console.log('Python stdout:', result);
+      console.log('Python stderr:', error);
+      
+      if (code === 0) {
+        try {
+          const response = JSON.parse(result);
+          console.log('Parsed response:', response);
+          res.json(response);
+        } catch (e) {
+          console.log('Failed to parse response, sending default success');
+          res.json({ status: 'success', message: 'Firewall rule created successfully' });
+        }
+      } else {
+        console.error('FortiGate SSH create rule error:', error);
+        res.status(500).json({ error: 'Failed to create firewall rule' });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate SSH create rule error:', error);
+    res.status(500).json({ error: 'Failed to create firewall rule' });
+  }
+});
+
+app.post('/api/fortigate/ssh/firewall-rules/delete', async (req, res) => {
+  try {
+    const { host, port, username, password, rule_id } = req.body;
+    
+    if (!host || !port || !username || !password || !rule_id) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    const { spawn } = await import('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_ssh_api.py', 'delete-rule', host, port, username, password, rule_id]);
+    
+    let result = '';
+    let error = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        try {
+          const response = JSON.parse(result);
+          res.json(response);
+        } catch (e) {
+          res.json({ status: 'success', message: 'Firewall rule deleted successfully' });
+        }
+      } else {
+        console.error('FortiGate SSH delete rule error:', error);
+        res.status(500).json({ error: 'Failed to delete firewall rule' });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate SSH delete rule error:', error);
+    res.status(500).json({ error: 'Failed to delete firewall rule' });
+  }
+});
+
+app.post('/api/fortigate/ssh/vpn-connections', async (req, res) => {
+  try {
+    const { host, port, username, password } = req.body;
+    
+    if (!host || !port || !username || !password) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    const { spawn } = await import('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_ssh_api.py', 'get-vpn', host, port, username, password]);
+    
+    let result = '';
+    let error = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        try {
+          const response = JSON.parse(result);
+          res.json(response);
+        } catch (e) {
+          res.json({ status: 'error', message: 'Failed to parse response', connections: [] });
+        }
+      } else {
+        console.error('FortiGate SSH VPN error:', error);
+        res.json({ status: 'error', message: 'Failed to get VPN connections', connections: [] });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate SSH VPN error:', error);
+    res.status(500).json({ error: 'Failed to get VPN connections' });
+  }
+});
+
+app.post('/api/fortigate/ssh/security-profiles', async (req, res) => {
+  try {
+    const { host, port, username, password } = req.body;
+    
+    if (!host || !port || !username || !password) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    const { spawn } = await import('child_process');
+    const pythonProcess = spawn('python3', ['fortigate_ssh_api.py', 'get-profiles', host, port, username, password]);
+    
+    let result = '';
+    let error = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        try {
+          const response = JSON.parse(result);
+          res.json(response);
+        } catch (e) {
+          res.json({ status: 'error', message: 'Failed to parse response', profiles: [] });
+        }
+      } else {
+        console.error('FortiGate SSH profiles error:', error);
+        res.json({ status: 'error', message: 'Failed to get security profiles', profiles: [] });
+      }
+    });
+  } catch (error) {
+    console.error('FortiGate SSH profiles error:', error);
+    res.status(500).json({ error: 'Failed to get security profiles' });
+  }
+});
+
 // MFA routes
 app.post('/api/mfa/send-code', async (req, res) => {
   try {
