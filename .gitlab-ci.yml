@@ -63,24 +63,28 @@ deploy:
   before_script:
     - echo "Running on production runner..."
     - kubectl version --client
+    - kubectl config current-context
   script:
     - echo "Current namespace and pods:"
-    - kubectl get pods
+    - kubectl get pods -n autoflow
+    - echo "Checking if deployments exist..."
+    - kubectl get deployment backend-deployment -n autoflow || kubectl apply -f backend-deployment.yaml -n autoflow
+    - kubectl get deployment frontend-deployment -n autoflow || kubectl apply -f frontend-deployment.yaml -n autoflow
     - echo "Updating backend deployment..."
-    - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE
+    - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE -n autoflow
     - echo "Updating frontend deployment..."
-    - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE
+    - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE -n autoflow
     - echo "Waiting for backend rollout..."
-    - kubectl rollout status deployment/backend-deployment --timeout=300s
+    - kubectl rollout status deployment/backend-deployment --timeout=300s -n autoflow
     - echo "Waiting for frontend rollout..."
-    - kubectl rollout status deployment/frontend-deployment --timeout=300s
+    - kubectl rollout status deployment/frontend-deployment --timeout=300s -n autoflow
     - echo "Final pod status:"
-    - kubectl get pods
+    - kubectl get pods -n autoflow
     - echo "Final service status:"
-    - kubectl get services
+    - kubectl get services -n autoflow
   environment:
     name: production
     url: http://192.168.111.201:31560
   only:
     - main
-  when: manual
+  # Remove "when: manual" to enable automatic deployment
