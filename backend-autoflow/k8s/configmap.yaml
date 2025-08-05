@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: autoflow-config
+  namespace: autoflow
+data:
+  NODE_ENV: "production"
+  BACKUP_DIR: "/app/backups"
+  PYTHONPATH: "/app"
+  FLASK_API_URL: "http://localhost:5001"
+  GENERATED_PLAYBOOKS_DIR: "/app/generated_playbooks"
+  REACT_APP_API_URL: "http://backend-service:5000"
+  REACT_APP_WS_URL: "ws://backend-service:5010" 

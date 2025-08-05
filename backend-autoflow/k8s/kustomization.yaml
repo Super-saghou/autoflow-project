@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: autoflow
+
+resources:
+  - namespace.yaml
+  - secrets.yaml
+  - configmap.yaml
+  - storage.yaml
+  - backend-deployment.yaml
+  - frontend-deployment.yaml
+  - services.yaml
+  - ingress.yaml
+  - rbac.yaml
+
+commonLabels:
+  app: autoflow
+  version: v1
+
+images:
+  - name: sarra539/autoflow-backend
+    newTag: latest
+  - name: sarra539/autoflow-frontend
+    newTag: latest 

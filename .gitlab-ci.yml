@@ -65,26 +65,25 @@ deploy:
     - kubectl version --client
     - kubectl config current-context
   script:
-    - echo "Current namespace and pods:"
-    - kubectl get pods -n autoflow
+    - echo "Current pods:"
+    - kubectl get pods
     - echo "Checking if deployments exist..."
-    - kubectl get deployment backend-deployment -n autoflow || kubectl apply -f backend-deployment.yaml -n autoflow
-    - kubectl get deployment frontend-deployment -n autoflow || kubectl apply -f frontend-deployment.yaml -n autoflow
+    - kubectl get deployment backend-deployment || kubectl apply -f backend-deployment.yaml
+    - kubectl get deployment frontend-deployment || kubectl apply -f frontend-deployment.yaml
     - echo "Updating backend deployment..."
-    - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE -n autoflow
+    - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE
     - echo "Updating frontend deployment..."
-    - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE -n autoflow
+    - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE
     - echo "Waiting for backend rollout..."
-    - kubectl rollout status deployment/backend-deployment --timeout=300s -n autoflow
+    - kubectl rollout status deployment/backend-deployment --timeout=300s
     - echo "Waiting for frontend rollout..."
-    - kubectl rollout status deployment/frontend-deployment --timeout=300s -n autoflow
+    - kubectl rollout status deployment/frontend-deployment --timeout=300s
     - echo "Final pod status:"
-    - kubectl get pods -n autoflow
+    - kubectl get pods
     - echo "Final service status:"
-    - kubectl get services -n autoflow
+    - kubectl get services
   environment:
     name: production
     url: http://192.168.111.201:31560
   only:
     - main
-  # Remove "when: manual" to enable automatic deployment
