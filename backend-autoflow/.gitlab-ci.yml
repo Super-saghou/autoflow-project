@@ -46,10 +46,11 @@ build-frontend:
     - echo "Verifying frontend directory..."
     - ls -la frontend-autoflow || { echo "Directory frontend-autoflow not found"; exit 1; }
     - cd frontend-autoflow
-    - echo "Building frontend image..."
-    - docker build --no-cache --pull -t $FRONTEND_IMAGE .
+    - echo "Building frontend image with cache busting..."
+    - docker build --no-cache --pull --build-arg BUILD_DATE=$(date) --build-arg BUILD_TIME=$(date +%s) -t $FRONTEND_IMAGE .
     - echo "Pushing frontend image..."
     - docker push $FRONTEND_IMAGE
+    - echo "Frontend image built and pushed successfully: $FRONTEND_IMAGE"
   retry:
     max: 2
   only:
@@ -63,13 +64,29 @@ deploy:
   before_script:
     - echo "Running on production runner..."
     - kubectl version --client
+    - kubectl config current-context
   script:
-    - echo "Current namespace and pods:"
+    - echo "Current pods:"
     - kubectl get pods
+    - echo "Current services:"
+    - kubectl get services
+    - echo "Applying backend deployment..."
+    - kubectl apply -f k8s/backend-deployment.yaml
+    - echo "Applying frontend deployment..."
+    - kubectl apply -f k8s/frontend-deployment.yaml
+    - echo "Applying backend service..."
+    - kubectl apply -f k8s/backend-service.yaml
+    - echo "Applying frontend service..."
+    - kubectl apply -f k8s/frontend-service.yaml
+    - echo "Applying secrets..."
+    - kubectl apply -f k8s/secret.yaml
     - echo "Updating backend deployment..."
     - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE
     - echo "Updating frontend deployment..."
     - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE
+    - echo "Force restarting deployments..."
+    - kubectl rollout restart deployment/backend-deployment
+    - kubectl rollout restart deployment/frontend-deployment
     - echo "Waiting for backend rollout..."
     - kubectl rollout status deployment/backend-deployment --timeout=300s
     - echo "Waiting for frontend rollout..."
@@ -82,5 +99,4 @@ deploy:
     name: production
     url: http://192.168.111.201:31560
   only:
-    - main
-  when: manual 
+    - main 

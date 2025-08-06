@@ -15,6 +15,12 @@ COPY . .
 ENV REACT_APP_API_URL=http://backend-service:5000
 ENV NODE_ENV=production
 
+# Add cache-busting timestamp to force rebuild
+ARG BUILD_DATE
+ARG BUILD_TIME
+RUN echo "Build date: ${BUILD_DATE:-$(date)}" > /app/build-info.txt
+RUN echo "Build time: ${BUILD_TIME:-$(date +%s)}" >> /app/build-info.txt
+
 # Build the app for production
 RUN npm run build
 
