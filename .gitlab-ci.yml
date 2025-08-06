@@ -50,11 +50,11 @@ build-frontend:
     - docker build --no-cache --pull -t $FRONTEND_IMAGE .
     - echo "Pushing frontend image..."
     - docker push $FRONTEND_IMAGE
+    - echo "Image built and pushed successfully: $FRONTEND_IMAGE"
   retry:
     max: 2
   only:
     - main
-
 deploy:
   stage: deploy
   tags:
