@@ -16,16 +16,13 @@ spec:
     spec:
       containers:
         - name: backend
-          image: sarra539/autoflow-backend:UpdateV4
+          image: sarra539/autoflow-repo:VerifUpdate
+          imagePullPolicy: Always
           ports:
-            - containerPort: 5000
-              name: http
-            - containerPort: 5010
-              name: websocket
-            - containerPort: 5001
-              name: flask-api
-            - containerPort: 5003
-              name: ai-agents
+            - containerPort: 5000  # HTTP API
+            - containerPort: 5010  # WebSocket
+            - containerPort: 5001  # Flask API
+            - containerPort: 5003  # AI Agents API
           env:
             - name: MONGO_URL
               valueFrom:
@@ -45,75 +42,37 @@ spec:
               value: "/app"
             - name: FLASK_API_URL
               value: "http://localhost:5001"
-            - name: GENERATED_PLAYBOOKS_DIR
-              value: "/app/generated_playbooks"
           resources:
             requests:
-              memory: "1Gi"
-              cpu: "500m"
+              cpu: "250m"
+              memory: "256Mi"
             limits:
-              memory: "2Gi"
-              cpu: "1000m"
+              cpu: "1"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 30
           volumeMounts:
             - name: backup-storage
               mountPath: /app/backups
             - name: logs-storage
               mountPath: /app/logs
-          startupProbe:
-            httpGet:
-              path: /api/health
-              port: 5000
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            failureThreshold: 30
-            timeoutSeconds: 5
-          livenessProbe:
-            httpGet:
-              path: /api/health
-              port: 5000
-            initialDelaySeconds: 120
-            periodSeconds: 30
-            timeoutSeconds: 10
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /api/health
-              port: 5000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-          lifecycle:
-            preStop:
-              exec:
-                command: ["/bin/sh", "-c", "kill $(cat /app/logs/*.pid) 2>/dev/null || true"]
       volumes:
         - name: backup-storage
           persistentVolumeClaim:
             claimName: backup-pvc
         - name: logs-storage
           emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: backend-service
-  labels:
-    app: backend
-spec:
-  type: ClusterIP
-  ports:
-    - port: 5000
-      targetPort: 5000
-      name: http
-    - port: 5010
-      targetPort: 5010
-      name: websocket
-    - port: 5001
-      targetPort: 5001
-      name: flask-api
-    - port: 5003
-      targetPort: 5003
-      name: ai-agents
-  selector:
-    app: backend 
+      dnsPolicy: Default
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
