@@ -74,6 +74,10 @@ deploy:
     - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE
     - echo "Updating frontend deployment..."
     - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE
+    - echo "Restarting backend deployment..."
+    - kubectl rollout restart deployment/backend-deployment
+    - echo "Restarting frontend deployment..."
+    - kubectl rollout restart deployment/frontend-deployment
     - echo "Waiting for backend rollout..."
     - kubectl rollout status deployment/backend-deployment --timeout=300s
     - echo "Waiting for frontend rollout..."
