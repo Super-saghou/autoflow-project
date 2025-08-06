@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: sarra539/autoflow-repo:VerifUpdate
+          image: sarra539/autoflow-repo:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5000

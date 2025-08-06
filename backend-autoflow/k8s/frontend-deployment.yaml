@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: sarra539/autoflow-front:VersionTestKuber9
+          image: sarra539/autoflow-front:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
