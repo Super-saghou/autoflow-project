@@ -55,7 +55,6 @@ build-frontend:
   only:
     - main
 
-# Deploy to Kubernetes (on your self-hosted runner)
 deploy:
   stage: deploy
   tags:
@@ -67,16 +66,22 @@ deploy:
   script:
     - echo "Current pods:"
     - kubectl get pods
-    - echo "Checking if deployments exist..."
-    - kubectl get deployment backend-deployment || kubectl apply -f backend-deployment.yaml
-    - kubectl get deployment frontend-deployment || kubectl apply -f frontend-deployment.yaml
+    - echo "Current services:"
+    - kubectl get services
+    - echo "Applying backend deployment..."
+    - kubectl apply -f backend-deployment.yaml
+    - echo "Applying frontend deployment..."
+    - kubectl apply -f frontend-deployment.yaml
+    - echo "Applying backend service..."
+    - kubectl apply -f backend-service.yaml
+    - echo "Applying frontend service..."
+    - kubectl apply -f frontend-service.yaml
     - echo "Updating backend deployment..."
     - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE
     - echo "Updating frontend deployment..."
     - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE
-    - echo "Restarting backend deployment..."
+    - echo "Force restarting deployments..."
     - kubectl rollout restart deployment/backend-deployment
-    - echo "Restarting frontend deployment..."
     - kubectl rollout restart deployment/frontend-deployment
     - echo "Waiting for backend rollout..."
     - kubectl rollout status deployment/backend-deployment --timeout=300s
