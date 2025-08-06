@@ -38,23 +38,17 @@ build-frontend:
   services:
     - docker:24.0-dind
   before_script:
-    - echo "Checking Docker version..."
     - docker --version
-    - echo "Attempting Docker login..."
-    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker login failed"; exit 1; }
+    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
   script:
-    - echo "Verifying frontend directory..."
-    - ls -la frontend-autoflow || { echo "Directory frontend-autoflow not found"; exit 1; }
     - cd frontend-autoflow
-    - echo "Building frontend image..."
-    - docker build --no-cache --pull -t $FRONTEND_IMAGE .
-    - echo "Pushing frontend image..."
+    - docker build --no-cache -t $FRONTEND_IMAGE .
     - docker push $FRONTEND_IMAGE
-    - echo "Image built and pushed successfully: $FRONTEND_IMAGE"
   retry:
     max: 2
   only:
     - main
+
 deploy:
   stage: deploy
   tags:
