@@ -4,8 +4,8 @@ stages:
 
 variables:
   DOCKER_USERNAME: "sarra539"
-  BACKEND_IMAGE: "sarra539/autoflow-repo:VerifUpdate"
-  FRONTEND_IMAGE: "sarra539/autoflow-front:VersionTestKuber9"
+  BACKEND_IMAGE: "sarra539/autoflow-repo:${CI_COMMIT_SHA:0:8}"
+  FRONTEND_IMAGE: "sarra539/autoflow-front:${CI_COMMIT_SHA:0:8}"
 
 # Build Backend Image (on shared runners)
 build-backend:
@@ -22,10 +22,11 @@ build-backend:
     - echo "Verifying backend directory..."
     - ls -la backend-autoflow || { echo "Directory backend-autoflow not found"; exit 1; }
     - cd backend-autoflow
-    - echo "Building backend image..."
+    - echo "Building backend image with tag: $BACKEND_IMAGE"
     - docker build --no-cache --pull -t $BACKEND_IMAGE .
     - echo "Pushing backend image..."
     - docker push $BACKEND_IMAGE
+    - echo "Backend image built and pushed successfully: $BACKEND_IMAGE"
   retry:
     max: 2
   only:
@@ -46,7 +47,7 @@ build-frontend:
     - echo "Verifying frontend directory..."
     - ls -la frontend-autoflow || { echo "Directory frontend-autoflow not found"; exit 1; }
     - cd frontend-autoflow
-    - echo "Building frontend image with cache busting..."
+    - echo "Building frontend image with tag: $FRONTEND_IMAGE"
     - docker build --no-cache --pull --build-arg BUILD_DATE=$(date) --build-arg BUILD_TIME=$(date +%s) -t $FRONTEND_IMAGE .
     - echo "Pushing frontend image..."
     - docker push $FRONTEND_IMAGE
@@ -56,7 +57,6 @@ build-frontend:
   only:
     - main
 
-# Deploy to Kubernetes (on your self-hosted runner)
 deploy:
   stage: deploy
   tags:
@@ -80,9 +80,9 @@ deploy:
     - kubectl apply -f k8s/frontend-service.yaml
     - echo "Applying secrets..."
     - kubectl apply -f k8s/secret.yaml
-    - echo "Updating backend deployment..."
+    - echo "Updating backend deployment with image: $BACKEND_IMAGE"
     - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE
-    - echo "Updating frontend deployment..."
+    - echo "Updating frontend deployment with image: $FRONTEND_IMAGE"
     - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE
     - echo "Force restarting deployments..."
     - kubectl rollout restart deployment/backend-deployment
@@ -95,6 +95,9 @@ deploy:
     - kubectl get pods
     - echo "Final service status:"
     - kubectl get services
+    - echo "Deployment completed with images:"
+    - echo "Backend: $BACKEND_IMAGE"
+    - echo "Frontend: $FRONTEND_IMAGE"
   environment:
     name: production
     url: http://192.168.111.201:31560
