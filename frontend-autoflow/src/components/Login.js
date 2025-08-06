@@ -41,10 +41,10 @@ const Login = () => {
         let email = data.user?.email;
         console.log('Extracted email from login response:', email); // Debug log
         
-        // For the legacy user "sarra", always use the configured email
-        if (username === 'sarra') {
+        // For both sarra and testuser, use the same configured email
+        if (username === 'sarra' || username === 'testuser') {
           email = 'sarra.bngharbia@gmail.com';
-          console.log('Using configured email for sarra:', email); // Debug log
+          console.log('Using configured email for', username + ':', email); // Debug log
         }
         // If email is empty or not provided, use a default based on username
         else if (!email || email.trim() === '') {
