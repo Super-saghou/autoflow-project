@@ -2,24 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend-deployment
-  namespace: autoflow
   labels:
-    app: autoflow-frontend
-    version: v1
+    app: frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: autoflow-frontend
+      app: frontend
   template:
     metadata:
       labels:
-        app: autoflow-frontend
-        version: v1
+        app: frontend
     spec:
       containers:
         - name: frontend
-          image: sarra539/autoflow-frontend:latest
+          image: sarra539/autoflow-front:VersionTestKuber9
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -27,15 +24,9 @@ spec:
               protocol: TCP
           env:
             - name: REACT_APP_API_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: autoflow-config
-                  key: REACT_APP_API_URL
+              value: "http://backend-service:5000"
             - name: REACT_APP_WS_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: autoflow-config
-                  key: REACT_APP_WS_URL
+              value: "ws://backend-service:5010"
           resources:
             requests:
               memory: "256Mi"

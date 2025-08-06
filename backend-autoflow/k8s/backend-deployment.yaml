@@ -2,24 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-deployment
-  namespace: autoflow
   labels:
-    app: autoflow-backend
-    version: v1
+    app: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: autoflow-backend
+      app: backend
   template:
     metadata:
       labels:
-        app: autoflow-backend
-        version: v1
+        app: backend
     spec:
       containers:
         - name: backend
-          image: sarra539/autoflow-backend:latest
+          image: sarra539/autoflow-repo:VerifUpdate
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
@@ -46,30 +43,15 @@ spec:
                   name: jwt-secret
                   key: jwt-secret
             - name: NODE_ENV
-              valueFrom:
-                configMapKeyRef:
-                  name: autoflow-config
-                  key: NODE_ENV
+              value: "production"
             - name: BACKUP_DIR
-              valueFrom:
-                configMapKeyRef:
-                  name: autoflow-config
-                  key: BACKUP_DIR
+              value: "/app/backups"
             - name: PYTHONPATH
-              valueFrom:
-                configMapKeyRef:
-                  name: autoflow-config
-                  key: PYTHONPATH
+              value: "/app"
             - name: FLASK_API_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: autoflow-config
-                  key: FLASK_API_URL
+              value: "http://localhost:5001"
             - name: GENERATED_PLAYBOOKS_DIR
-              valueFrom:
-                configMapKeyRef:
-                  name: autoflow-config
-                  key: GENERATED_PLAYBOOKS_DIR
+              value: "/app/generated_playbooks"
           resources:
             requests:
               memory: "1Gi"
@@ -78,10 +60,6 @@ spec:
               memory: "2Gi"
               cpu: "1000m"
           volumeMounts:
-            - name: backup-storage
-              mountPath: /app/backups
-            - name: logs-storage
-              mountPath: /app/logs
             - name: generated-playbooks
               mountPath: /app/generated_playbooks
           startupProbe:
@@ -113,12 +91,6 @@ spec:
               exec:
                 command: ["/bin/sh", "-c", "kill $(cat /app/logs/*.pid) 2>/dev/null || true"]
       volumes:
-        - name: backup-storage
-          persistentVolumeClaim:
-            claimName: backup-pvc
-        - name: logs-storage
-          persistentVolumeClaim:
-            claimName: logs-pvc
         - name: generated-playbooks
           emptyDir: {}
       restartPolicy: Always 
