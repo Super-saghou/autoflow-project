@@ -69,13 +69,15 @@ deploy:
     - echo "Current services:"
     - kubectl get services
     - echo "Applying backend deployment..."
-    - kubectl apply -f backend-deployment.yaml
+    - kubectl apply -f k8s/backend-deployment.yaml
     - echo "Applying frontend deployment..."
-    - kubectl apply -f frontend-deployment.yaml
+    - kubectl apply -f k8s/frontend-deployment.yaml
     - echo "Applying backend service..."
-    - kubectl apply -f backend-service.yaml
+    - kubectl apply -f k8s/backend-service.yaml
     - echo "Applying frontend service..."
-    - kubectl apply -f frontend-service.yaml
+    - kubectl apply -f k8s/frontend-service.yaml
+    - echo "Applying secrets..."
+    - kubectl apply -f k8s/secret.yaml
     - echo "Updating backend deployment..."
     - kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE
     - echo "Updating frontend deployment..."
