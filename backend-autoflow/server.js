@@ -796,7 +796,7 @@ app.post('/api/login', async (req, res) => {
           username: "sarra",
           email: "sarra.bngharbia@gmail.com",
           role: "Admin",
-          permissions: ["write_vlans", "read_devices", "write_devices"]
+          permissions: ["read_vlans", "write_vlans", "delete_vlans", "read_devices", "write_devices", "delete_devices", "read_topology", "write_topology", "read_backups", "write_backups", "delete_backups", "restore_backups", "read_monitoring", "write_monitoring", "read_audit", "write_audit", "read_users", "write_users", "delete_users", "read_roles", "write_roles", "delete_roles", "execute_playbooks", "configure_ssh", "configure_security"]
         }
       });
   } else {
@@ -1712,12 +1712,12 @@ app.post('/api/security-agent/unblock', (req, res) => {
 });
 
 // API to fetch MAC address table for a specific switch
-app.get('/api/mac-table/:switchName', (req, res) => {
+app.get('/api/mac-table/:switchName', authenticateToken, requirePermission('read_devices'), (req, res) => {
   const { switchName } = req.params;
   let switchIp = switchName === 'Cisco 3725' ? '192.168.111.198' : 'localhost';
   const username = 'sarra'; // Updated to correct SSH username
   const password = 'sarra'; // Updated to correct SSH password
-  exec(`python3 /home/sarra/autoflow-project/backend-autoflow/run_mac_table.py ${switchIp} ${username} ${password}`, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
+  exec(`python3 /app/run_mac_table.py ${switchIp} ${username} ${password}`, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing run_mac_table.py: ${error.message}, Exit code: ${error.code}`);
       return res.status(500).json({ error: 'Failed to fetch MAC table', details: error.message });

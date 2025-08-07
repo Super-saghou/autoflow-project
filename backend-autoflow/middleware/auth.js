@@ -19,6 +19,23 @@ const authenticateToken = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     console.log('Decoded JWT:', decoded); // Debug log
+    
+    // Handle legacy users (legacy-sarra)
+    if (decoded.userId === 'legacy-sarra') {
+      // Create a mock user object for legacy login
+      req.user = {
+        id: 'legacy-sarra',
+        username: 'sarra',
+        email: 'sarra.bngharbia@gmail.com',
+        role: 'Admin',
+        permissions: ['read_vlans', 'write_vlans', 'delete_vlans', 'read_devices', 'write_devices', 'delete_devices', 'read_topology', 'write_topology', 'read_backups', 'write_backups', 'delete_backups', 'restore_backups', 'read_monitoring', 'write_monitoring', 'read_audit', 'write_audit', 'read_users', 'write_users', 'delete_users', 'read_roles', 'write_roles', 'delete_roles', 'execute_playbooks', 'configure_ssh', 'configure_security'],
+        isActive: true
+      };
+      next();
+      return;
+    }
+    
+    // Handle regular database users
     const user = await User.findById(decoded.userId).select('-password');
     
     if (!user || !user.isActive) {
