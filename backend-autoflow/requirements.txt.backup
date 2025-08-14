@@ -1,0 +1,29 @@
+# Core dependencies
+flask==2.3.3
+flask-cors==4.0.0
+requests==2.31.0
+PyYAML>=6.0.2
+
+# Network automation
+netmiko==4.6.0
+paramiko==3.3.1
+ansible==8.5.0
+
+# AI and ML packages
+langchain==0.1.0
+langchain-ollama==0.1.0
+crewai==0.28.0
+
+# Security packages
+cryptography>=45.0.0
+hvac>=1.2.0
+
+# Monitoring and system packages
+psutil>=5.9.0
+netifaces>=0.11.0
+
+# Database
+pymongo==4.5.0
+
+# Utilities
+python-dotenv==1.0.0 

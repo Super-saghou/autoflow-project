@@ -1,0 +1,12 @@
+all:
+  children:
+    switches:
+      hosts:
+        192.168.111.198:
+          ansible_connection: ssh
+          ansible_user: sarra
+          ansible_password: sarra
+          ansible_become: yes
+          ansible_become_password: sarra
+          ansible_network_os: ios
+          ansible_become_method: enable 

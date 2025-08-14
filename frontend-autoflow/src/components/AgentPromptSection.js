@@ -173,10 +173,13 @@ const AgentPromptSection = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minutes timeout
       
-      const res = await fetch(`http://localhost:5007${endpoint}`, {
+      const res = await fetch(`http://localhost:5000/api${endpoint}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ request: prompt.trim() }),
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ prompt: prompt.trim() }),
         signal: controller.signal
       });
       
@@ -202,7 +205,7 @@ const AgentPromptSection = () => {
       if (err.name === 'AbortError') {
         setError('Request timed out. CrewAI agents are still processing in the background. Check the server logs for progress.');
       } else {
-        setError('Failed to connect to AI agents. Please ensure the AI service is running on port 5007.');
+        setError('Failed to connect to AI agents. Please ensure the backend service is running.');
       }
       setLoading(false);
     }

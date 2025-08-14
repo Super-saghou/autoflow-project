@@ -1,5 +1,6 @@
 import os
-from crewai import Agent, Task, Crew, BaseTool
+from crewai import Agent, Task, Crew
+from crewai.tools import BaseTool
 import subprocess
 from netmiko import ConnectHandler
 
@@ -15,7 +16,7 @@ except ImportError:
 PREPROMPT_PATH = 'preprompt.txt'
 COMMANDS_PATH = 'output.txt'
 PLAYBOOK_PATH = 'playbook.yml'
-INVENTORY_PATH = 'inventory.yml'
+INVENTORY_PATH = '/agentic/inventory'
 
 llm = OllamaLLM(model="llama3:latest", base_url="http://localhost:11434")
 

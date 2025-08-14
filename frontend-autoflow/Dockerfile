@@ -12,7 +12,7 @@ RUN npm ci
 COPY . .
 
 # Set environment variables for build
-ENV REACT_APP_API_URL=http://backend-service:5000
+ENV REACT_APP_API_URL=http://192.168.111.201:31560
 ENV NODE_ENV=production
 
 # Add cache-busting timestamp to force rebuild

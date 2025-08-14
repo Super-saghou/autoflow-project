@@ -201,8 +201,14 @@ const Dashboard = () => {
     setMacTableLoading(true);
     setMacTableError('');
     try {
+      const token = localStorage.getItem('token');
       // You can make switchName dynamic if needed
-      const res = await fetch(`${API_URL}/api/mac-table/Cisco%203725`);
+      const res = await fetch(`${API_URL}/api/mac-table/Cisco%203725`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (!res.ok) throw new Error('Failed to fetch MAC table');
       const data = await res.json();
       setMacTable(Array.isArray(data) ? data : []);

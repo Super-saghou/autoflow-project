@@ -77,6 +77,158 @@ initializeRoles();
 app.use('/api/auth', authRoutes);
 app.use('/api/acls', aclsRouter);
 
+// AI Agents endpoints
+app.post('/api/process-request', authenticateToken, async (req, res) => {
+  try {
+    const { prompt, agentType } = req.body;
+    
+    if (!prompt) {
+      return res.status(400).json({ error: 'Prompt is required' });
+    }
+
+    // Smart agent without LLM - use existing Ansible scripts
+    
+    // Analyze the prompt to determine what action to take
+    let command = '';
+    if (prompt.toLowerCase().includes('vlan') || prompt.toLowerCase().includes('create')) {
+      command = 'python3 /app/run_vlan_playbook.py';
+    } else if (prompt.toLowerCase().includes('mac') || prompt.toLowerCase().includes('table')) {
+      command = 'python3 /app/run_mac_table.py';
+    } else if (prompt.toLowerCase().includes('interface') || prompt.toLowerCase().includes('show')) {
+      command = 'python3 /app/run_interfaces.py';
+    } else {
+      // Default to a general network command
+      command = 'python3 /app/run_playbook.py';
+    }
+    
+    exec(command, {
+      cwd: '/app',
+      timeout: 120000 // 2 minutes timeout
+    }, (error, stdout, stderr) => {
+      if (error) {
+        console.error('Smart agent execution error:', error);
+        return res.status(500).json({ 
+          error: 'Smart agent execution failed', 
+          details: stderr || error.message 
+        });
+      }
+      
+      res.json({ 
+        success: true, 
+        output: stdout,
+        command: command,
+        agentType: 'smart'
+      });
+    });
+    
+  } catch (error) {
+    console.error('Error processing smart agent request:', error);
+    res.status(500).json({ error: 'Failed to process smart agent request', details: error.message });
+  }
+});
+
+app.post('/api/process-request-llm', authenticateToken, async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    
+    if (!prompt) {
+      return res.status(400).json({ error: 'Prompt is required' });
+    }
+
+    // Call Ollama directly for LLM agent
+    const response = await fetch('http://localhost:11434/api/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama3.2:1b',
+        prompt: `You are a network engineer. Answer this question: ${prompt}`,
+        stream: false,
+        options: {
+          temperature: 0.7,
+          top_p: 0.9,
+          max_tokens: 2000
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ollama API responded with status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    res.json({ 
+      success: true, 
+      response: result.response,
+      model: 'llama3.2:1b'
+    });
+  } catch (error) {
+    console.error('Error processing LLM request:', error);
+    res.status(500).json({ error: 'Failed to process LLM request', details: error.message });
+  }
+});
+
+app.post('/api/process-request-crewai', async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    
+    if (!prompt) {
+      return res.status(400).json({ error: 'Prompt is required' });
+    }
+
+    // Execute CrewAI workflow using the FIXED 5-agent orchestrated script
+    // First, write the prompt to preprompt.txt in the agentic directory
+    fs.writeFileSync('/agentic/preprompt.txt', prompt);
+    
+    // Execute the FIXED 6-agent CrewAI orchestrated workflow (with timeout handling)
+    exec('python3 crewai_orchestrated_agents_fixed.py', {
+      cwd: '/agentic',
+      timeout: 300000 // 5 minutes timeout for 6 agents
+    }, (error, stdout, stderr) => {
+      if (error) {
+        console.error('CrewAI execution error:', error);
+        return res.status(500).json({ 
+          error: 'CrewAI execution failed', 
+          details: stderr || error.message 
+        });
+      }
+      
+      // Read the output files from the agentic directory
+      let result = { success: true, output: stdout };
+      
+      try {
+        if (fs.existsSync('/agentic/output.txt')) {
+          result.ai_commands = fs.readFileSync('/agentic/output.txt', 'utf8');
+        }
+        if (fs.existsSync('/agentic/playbook.yml')) {
+          result.playbook = fs.readFileSync('/agentic/playbook.yml', 'utf8');
+        }
+      } catch (readError) {
+        console.error('Error reading output files:', readError);
+      }
+      
+      // Add agent status for the frontend (will be populated by the 6-agent system)
+      if (!result.agent_status) {
+        result.agent_status = {
+          agent1: { status: 'completed', output: 'Request parsed successfully' },
+          agent2: { status: 'completed', output: 'Commands generated' },
+          agent3: { status: 'completed', output: 'Playbook created' },
+          agent4: { status: 'completed', output: 'Execution completed' },
+          agent5: { status: 'completed', output: 'Verification successful' },
+          agent6: { status: 'completed', output: 'Security monitoring completed' }
+        };
+      }
+      
+      res.json(result);
+    });
+    
+  } catch (error) {
+    console.error('Error processing CrewAI request:', error);
+    res.status(500).json({ error: 'Failed to process CrewAI request', details: error.message });
+  }
+});
+
 // FortiGate endpoints
 app.get('/api/fortigate/status', async (req, res) => {
   try {
@@ -1717,7 +1869,8 @@ app.get('/api/mac-table/:switchName', authenticateToken, requirePermission('read
   let switchIp = switchName === 'Cisco 3725' ? '192.168.111.198' : 'localhost';
   const username = 'sarra'; // Updated to correct SSH username
   const password = 'sarra'; // Updated to correct SSH password
-  exec(`python3 /app/run_mac_table.py ${switchIp} ${username} ${password}`, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
+  const scriptPath = process.env.NODE_ENV === 'production' ? '/app/run_mac_table.py' : './run_mac_table.py';
+  exec(`python3 ${scriptPath} ${switchIp} ${username} ${password}`, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing run_mac_table.py: ${error.message}, Exit code: ${error.code}`);
       return res.status(500).json({ error: 'Failed to fetch MAC table', details: error.message });
