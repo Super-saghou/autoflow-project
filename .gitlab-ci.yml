@@ -5,8 +5,8 @@ stages:
 
 variables:
   DOCKER_USERNAME: "sarra539"
-  BACKEND_IMAGE: "sarra539/autoflow-repo:VerifUpdate"
-  FRONTEND_IMAGE: "sarra539/autoflow-front:VersionTestKuber9"
+  BACKEND_IMAGE: "sarra539/autoflow-repo:Version1"
+  FRONTEND_IMAGE: "sarra539/autoflow-front:version1"
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
 
 security-scan:
