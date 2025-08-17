@@ -1,5 +1,5 @@
 stages:
-  - security-scan    # NEW: Security scanning stage
+  - security-scan
   - build
   - deploy
 
@@ -7,9 +7,9 @@ variables:
   DOCKER_USERNAME: "sarra539"
   BACKEND_IMAGE: "sarra539/autoflow-repo:VerifUpdate"
   FRONTEND_IMAGE: "sarra539/autoflow-front:VersionTestKuber9"
-  SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"  # NEW: Secure image reference
+  SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
 
-# NEW: Security Scanning Stage
+# Security Scanning Stage - FIXED FORMAT
 security-scan:
   stage: security-scan
   image: node:18-alpine
@@ -52,7 +52,7 @@ security-scan:
     - if: $CI_COMMIT_BRANCH == "main"
   allow_failure: false
 
-# Build Backend Image (on shared runners) - UPDATED to use secure image
+# Build Backend Image - FIXED FORMAT
 build-backend:
   stage: build
   image: docker:24.0
@@ -83,7 +83,7 @@ build-backend:
   only:
     - main
 
-# Build Frontend Image (on shared runners) - UNCHANGED
+# Build Frontend Image - UNCHANGED
 build-frontend:
   stage: build
   image: docker:24.0
@@ -101,7 +101,7 @@ build-frontend:
   only:
     - main
 
-# Deploy Stage - ENHANCED with security monitoring
+# Deploy Stage - FIXED FORMAT
 deploy:
   stage: deploy
   tags:
