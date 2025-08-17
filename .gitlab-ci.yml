@@ -13,12 +13,7 @@ security-scan:
   stage: security-scan
   image: node:18-alpine
   script:
-    - echo "Starting DevSecOps Security Scan..."
-    - echo "=========================================="
-    - echo "SonarQube Status: Running on Kubernetes control VM"
-    - echo "Trivy Status: Monitoring containers automatically"
-    - echo "Vault Status: Managing secrets securely"
-    - echo "Security tools ready - proceeding to build stage"
+    - echo "Testing security scan"
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == "main"
   allow_failure: false
