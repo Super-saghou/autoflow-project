@@ -32,9 +32,8 @@ build-backend:
     - echo "Checking Docker version..."
     - docker --version
     - echo "Attempting Docker login..."
-    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker彼此
-
-System: Docker login failed"; exit 1; }
+    - |
+      echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker login failed"; exit 1; }
   script:
     - echo "Verifying backend directory..."
     - ls -la backend-autoflow || { echo "Directory backend-autoflow not found"; exit 1; }
