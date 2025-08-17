@@ -9,7 +9,6 @@ variables:
   FRONTEND_IMAGE: "sarra539/autoflow-front:VersionTestKuber9"
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
 
-# Security Scanning Stage - SIMPLIFIED
 security-scan:
   stage: security-scan
   image: node:18-alpine
@@ -21,11 +20,9 @@ security-scan:
     - echo "Vault Status: Managing secrets securely"
     - echo "Security tools ready - proceeding to build stage"
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == "main"
   allow_failure: false
 
-# Build Backend Image
 build-backend:
   stage: build
   image: docker:24.0
@@ -35,7 +32,9 @@ build-backend:
     - echo "Checking Docker version..."
     - docker --version
     - echo "Attempting Docker login..."
-    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker login failed"; exit 1; }
+    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker彼此
+
+System: Docker login failed"; exit 1; }
   script:
     - echo "Verifying backend directory..."
     - ls -la backend-autoflow || { echo "Directory backend-autoflow not found"; exit 1; }
@@ -53,7 +52,6 @@ build-backend:
   only:
     - main
 
-# Build Frontend Image
 build-frontend:
   stage: build
   image: docker:24.0
@@ -71,7 +69,6 @@ build-frontend:
   only:
     - main
 
-# Deploy Stage
 deploy:
   stage: deploy
   tags:
