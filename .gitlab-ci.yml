@@ -27,13 +27,23 @@ build-backend:
     - echo "Checking Docker version..."
     - docker --version
     - echo "Attempting Docker login..."
-    - |
-      echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin || { echo "Docker login failed"; exit 1; }
+    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
   script:
-    - echo "Verifying backend directory..."
-    - ls -la backend-autoflow || { echo "Directory backend-autoflow not found"; exit 1; }
+    - echo "Current directory:"
+    - pwd
+    - echo "Directory contents:"
+    - ls -la
+    - echo "Checking if backend-autoflow exists:"
+    - ls -la backend-autoflow || echo "backend-autoflow directory not found"
+    - echo "Checking for Dockerfiles:"
+    - find . -name "Dockerfile*" -type f
+    - echo "Building SECURE backend image..."
     - cd backend-autoflow
-    - echo "Building SECURE backend image using Dockerfile.secure.hybrid..."
+    - echo "Backend directory contents:"
+    - ls -la
+    - echo "Available Dockerfiles:"
+    - ls -la Dockerfile*
+    - echo "Building with Dockerfile.secure.hybrid..."
     - docker build --no-cache --pull -f Dockerfile.secure.hybrid -t $BACKEND_IMAGE .
     - echo "Building additional secure tag..."
     - docker build --no-cache --pull -f Dockerfile.secure.hybrid -t $SECURE_BACKEND_IMAGE .
