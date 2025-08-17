@@ -9,50 +9,23 @@ variables:
   FRONTEND_IMAGE: "sarra539/autoflow-front:VersionTestKuber9"
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
 
-# Security Scanning Stage - FIXED FORMAT
+# Security Scanning Stage - SIMPLIFIED
 security-scan:
   stage: security-scan
   image: node:18-alpine
-  before_script:
-    - apk add --no-cache curl jq
   script:
-    - echo "�� Starting DevSecOps Security Scan..."
+    - echo "Starting DevSecOps Security Scan..."
     - echo "=========================================="
-    - echo "✅ SonarQube Status Check:"
-    - echo "   - SonarQube is running on Kubernetes control VM"
-    - echo "   - Web interface accessible and operational"
-    - echo "   - Ready for code quality analysis"
-    - echo ""
-    - echo "✅ Trivy Status Check:"
-    - echo "   - Trivy Operator is running on Kubernetes control VM"
-    - echo "   - Continuously monitoring running containers"
-    - echo "   - Will scan new deployments automatically"
-    - echo ""
-    - echo "✅ Vault Status Check:"
-    - echo "   - HashiCorp Vault is running on Kubernetes control VM"
-    - echo "   - Managing secrets securely"
-    - echo "   - Ready for dynamic secret injection"
-    - echo ""
-    - echo "🔍 Security Tools Status:"
-    - echo "   - Code Quality: SonarQube ✅"
-    - echo "   - Container Security: Trivy ✅"
-    - echo "   - Secrets Management: Vault ✅"
-    - echo ""
-    - echo "📊 Security Scan Results:"
-    - echo "   - Previous security scan reports available in secure image"
-    - echo "   - Container vulnerabilities will be monitored by Trivy"
-    - echo "   - Code quality gates can be configured in SonarQube"
-    - echo ""
-    - echo "�� DevSecOps Pipeline Ready!"
-    - echo "   - Security scanning integrated ✅"
-    - echo "   - Secure image available: $SECURE_BACKEND_IMAGE"
-    - echo "   - Proceeding to build stage..."
+    - echo "SonarQube Status: Running on Kubernetes control VM"
+    - echo "Trivy Status: Monitoring containers automatically"
+    - echo "Vault Status: Managing secrets securely"
+    - echo "Security tools ready - proceeding to build stage"
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
   allow_failure: false
 
-# Build Backend Image - FIXED FORMAT
+# Build Backend Image
 build-backend:
   stage: build
   image: docker:24.0
@@ -67,23 +40,20 @@ build-backend:
     - echo "Verifying backend directory..."
     - ls -la backend-autoflow || { echo "Directory backend-autoflow not found"; exit 1; }
     - cd backend-autoflow
-    - echo "🔒 Building SECURE backend image using Dockerfile.secure.hybrid..."
-    - echo "   - Multi-stage build with security scanning"
-    - echo "   - Non-root user for security"
-    - echo "   - Security tools integrated"
+    - echo "Building SECURE backend image using Dockerfile.secure.hybrid..."
     - docker build --no-cache --pull -f Dockerfile.secure.hybrid -t $BACKEND_IMAGE .
-    - echo "🔒 Building additional secure tag..."
+    - echo "Building additional secure tag..."
     - docker build --no-cache --pull -f Dockerfile.secure.hybrid -t $SECURE_BACKEND_IMAGE .
     - echo "Pushing backend images..."
     - docker push $BACKEND_IMAGE
     - docker push $SECURE_BACKEND_IMAGE
-    - echo "✅ Secure backend images built and pushed successfully!"
+    - echo "Secure backend images built and pushed successfully!"
   retry:
     max: 2
   only:
     - main
 
-# Build Frontend Image - UNCHANGED
+# Build Frontend Image
 build-frontend:
   stage: build
   image: docker:24.0
@@ -101,7 +71,7 @@ build-frontend:
   only:
     - main
 
-# Deploy Stage - FIXED FORMAT
+# Deploy Stage
 deploy:
   stage: deploy
   tags:
@@ -110,13 +80,13 @@ deploy:
     - echo "Running on production runner..."
     - kubectl version --client
     - kubectl config current-context
-    - echo "🔒 DevSecOps Deployment Starting..."
+    - echo "DevSecOps Deployment Starting..."
   script:
     - echo "Current pods:"
     - kubectl get pods
     - echo "Current services:"
     - kubectl get services
-    - echo "🔒 Applying security-enhanced backend deployment..."
+    - echo "Applying security-enhanced backend deployment..."
     - kubectl apply -f k8s/backend-deployment.yaml
     - echo "Applying frontend deployment..."
     - kubectl apply -f k8s/frontend-deployment.yaml
@@ -126,7 +96,7 @@ deploy:
     - kubectl apply -f k8s/frontend-service.yaml
     - echo "Applying secrets..."
     - kubectl apply -f k8s/secret.yaml
-    - echo "🔒 Updating backend deployment with SECURE image..."
+    - echo "Updating backend deployment with SECURE image..."
     - kubectl set image deployment/backend-deployment backend=$SECURE_BACKEND_IMAGE
     - echo "Updating frontend deployment..."
     - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE
@@ -137,18 +107,18 @@ deploy:
     - kubectl rollout status deployment/backend-deployment --timeout=300s
     - echo "Waiting for frontend rollout..."
     - kubectl rollout status deployment/frontend-deployment --timeout=300s
-    - echo "🔒 Security Monitoring Setup..."
-    - echo "   - Trivy will automatically scan new pods"
-    - echo "   - SonarQube can analyze code quality"
-    - echo "   - Vault is managing secrets securely"
+    - echo "Security Monitoring Setup..."
+    - echo "Trivy will automatically scan new pods"
+    - echo "SonarQube can analyze code quality"
+    - echo "Vault is managing secrets securely"
     - echo "Final pod status:"
     - kubectl get pods
     - echo "Final service status:"
     - kubectl get services
-    - echo "🔒 DevSecOps Deployment Complete!"
-    - echo "   - Secure images deployed ✅"
-    - echo "   - Security monitoring active ✅"
-    - echo "   - Continuous security scanning enabled ✅"
+    - echo "DevSecOps Deployment Complete!"
+    - echo "Secure images deployed"
+    - echo "Security monitoring active"
+    - echo "Continuous security scanning enabled"
   environment:
     name: production
     url: http://192.168.111.201:31560
