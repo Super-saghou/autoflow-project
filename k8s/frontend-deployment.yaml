@@ -18,7 +18,7 @@ spec:
         kubernetes.io/hostname: sarra-virtual-machine  # Remove if not needed
       containers:
         - name: frontend
-          image: sarra539/autoflow-front:VersionTestKuber9
+          image: sarra539/autoflow-front:version1
           ports:
             - containerPort: 80
           env:

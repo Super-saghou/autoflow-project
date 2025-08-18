@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: sarra539/autoflow-repo:VerifUpdate
+          image: sarra539/autoflow-repo:Version1
           imagePullPolicy: Always
           ports:
             - containerPort: 5000  # HTTP API
@@ -44,11 +44,11 @@ spec:
               value: "http://localhost:5001"
           resources:
             requests:
-              cpu: "250m"
-              memory: "256Mi"
+              cpu: "500m"      # INCREASED: from 250m to 500m
+              memory: "512Mi"  # INCREASED: from 256Mi to 512Mi
             limits:
-              cpu: "1"
-              memory: "1Gi"
+              cpu: "2"         # INCREASED: from 1 to 2
+              memory: "2Gi"    # INCREASED: from 1Gi to 2Gi
           readinessProbe:
             httpGet:
               path: /api/health
