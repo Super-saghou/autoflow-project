@@ -123,14 +123,7 @@ sonarqube-scan:
   script:
     - echo "Running SonarQube code quality analysis..."
     - cd backend-autoflow
-    - sonar-scanner \
-      -Dsonar.projectKey=autoflow-backend \
-      -Dsonar.sources=. \
-      -Dsonar.host.url=$SONAR_HOST_URL \
-      -Dsonar.login=$SONAR_TOKEN \
-      -Dsonar.projectVersion=${CI_COMMIT_SHA:0:8} \
-      -Dsonar.projectName="AutoFlow Backend" \
-      -Dsonar.projectDescription="Network automation platform with DevSecOps integration"
+    - sonar-scanner -Dsonar.projectKey=autoflow-backend -Dsonar.sources=. -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectVersion=${CI_COMMIT_SHA:0:8} -Dsonar.projectName="AutoFlow Backend" -Dsonar.projectDescription="Network automation platform with DevSecOps integration"
     - echo "SonarQube analysis completed successfully!"
   only:
     - main
