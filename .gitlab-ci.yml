@@ -11,7 +11,6 @@ variables:
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
   USE_SECURE_IMAGE: "true"
 
-# Security scanning stage
 security-scan:
   stage: security-scan
   image: python:3.10-slim
@@ -90,7 +89,6 @@ build-frontend:
   only:
     - main
 
-# Image scanning stage
 image-scan:
   stage: image-scan
   image: docker:24.0
@@ -116,7 +114,6 @@ image-scan:
   only:
     - main
 
-# SonarQube analysis
 sonarqube-scan:
   stage: image-scan
   image: sonarqube-scanner:latest
@@ -128,7 +125,6 @@ sonarqube-scan:
   only:
     - main
 
-# Vault smoke test
 vault-smoke-test:
   stage: image-scan
   image: alpine:latest
