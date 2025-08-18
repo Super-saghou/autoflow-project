@@ -116,7 +116,8 @@ image-scan:
         - backend-vulnerabilities.json
         - frontend-vulnerabilities.json
     paths:
-      - *-vulnerabilities.json
+      - backend-vulnerabilities.json
+      - frontend-vulnerabilities.json
     expire_in: 1 week
   only:
     - main
