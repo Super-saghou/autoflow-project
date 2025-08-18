@@ -175,16 +175,8 @@ deploy:
     - kubectl apply -f k8s/frontend-service.yaml
     - echo "Applying secrets..."
     - kubectl apply -f k8s/secret.yaml
-    - |
-      if [ "$USE_SECURE_IMAGE" = "true" ]; then
-        echo "Using secure image for deployment..."
-        echo "Updating backend deployment with SECURE image: $SECURE_BACKEND_IMAGE"
-        kubectl set image deployment/backend-deployment backend=$SECURE_BACKEND_IMAGE
-      else
-        echo "Using standard image for deployment..."
-        echo "Updating backend deployment with image: $BACKEND_IMAGE"
-        kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE
-      fi
+    - echo "Using secure image for deployment..."
+    - kubectl set image deployment/backend-deployment backend=$SECURE_BACKEND_IMAGE
     - echo "Updating frontend deployment..."
     - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE
     - echo "Force restarting deployments..."
