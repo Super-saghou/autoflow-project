@@ -31,8 +31,8 @@ security-scan:
     paths:
       - backend-autoflow/*-report.json
     expire_in: 1 week
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == "main"
+  only:
+    - main
   allow_failure: false
 
 build-backend:
