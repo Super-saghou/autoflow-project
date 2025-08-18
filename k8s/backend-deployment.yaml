@@ -44,11 +44,11 @@ spec:
               value: "http://localhost:5001"
           resources:
             requests:
-              cpu: "500m"      # INCREASED: from 250m to 500m
-              memory: "512Mi"  # INCREASED: from 256Mi to 512Mi
+              cpu: "300m"      # OPTIMIZED: from 500m to 300m
+              memory: "384Mi"  # OPTIMIZED: from 512Mi to 384Mi
             limits:
-              cpu: "2"         # INCREASED: from 1 to 2
-              memory: "2Gi"    # INCREASED: from 1Gi to 2Gi
+              cpu: "1.5"       # OPTIMIZED: from 2 to 1.5
+              memory: "1.5Gi"  # OPTIMIZED: from 2Gi to 1.5Gi
           readinessProbe:
             httpGet:
               path: /api/health
