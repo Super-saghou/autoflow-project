@@ -97,28 +97,24 @@ image-scan:
   services:
     - docker:24.0-dind
   before_script:
-    - echo "Installing Trivy for container vulnerability scanning..."
-    - wget -qO - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.48.4
-    - trivy --version
-  script:
     - echo "Logging into Docker..."
     - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-    - echo "Scanning secure backend image for vulnerabilities..."
-    - trivy image --format json --output backend-vulnerabilities.json $SECURE_BACKEND_IMAGE || echo "Trivy scan completed"
-    - echo "Scanning frontend image for vulnerabilities..."
-    - trivy image --format json --output frontend-vulnerabilities.json $FRONTEND_IMAGE || echo "Trivy scan completed"
-    - echo "Container vulnerability scans completed."
-  artifacts:
-    paths:
-      - backend-vulnerabilities.json
-      - frontend-vulnerabilities.json
-    expire_in: 1 week
+  script:
+    - echo "Container images built successfully!"
+    - echo "Trivy Operator v0.28.0 on Control VM will automatically scan new pods"
+    - echo "No manual scanning needed - using existing Trivy Operator infrastructure"
+    - echo "Images ready for deployment:"
+    - echo "- Backend: $SECURE_BACKEND_IMAGE"
+    - echo "- Frontend: $FRONTEND_IMAGE"
   only:
     - main
 
 sonarqube-scan:
   stage: image-scan
-  image: sonarqube-scanner:latest
+  image: sonarqube/sonar-scanner-cli:latest
+  before_script:
+    - echo "Connecting to SonarQube on Control VM..."
+    - echo "SonarQube URL: $SONAR_HOST_URL"
   script:
     - echo "Running SonarQube code quality analysis..."
     - cd backend-autoflow
