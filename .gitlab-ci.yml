@@ -24,7 +24,7 @@ security-scan:
     - echo "Running Safety check for Python dependencies"
     - safety check -r requirements.txt --json --output safety-report.json || echo "Safety check completed"
     - echo "Running pip-audit for vulnerability scanning"
-    - pip-audit --format json --output pip-audit-report.json || echo "Pip audit completed"
+    - pip-audit --format json --output pip-audit-report.json || echo "Pin audit completed"
     - echo "Security scans completed. Reports saved"
   artifacts:
     paths:
@@ -110,8 +110,7 @@ sonarqube-scan:
   stage: image-scan
   image: sonarsource/sonar-scanner-cli:latest
   before_script:
-    - echo "Connecting to SonarQube on Control VM"
-    - echo "SonarQube URL: $SONAR_HOST_URL"
+    - echo "Preparing SonarQube scan"
   script:
     - echo "Running SonarQube code quality analysis"
     - cd backend-autoflow
