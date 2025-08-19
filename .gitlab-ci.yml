@@ -108,7 +108,7 @@ image-scan:
 
 sonarqube-scan:
   stage: image-scan
-  image: sonarqube/sonar-scanner-cli:latest
+  image: sonarsource/sonar-scanner-cli:latest
   before_script:
     - echo "Connecting to SonarQube on Control VM"
     - echo "SonarQube URL: $SONAR_HOST_URL"
