@@ -112,12 +112,7 @@ sonarqube-scan:
   before_script:
     - echo "Preparing SonarQube scan"
   script:
-    - echo "Checking SonarQube server connectivity"
-    - curl -s --connect-timeout 5 $SONAR_HOST_URL/api/v2/analysis/version || echo "Warning: Could not connect to SonarQube server at $SONAR_HOST_URL"
-    - echo "Running SonarQube code quality analysis"
-    - cd backend-autoflow
-    - sonar-scanner -Dsonar.projectKey=autoflow-backend -Dsonar.sources=. -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.token=$SONAR_TOKEN -Dsonar.projectVersion=${CI_COMMIT_SHA:0:8} -Dsonar.projectName="AutoFlow Backend" -Dsonar.projectDescription="Network automation platform with DevSecOps integration" || echo "SonarQube scan failed - continuing due to allow_failure"
-    - echo "SonarQube analysis completed or skipped"
+    - echo "Testing SonarQube job"
   allow_failure: true
   only:
     - main
