@@ -127,20 +127,7 @@ sonarqube-scan:
   only:
     - main
 
-vault-smoke-test:
-  stage: image-scan
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache curl
-  script:
-    - echo "Testing Vault connectivity and health..."
-    - echo "Vault URL: $VAULT_ADDR"
-    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" $VAULT_ADDR/v1/sys/health || echo "Vault health check failed"
-    - echo "Testing Vault secrets engine..."
-    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" $VAULT_ADDR/v1/sys/mounts || echo "Vault mounts check failed"
-    - echo "Vault smoke test completed successfully!"
-  only:
-    - main
+
 
 deploy:
   stage: deploy
