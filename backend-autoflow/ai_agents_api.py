@@ -3,15 +3,10 @@ from flask_cors import CORS
 import logging
 import os
 import requests
-import warnings
 from datetime import datetime
 import threading
 import uuid
 import time
-
-# Suppress deprecation warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning, module="cryptography")
-warnings.filterwarnings("ignore", category=DeprecationWarning, module="paramiko")
 
 app = Flask(__name__)
 CORS(app)
@@ -285,6 +280,277 @@ def agent_ai_config_task_status(task_id):
     if not task:
         return jsonify({'error': 'Task not found'}), 404
     return jsonify(task)
+
+# Security Monitor (AI Agent #6) endpoints
+@app.route("/api/security-monitor/start", methods=["POST"])
+def start_security_monitor():
+    """Start the security monitoring service"""
+    try:
+        # Check if monitoring is already running
+        if is_monitoring_active():
+            return jsonify({
+                "status": "already_running",
+                "message": "Security monitoring is already active",
+                "logs": get_recent_logs(),
+                "threats": get_recent_threats(),
+                "alerts": get_recent_alerts()
+            }), 200
+        
+        # Start monitoring in background thread
+        start_monitoring_thread()
+        
+        return jsonify({
+            "status": "started",
+            "message": "Security monitoring started successfully",
+            "logs": get_recent_logs(),
+            "threats": get_recent_threats(),
+            "alerts": get_recent_alerts()
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to start security monitoring: {e}")
+        return jsonify({"error": f"Failed to start monitoring: {str(e)}"}), 500
+
+@app.route("/api/security-monitor/stop", methods=["POST"])
+def stop_security_monitor():
+    """Stop the security monitoring service"""
+    try:
+        if not is_monitoring_active():
+            return jsonify({
+                "status": "already_stopped",
+                "message": "Security monitoring is already stopped"
+            }), 200
+        
+        # Stop monitoring
+        stop_monitoring_thread()
+        
+        return jsonify({
+            "status": "stopped",
+            "message": "Security monitoring stopped successfully"
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to stop security monitoring: {e}")
+        return jsonify({"error": f"Failed to stop monitoring: {str(e)}"}), 500
+
+@app.route("/api/security-monitor/status", methods=["GET"])
+def get_security_monitor_status():
+    """Get the current status of security monitoring"""
+    try:
+        status = "active" if is_monitoring_active() else "stopped"
+        
+        return jsonify({
+            "status": status,
+            "totalLogs": len(get_recent_logs()),
+            "threatsDetected": len(get_recent_threats()),
+            "alertsGenerated": len(get_recent_alerts()),
+            "lastUpdate": datetime.now().isoformat(),
+            "switchIp": "192.168.111.198",
+            "ollamaAvailable": check_ollama_available()
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to get security monitor status: {e}")
+        return jsonify({"error": f"Failed to get status: {str(e)}"}), 500
+
+@app.route("/api/security-monitor/logs", methods=["GET"])
+def get_security_monitor_logs():
+    """Get recent security monitoring logs"""
+    try:
+        logs = get_recent_logs()
+        return jsonify({"logs": logs}), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to get security monitor logs: {e}")
+        return jsonify({"error": f"Failed to get logs: {str(e)}"}), 500
+
+@app.route("/api/security-monitor/threats", methods=["GET"])
+def get_security_monitor_threats():
+    """Get detected security threats"""
+    try:
+        threats = get_recent_threats()
+        return jsonify({"threats": threats}), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to get security monitor threats: {e}")
+        return jsonify({"error": f"Failed to get threats: {str(e)}"}), 500
+
+@app.route("/api/security-monitor/alerts", methods=["GET"])
+def get_security_monitor_alerts():
+    """Get security alerts"""
+    try:
+        alerts = get_recent_alerts()
+        return jsonify({"alerts": alerts}), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to get security monitor alerts: {e}")
+        return jsonify({"error": f"Failed to get alerts: {str(e)}"}), 500
+
+# Security Monitor helper functions
+monitoring_thread = None
+monitoring_active = False
+recent_logs = []
+recent_threats = []
+recent_alerts = []
+
+def is_monitoring_active():
+    """Check if security monitoring is currently active"""
+    global monitoring_active
+    return monitoring_active
+
+def start_monitoring_thread():
+    """Start the security monitoring in a background thread"""
+    global monitoring_thread, monitoring_active
+    
+    if monitoring_thread and monitoring_thread.is_alive():
+        return
+    
+    monitoring_active = True
+    monitoring_thread = threading.Thread(target=run_security_monitor, daemon=True)
+    monitoring_thread.start()
+    logger.info("Security monitoring thread started")
+
+def stop_monitoring_thread():
+    """Stop the security monitoring thread"""
+    global monitoring_thread, monitoring_active
+    
+    monitoring_active = False
+    if monitoring_thread and monitoring_thread.is_alive():
+        monitoring_thread.join(timeout=5)
+    logger.info("Security monitoring thread stopped")
+
+def run_security_monitor():
+    """Main security monitoring loop"""
+    global recent_logs, recent_threats, recent_alerts, monitoring_active
+    
+    try:
+        # Simulate monitoring activity
+        while monitoring_active:
+            # Simulate receiving logs from syslog server
+            simulate_log_reception()
+            
+            # Simulate threat detection
+            simulate_threat_detection()
+            
+            # Simulate alert generation
+            simulate_alert_generation()
+            
+            time.sleep(5)  # Update every 5 seconds to reduce glitching
+            
+    except Exception as e:
+        logger.error(f"Security monitoring error: {e}")
+        monitoring_active = False
+
+def get_real_logs_from_syslog():
+    """Get real logs from the running syslog server"""
+    try:
+        # Read from shared file created by syslog server
+        import json
+        import os
+        
+        if os.path.exists('syslog_data.json'):
+            with open('syslog_data.json', 'r') as f:
+                shared_data = json.load(f)
+                return shared_data.get('logs', [])
+        else:
+            return []
+    except Exception as e:
+        logger.error(f"Failed to get real logs: {e}")
+        return []
+
+def simulate_log_reception():
+    """Get real logs from syslog server instead of simulating"""
+    global recent_logs
+    
+    # Get real logs from syslog server
+    real_logs = get_real_logs_from_syslog()
+    
+    if real_logs:
+        recent_logs.extend(real_logs)
+        if len(recent_logs) > 50:  # Keep only last 50 logs
+            recent_logs = recent_logs[-50:]
+    else:
+        # Only add logs if we have real ones
+        pass
+
+def get_real_threats_from_syslog():
+    """Get real threats from the running syslog server"""
+    try:
+        # Read from shared file created by syslog server
+        import json
+        import os
+        
+        if os.path.exists('syslog_data.json'):
+            with open('syslog_data.json', 'r') as f:
+                shared_data = json.load(f)
+                return shared_data.get('threats', [])
+        else:
+            return []
+    except Exception as e:
+        logger.error(f"Failed to get real threats: {e}")
+        return []
+
+def simulate_threat_detection():
+    """Get real threats from syslog server instead of simulating"""
+    global recent_threats
+    
+    # Get real threats from syslog server
+    real_threats = get_real_threats_from_syslog()
+    
+    if real_threats:
+        recent_threats.extend(real_threats)
+        if len(recent_threats) > 20:  # Keep only last 20 threats
+            recent_threats = recent_threats[-20:]
+    else:
+        # Only add threats if we have real ones
+        pass
+
+def get_real_alerts_from_syslog():
+    """Get real alerts from the running syslog server"""
+    try:
+        # Read from shared file created by syslog server
+        import json
+        import os
+        
+        if os.path.exists('syslog_data.json'):
+            with open('syslog_data.json', 'r') as f:
+                shared_data = json.load(f)
+                return shared_data.get('alerts', [])
+        else:
+            return []
+    except Exception as e:
+        logger.error(f"Failed to get real alerts: {e}")
+        return []
+
+def simulate_alert_generation():
+    """Get real alerts from syslog server instead of simulating"""
+    global recent_alerts
+    
+    # Get real alerts from syslog server
+    real_alerts = get_real_alerts_from_syslog()
+    
+    if real_alerts:
+        recent_alerts.extend(real_alerts)
+        if len(recent_alerts) > 15:  # Keep only last 15 alerts
+            recent_alerts = recent_alerts[-15:]
+    else:
+        # Only add alerts if we have real ones
+        pass
+
+def get_recent_logs():
+    """Get recent logs"""
+    global recent_logs
+    return recent_logs
+
+def get_recent_threats():
+    """Get recent threats"""
+    global recent_threats
+    return recent_threats
+
+def get_recent_alerts():
+    """Get recent alerts"""
+    global recent_alerts
+    return recent_alerts
 
 if __name__ == "__main__":
     logger.info("Starting AI Agents API on port 5003...")

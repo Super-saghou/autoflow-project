@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 import secrets
 import time
 import logging
+from email_config import get_email_config, get_email_templates
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,14 +23,13 @@ class MFAConfig:
         self._temp_codes = {}
         self._attempt_counts = {}
         
+        # Get email configuration
+        self.email_config = get_email_config()
+        self.email_templates = get_email_templates()
+        
     def _get_email_config(self):
-        """Get email configuration from environment variables"""
-        return {
-            'smtp_server': os.getenv('SMTP_SERVER', 'smtp.gmail.com'),
-            'smtp_port': int(os.getenv('SMTP_PORT', '587')),
-            'sender_email': os.getenv('SENDER_EMAIL', ''),
-            'sender_password': os.getenv('SENDER_PASSWORD', '')
-        }
+        """Get email configuration from email_config.py"""
+        return self.email_config
         
     def generate_verification_code(self):
         """Generate a secure random 6-digit verification code"""
@@ -97,18 +97,6 @@ class MFAConfig:
             # Get email configuration
             email_config = self._get_email_config()
             
-            # Debug: Print email configuration (without password)
-            print(f"DEBUG: SMTP Server: {email_config['smtp_server']}")
-            print(f"DEBUG: SMTP Port: {email_config['smtp_port']}")
-            print(f"DEBUG: Sender Email: {email_config['sender_email']}")
-            print(f"DEBUG: Sender Password: {'*' * len(email_config['sender_password']) if email_config['sender_password'] else 'NOT SET'}")
-            
-            # For testing purposes, if email config is not set, just print the code
-            if not email_config['sender_email'] or not email_config['sender_password']:
-                print(f"TEST MODE: Verification code {verification_code} for {user_email}")
-                print("To enable real email sending, configure SMTP settings in .env file")
-                return True, "Code generated successfully (test mode)"
-            
             # Validate email configuration
             if not email_config['sender_email'] or not email_config['sender_password']:
                 logger.error("Email configuration missing")
@@ -118,31 +106,11 @@ class MFAConfig:
             msg = MIMEMultipart()
             msg['From'] = email_config['sender_email']
             msg['To'] = user_email
-            msg['Subject'] = "AutoFlow - Verification Code"
+            msg['Subject'] = self.email_templates['verification_subject']
             
-            # Create HTML and plain text versions
-            html_body = f"""
-            <html>
-            <body>
-                <h2>AutoFlow Verification Code</h2>
-                <p>Your verification code is: <strong style="font-size: 24px; color: #3b82f6;">{verification_code}</strong></p>
-                <p>This code will expire in 5 minutes.</p>
-                <p>If you didn't request this code, please ignore this email.</p>
-                <hr>
-                <p style="color: #6b7280; font-size: 12px;">This is an automated message from AutoFlow Network Management Platform.</p>
-            </body>
-            </html>
-            """
-            
-            plain_body = f"""
-            AutoFlow Verification Code
-            
-            Your verification code is: {verification_code}
-            
-            This code will expire in 5 minutes.
-            
-            If you didn't request this code, please ignore this email.
-            """
+            # Get templates and format with verification code
+            html_body = self.email_templates['verification_html'].format(verification_code=verification_code)
+            plain_body = self.email_templates['verification_plain'].format(verification_code=verification_code)
             
             # Attach both versions
             msg.attach(MIMEText(plain_body, 'plain'))

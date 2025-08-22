@@ -28,6 +28,15 @@ module.exports = function(app) {
     })
   );
 
+  // Security Monitor API proxy
+  app.use(
+    '/api/security-monitor',
+    createProxyMiddleware({
+      target: 'http://localhost:5003',
+      changeOrigin: true,
+    })
+  );
+
   // API proxy for all other API calls
   app.use(
     '/api',

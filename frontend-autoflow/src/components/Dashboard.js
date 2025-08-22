@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import Particles from '@tsparticles/react';
@@ -16,6 +17,7 @@ import MonitoringPage from './MonitoringPage';
 import SecurityAgentDashboard from './SecurityAgentDashboard';
 import AIPromptModal from './AIPromptModal';
 import AgentPromptSection from './AgentPromptSection';
+import SecurityMonitorAgent from './SecurityMonitorAgent';
 import AclsSection from './AclsSection';
 import RoleBadge from './RoleBadge';
 import AccessDenied from './AccessDenied';
@@ -1175,6 +1177,16 @@ const Dashboard = () => {
               </li>
             )}
 
+            {/* Settings - Admin only */}
+            {canAccessSection(userProfile.role, 'settings') && (
+              <li className="nav-item">
+                <button onClick={() => setActiveSection('settings')} className={`nav-button ${activeSection === 'settings' ? 'active' : ''}`}>
+                  <span className="nav-icon">⚙️</span>
+                  {isMenuOpen && 'Settings'}
+                </button>
+              </li>
+            )}
+
             {/* Devices - Accessible selon les permissions */}
             {canAccessSection(userProfile.role, 'devices') && (
               <li className="nav-item">
@@ -1261,16 +1273,6 @@ const Dashboard = () => {
               </li>
             )}
 
-            {/* Settings - Admin only */}
-            {canAccessSection(userProfile.role, 'settings') && (
-              <li className="nav-item">
-                <button onClick={() => setActiveSection('settings')} className={`nav-button ${activeSection === 'settings' ? 'active' : ''}`}>
-                  <span className="nav-icon">⚙️</span>
-                  {isMenuOpen && 'Settings'}
-                </button>
-              </li>
-            )}
-
             {/* Firewalling - Admin only */}
             {canAccessSection(userProfile.role, 'firewalling') && (
               <li className="nav-item">
@@ -1311,22 +1313,22 @@ const Dashboard = () => {
               </li>
             )}
 
-            {/* Agent - Accessible selon les permissions */}
+            {/* AI Agents - Accessible selon les permissions */}
             {canAccessSection(userProfile.role, 'agent') && (
               <li className="nav-item">
                 <button onClick={() => setActiveSection('agent')} className={`nav-button ${activeSection === 'agent' ? 'active' : ''}`}>
                   <span className="nav-icon">🧑‍💼</span>
-                  {isMenuOpen && 'Agent'}
+                  {isMenuOpen && 'AI Agents'}
                 </button>
               </li>
             )}
 
-            {/* Agent AI Config - Accessible selon les permissions */}
+                            {/* AI Assistant - Accessible selon les permissions */}
             {canAccessSection(userProfile.role, 'agent-ai-config') && (
               <li className="nav-item">
                 <button onClick={() => setActiveSection('agent-ai-config')} className={`nav-button ${activeSection === 'agent-ai-config' ? 'active' : ''}`}>
                   <span className="nav-icon">🤖</span>
-                  {isMenuOpen && 'Agent AI Config'}
+                  {isMenuOpen && 'AI Assistant'}
                 </button>
               </li>
             )}
@@ -4166,7 +4168,7 @@ const Dashboard = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 32, marginBottom: 24 }}>
                   <div style={{ fontSize: 64, color: '#6366f1', marginRight: 18 }}>🧑‍💼</div>
                   <div>
-                    <h2 style={{ fontSize: 40, fontWeight: 900, margin: 0, color: '#6366f1', letterSpacing: 2, textShadow: '0 2px 12px #e0e7ff' }}>Agent</h2>
+                    <h2 style={{ fontSize: 40, fontWeight: 900, margin: 0, color: '#6366f1', letterSpacing: 2, textShadow: '0 2px 12px #e0e7ff' }}>AI Agents</h2>
                     <p style={{ color: '#0ea5e9', fontSize: 22, margin: 0, marginTop: 10, maxWidth: 800, fontWeight: 600, letterSpacing: 1 }}>
                       Full agentic automation: enter a network security or config prompt and let the agents (3-step workflow) do the real work—preprompt, AI, playbook, execution. See real logs and results below.
                     </p>
@@ -4174,6 +4176,11 @@ const Dashboard = () => {
                 </div>
                 {/* Prompt Input and Results */}
                 <AgentPromptSection />
+                
+                {/* Security Monitor Agent */}
+                <Box sx={{ marginTop: 4 }}>
+                  <SecurityMonitorAgent />
+                </Box>
               </div>
             </div>
           )}
@@ -4195,7 +4202,7 @@ const Dashboard = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 18 }}>
                   <div style={{ fontSize: 54, color: '#3b82f6', marginRight: 12 }}>🤖</div>
                   <div>
-                    <h2 style={{ fontSize: 34, fontWeight: 800, margin: 0, color: '#3b82f6', letterSpacing: 1 }}>Agent AI Config</h2>
+                    <h2 style={{ fontSize: 34, fontWeight: 800, margin: 0, color: '#3b82f6', letterSpacing: 1 }}>AI Assistant</h2>
                     <p style={{ color: '#ea580c', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
                       Use natural language to generate and apply network configurations. The agent will interpret your prompt, generate commands, create an Ansible playbook, and execute it on your devices.
                     </p>

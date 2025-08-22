@@ -57,6 +57,7 @@ const AgentPromptSection = () => {
     agent3: { status: 'idle', output: '', timestamp: null },
     agent4: { status: 'idle', output: '', timestamp: null },
     agent5: { status: 'idle', output: '', timestamp: null },
+    security: { status: 'idle', output: '', timestamp: null },
   });
   const [selectedAgent, setSelectedAgent] = useState('smart');
 
@@ -81,6 +82,13 @@ const AgentPromptSection = () => {
       icon: "👥",
       color: "#f59e0b",
       endpoint: "/process-request-crewai"
+    },
+    security: {
+      name: "AI Security Monitor",
+      description: "Real-time network security monitoring",
+      icon: "🛡️",
+      color: "#ef4444",
+      endpoint: "/security-monitor"
     }
   };
 

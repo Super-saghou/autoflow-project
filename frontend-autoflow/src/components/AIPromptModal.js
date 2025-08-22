@@ -185,7 +185,7 @@ const AIPromptModal = ({ open, onClose }) => {
         }}>
           <SmartToy sx={{ fontSize: 28 }} />
           <Typography variant="body1" fontWeight={600} sx={{ fontSize: '1.25rem' }}>
-            Agent AI Config - Custom Configuration
+            AI Assistant - Custom Configuration
           </Typography>
         </DialogTitle>
 

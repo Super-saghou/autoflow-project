@@ -1,0 +1,129 @@
+{
+  "logs": [
+    {
+      "timestamp": "2025-08-22T16:42:55.212320",
+      "message": "<133>69: *Mar  1 01:29:50.831: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-08-22T16:44:24.743528",
+      "message": "<133>70: *Mar  1 01:29:51.831: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-08-22T16:46:38.947092",
+      "message": "<131>71: *Mar  1 01:30:37.331: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-08-22T16:53:13.410129",
+      "message": "<133>72: *Mar  1 01:30:38.331: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-08-22T16:56:10.326318",
+      "message": "<133>73: *Mar  1 01:34:48.459: %SYS-5-CONFIG_I: Configured from console by console",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-08-22T16:56:39.149427",
+      "message": "<133>74: *Mar  1 01:35:54.643: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
+      "level": "info",
+      "source": "192.168.111.198"
+    }
+  ],
+  "threats": [
+    {
+      "timestamp": "2025-08-22T16:42:55.212393",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The switch log message indicates that the FastEthernet0/1 interface has changed from an administratively up state to down. This typically occurs due to a hardware failure or degradation.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-08-22T16:44:24.743553",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The switch logged an event indicating that the FastEthernet0/1 interface was brought down. This could indicate a hardware failure or a network configuration issue.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-08-22T16:46:38.947122",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The switch has gone down. This is a normal operation for most network devices as they periodically reset to save power.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-08-22T16:53:13.410163",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The \"Line protocol on Interface FastEthernet0/1, changed state to up\" line indicates that a connection to the interface is being established or terminated. This could be due to various reasons such as connecting a new device to the network, disconnecting an old one, or adjusting settings.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-08-22T16:56:10.326345",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This log indicates that the switch was configured from the console by another device. This is a potential security threat as it could allow for unauthorized access to the network.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-08-22T16:56:39.149458",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The log message indicates that the Cisco switch was configured from a console session by a remote user named sarra on port vty0 (192.168.111.190). This suggests an unauthorized access attempt to the switch.",
+      "source_ip": "192.168.111.198"
+    }
+  ],
+  "alerts": [
+    {
+      "timestamp": "2025-08-22T16:42:55.212405",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<133>69: *Mar  1 01:29:50.831: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-08-22T16:44:24.743562",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<133>70: *Mar  1 01:29:51.831: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-08-22T16:46:38.947130",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<131>71: *Mar  1 01:30:37.331: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-08-22T16:53:13.410171",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<133>72: *Mar  1 01:30:38.331: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-08-22T16:56:10.326355",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<133>73: *Mar  1 01:34:48.459: %SYS-5-CONFIG_I: Configured from console by console",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-08-22T16:56:39.149468",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<133>74: *Mar  1 01:35:54.643: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
+      "recommendation": ""
+    }
+  ],
+  "last_update": "2025-08-22T16:56:39.149479"
+}

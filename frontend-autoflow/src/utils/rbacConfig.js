@@ -1,7 +1,7 @@
 // RBAC Configuration - Permissions par rôle
 export const rolePermissions = {
   Admin: {
-    sections: ['home', 'devices', 'topology', 'monitoring', 'firewalling', 'settings', 'help', 'agent', 'agent-ai-config', 'acls'],
+    sections: ['home', 'settings', 'devices', 'topology', 'monitoring', 'firewalling', 'help', 'agent', 'agent-ai-config', 'acls'],
     actions: {
       create: true,
       read: true,
@@ -92,6 +92,12 @@ export const sectionConfig = {
     description: 'Dashboard principal',
     adminOnly: false
   },
+  settings: {
+    name: 'Settings',
+    icon: '⚙️',
+    description: 'Configuration système (Admin only)',
+    adminOnly: true
+  },
   devices: {
     name: 'Devices',
     icon: '🖥️',
@@ -116,12 +122,6 @@ export const sectionConfig = {
     description: 'Configuration des pare-feu (Admin only)',
     adminOnly: true
   },
-  settings: {
-    name: 'Settings',
-    icon: '⚙️',
-    description: 'Configuration système (Admin only)',
-    adminOnly: true
-  },
   help: {
     name: 'Help',
     icon: '❓',
@@ -129,13 +129,13 @@ export const sectionConfig = {
     adminOnly: false
   },
   agent: {
-    name: 'Agent',
+    name: 'AI Agents',
     icon: '🧑‍💼',
     description: 'Agents de sécurité (Admin only)',
     adminOnly: true
   },
   'agent-ai-config': {
-    name: 'Agent AI Config',
+    name: 'AI Assistant',
     icon: '🤖',
     description: 'Configuration des agents IA (Admin only)',
     adminOnly: true
