@@ -1,0 +1,30 @@
+# Dockerfile for Ollama service to run alongside backend
+FROM ubuntu:22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV OLLAMA_HOST=0.0.0.0
+ENV OLLAMA_ORIGINS=*
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Ollama
+RUN curl -fsSL https://ollama.ai/install.sh | sh
+
+# Create directory for models
+RUN mkdir -p /root/.ollama
+
+# Expose the Ollama API port
+EXPOSE 11434
+
+# Health check for Kubernetes
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:11434/api/tags || exit 1
+
+# Start Ollama service
+CMD ["ollama", "serve"] 

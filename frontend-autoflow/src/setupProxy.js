@@ -15,7 +15,7 @@ module.exports = function(app) {
   app.use(
     '/api/agent_status',
     createProxyMiddleware({
-      target: 'http://localhost:5003',
+      target: 'http://localhost:5000',
       changeOrigin: true,
     })
   );
@@ -32,7 +32,7 @@ module.exports = function(app) {
   app.use(
     '/api/security-monitor',
     createProxyMiddleware({
-      target: 'http://localhost:5003',
+      target: 'http://localhost:5000',
       changeOrigin: true,
     })
   );
