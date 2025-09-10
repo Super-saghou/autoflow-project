@@ -147,7 +147,7 @@ trivy-scan:
     - main
   allow_failure: false
 
-# Job SonarQube amélioré
+# Job SonarQube corrigé
 sonarqube-scan:
   stage: sonarqube-scan
   image: sonarsource/sonar-scanner-cli:latest
@@ -164,14 +164,7 @@ sonarqube-scan:
   script:
     - echo "Running SonarQube analysis on backend code"
     - cd backend-autoflow
-    - sonar-scanner
-      -Dsonar.projectKey=autoflow-backend
-      -Dsonar.sources=.
-      -Dsonar.host.url=$SONAR_HOST_URL
-      -Dsonar.login=$SONAR_TOKEN
-      -Dsonar.python.version=3.10
-      -Dsonar.python.bandit.reportPaths=bandit-report.json
-      -Dsonar.python.safety.reportPaths=safety-report.json
+    - sonar-scanner -Dsonar.projectKey=autoflow-backend -Dsonar.sources=. -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.python.version=3.10 -Dsonar.python.bandit.reportPaths=bandit-report.json -Dsonar.python.safety.reportPaths=safety-report.json
     - echo "SonarQube analysis completed"
   artifacts:
     reports:
