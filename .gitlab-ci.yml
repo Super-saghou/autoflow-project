@@ -1,4 +1,3 @@
-sarra@sarra-virtual-machine:~/autoflow-project$ cat .gitlab-ci.yml 
 stages:
   - security-scan
   - build
