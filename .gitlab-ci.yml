@@ -147,7 +147,7 @@ trivy-scan:
     - main
   allow_failure: false
 
-# Job SonarQube corrigé
+# Job SonarQube corrigé 
 sonarqube-scan:
   stage: sonarqube-scan
   image: sonarsource/sonar-scanner-cli:latest
@@ -160,7 +160,7 @@ sonarqube-scan:
       - .sonar/cache
   before_script:
     - echo "Preparing SonarQube scan"
-    - echo "SonarQube URL: $SONAR_HOST_URL"
+    - 'echo "SonarQube URL: ${SONAR_HOST_URL}"'
   script:
     - echo "Running SonarQube analysis on backend code"
     - cd backend-autoflow
