@@ -13,7 +13,6 @@ variables:
   FRONTEND_IMAGE: "sarra539/autoflow-front:version1"
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
   USE_SECURE_IMAGE: "true"
-  # Nouvelles variables pour Trivy, SonarQube, Vault
   TRIVY_CACHE_DIR: ".trivycache"
   SONAR_HOST_URL: $SONAR_HOST_URL
   SONAR_TOKEN: $SONAR_TOKEN
@@ -135,7 +134,7 @@ trivy-scan:
     - echo "Trivy scans completed successfully"
   artifacts:
     reports:
-      junit:
+      junit: 
         - trivy-backend-report.json
         - trivy-frontend-report.json
         - trivy-fs-report.json
@@ -198,10 +197,10 @@ deploy:
   tags:
     - production
   before_script:
-    - echo "Running on production runner"
     - kubectl version --client
     - kubectl config current-context
   script:
+    - echo "Running on production runner"
     - echo "DevSecOps Deployment Starting"
     - echo "Security scan results:"
     - echo "- Bandit: Security issues scanned"
@@ -212,41 +211,22 @@ deploy:
     - echo "- Vault: Secrets management verified"
     - echo "Current pods"
     - kubectl get pods -o wide
-    - echo "Inspecting pending/terminating pods"
-    - kubectl describe pod $(kubectl get pods | grep backend-deployment | grep Pending | awk '{print $1}' | head -n 1) || echo "No pending backend pods to describe"
-    - kubectl describe pod $(kubectl get pods | grep backend-deployment | grep Terminating | awk '{print $1}' | head -n 1) || echo "No terminating backend pods to describe"
-    - echo "Current services"
-    - kubectl get services -o wide
-    - echo "Applying security-enhanced backend deployment"
+    - echo "Applying deployments and services"
     - kubectl apply -f k8s/backend-deployment.yaml
     - kubectl apply -f k8s/frontend-deployment.yaml
     - kubectl apply -f k8s/backend-service.yaml
     - kubectl apply -f k8s/frontend-service.yaml
     - kubectl apply -f k8s/secret.yaml
-    - echo "Using secure image for deployment"
+    - echo "Using secure backend image"
     - kubectl set image deployment/backend-deployment backend=$SECURE_BACKEND_IMAGE
     - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE
-    - echo "Force restarting deployments"
+    - echo "Restarting deployments"
     - kubectl rollout restart deployment/backend-deployment
     - kubectl rollout restart deployment/frontend-deployment
-    - echo "Waiting for rollouts"
-    - kubectl rollout status deployment/backend-deployment --timeout=600s || echo "Backend rollout timed out"
-    - kubectl rollout status deployment/frontend-deployment --timeout=600s || echo "Frontend rollout timed out"
-    - echo "Security Monitoring Setup"
-    - echo "Trivy will automatically scan new pods"
-    - echo "SonarQube quality gates passed"
-    - echo "Vault secrets management active"
-    - echo "All security tools integrated successfully"
-    - echo "Final pod status"
-    - kubectl get pods -o wide
-    - echo "Final service status"
-    - kubectl get services -o wide
+    - echo "Checking rollout status"
+    - kubectl rollout status deployment/backend-deployment --timeout=600s
+    - kubectl rollout status deployment/frontend-deployment --timeout=600s
     - echo "DevSecOps Deployment Complete"
-    - echo "Secure images deployed"
-    - echo "Security monitoring active"
-    - echo "Continuous security scanning enabled"
-    - echo "Vault secrets management active"
-    - echo "SonarQube quality gates passed"
   allow_failure: true
   environment:
     name: production
