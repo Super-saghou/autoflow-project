@@ -13,7 +13,6 @@ variables:
   FRONTEND_IMAGE: "sarra539/autoflow-front:version1"
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
   USE_SECURE_IMAGE: "true"
-  # Nouvelles variables pour Trivy, SonarQube, Vault
   TRIVY_CACHE_DIR: ".trivycache"
   SONAR_HOST_URL: $SONAR_HOST_URL
   SONAR_TOKEN: $SONAR_TOKEN
@@ -115,7 +114,6 @@ image-scan:
   only:
     - main
 
-# Nouveau job Trivy pour scan complet des images et du code
 trivy-scan:
   stage: trivy-scan
   image: aquasec/trivy:latest
@@ -136,7 +134,7 @@ trivy-scan:
     - echo "Trivy scans completed successfully"
   artifacts:
     reports:
-      junit: 
+      junit:
         - trivy-backend-report.json
         - trivy-frontend-report.json
         - trivy-fs-report.json
@@ -147,7 +145,6 @@ trivy-scan:
     - main
   allow_failure: false
 
-# Job SonarQube corrigé
 sonarqube-scan:
   stage: sonarqube-scan
   image: sonarsource/sonar-scanner-cli:latest
@@ -164,7 +161,13 @@ sonarqube-scan:
   script:
     - echo "Running SonarQube analysis on backend code"
     - cd backend-autoflow
-    - sonar-scanner -Dsonar.projectKey=autoflow-backend -Dsonar.sources=. -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.python.version=3.10 -Dsonar.python.bandit.reportPaths=bandit-report.json -Dsonar.python.safety.reportPaths=safety-report.json
+    - sonar-scanner -Dsonar.projectKey=autoflow-backend \
+      -Dsonar.sources=. \
+      -Dsonar.host.url=$SONAR_HOST_URL \
+      -Dsonar.login=$SONAR_TOKEN \
+      -Dsonar.python.version=3.10 \
+      -Dsonar.python.bandit.reportPaths=bandit-report.json \
+      -Dsonar.python.safety.reportPaths=safety-report.json
     - echo "SonarQube analysis completed"
   artifacts:
     reports:
@@ -176,7 +179,6 @@ sonarqube-scan:
     - main
   allow_failure: true
 
-# Nouveau job Vault pour vérification des secrets
 vault-check:
   stage: vault-check
   image: vault:latest
