@@ -1,8 +1,32 @@
 stages:
-  - test
+  - security-scan
 
-hello-world-job:
-  stage: test
+variables:
+  DOCKER_USERNAME: "sarra539"
+  BACKEND_IMAGE: "sarra539/autoflow-repo:Version1"
+  FRONTEND_IMAGE: "sarra539/autoflow-front:version1"
+  SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
+  USE_SECURE_IMAGE: "true"
+
+security-scan:
+  stage: security-scan
+  image: python:3.10-slim
+  before_script:
+    - pip install bandit safety pip-audit
   script:
-    - echo "Hello, World! This is a test pipeline."
-    - echo "GitLab CI/CD is working correctly."
+    - echo "Running comprehensive security scans on backend code"
+    - cd backend-autoflow
+    - echo "Running Bandit security scan"
+    - bandit -r . -f json -o bandit-report.json || echo "Bandit scan completed with warnings"
+    - echo "Running Safety check for Python dependencies"
+    - safety check -r requirements.txt --json --output safety-report.json || echo "Safety check completed"
+    - echo "Running pip-audit for vulnerability scanning"
+    - pip-audit --format json --output pip-audit-report.json || echo "Pip audit completed"
+    - echo "Security scans completed. Reports saved"
+  artifacts:
+    paths:
+      - backend-autoflow/*-report.json
+    expire_in: 1 week
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  allow_failure: false
