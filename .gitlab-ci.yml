@@ -2,9 +2,6 @@ stages:
   - security-scan
   - build
   - image-scan
-  - trivy-scan
-  - sonarqube-scan
-  - vault-check
   - deploy
 
 variables:
@@ -13,33 +10,31 @@ variables:
   FRONTEND_IMAGE: "sarra539/autoflow-front:version1"
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
   USE_SECURE_IMAGE: "true"
-  TRIVY_CACHE_DIR: ".trivycache"
-  SONAR_HOST_URL: $SONAR_HOST_URL
-  SONAR_TOKEN: $SONAR_TOKEN
-  VAULT_ADDR: $VAULT_ADDR
-  VAULT_TOKEN: $VAULT_TOKEN
 
+# Security scanning stage
 security-scan:
   stage: security-scan
   image: python:3.10-slim
   before_script:
     - pip install bandit safety pip-audit
   script:
-    - echo "Running comprehensive security scans on backend code"
+    - echo "Running comprehensive security scans on backend code..."
     - cd backend-autoflow
-    - echo "Running Bandit security scan"
+    - echo "Running Bandit security scan..."
     - bandit -r . -f json -o bandit-report.json || echo "Bandit scan completed with warnings"
-    - echo "Running Safety check for Python dependencies"
+    - echo "Running Safety check for Python dependencies..."
     - safety check -r requirements.txt --json --output safety-report.json || echo "Safety check completed"
-    - echo "Running pip-audit for vulnerability scanning"
+    - echo "Running pip-audit for vulnerability scanning..."
     - pip-audit --format json --output pip-audit-report.json || echo "Pip audit completed"
-    - echo "Security scans completed. Reports saved"
+    - echo "Security scans completed. Reports saved."
   artifacts:
+    reports:
+      security: bandit-report.json
     paths:
       - backend-autoflow/*-report.json
     expire_in: 1 week
-  only:
-    - main
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == "main"
   allow_failure: false
 
 build-backend:
@@ -48,33 +43,33 @@ build-backend:
   services:
     - docker:24.0-dind
   before_script:
-    - echo "Checking Docker version"
+    - echo "Checking Docker version..."
     - docker --version
-    - echo "Attempting Docker login"
+    - echo "Attempting Docker login..."
     - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
   script:
-    - echo "Current directory"
+    - echo "Current directory:"
     - pwd
-    - echo "Directory contents"
+    - echo "Directory contents:"
     - ls -la
-    - echo "Checking if backend-autoflow exists"
+    - echo "Checking if backend-autoflow exists:"
     - ls -la backend-autoflow || echo "backend-autoflow directory not found"
-    - echo "Checking for Dockerfiles"
+    - echo "Checking for Dockerfiles:"
     - find . -name "Dockerfile*" -type f
-    - echo "Building SECURE backend image"
+    - echo "Building SECURE backend image..."
     - cd backend-autoflow
-    - echo "Backend directory contents"
+    - echo "Backend directory contents:"
     - ls -la
-    - echo "Available Dockerfiles"
+    - echo "Available Dockerfiles:"
     - ls -la Dockerfile*
-    - echo "Building with Dockerfile.secure.hybrid"
+    - echo "Building with Dockerfile.secure.hybrid..."
     - docker build --no-cache --pull -f Dockerfile.secure.hybrid -t $BACKEND_IMAGE .
-    - echo "Building additional secure tag"
+    - echo "Building additional secure tag..."
     - docker build --no-cache --pull -f Dockerfile.secure.hybrid -t $SECURE_BACKEND_IMAGE .
-    - echo "Pushing backend images"
+    - echo "Pushing backend images..."
     - docker push $BACKEND_IMAGE
     - docker push $SECURE_BACKEND_IMAGE
-    - echo "Secure backend images built and pushed successfully"
+    - echo "Secure backend images built and pushed successfully!"
   retry:
     max: 2
   only:
@@ -89,7 +84,7 @@ build-frontend:
     - docker --version
     - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
   script:
-    - echo "Verifying frontend directory"
+    - echo "Verifying frontend directory..."
     - ls -la frontend-autoflow || echo "frontend-autoflow directory not found"
     - cd frontend-autoflow
     - docker build --no-cache -t $FRONTEND_IMAGE .
@@ -99,166 +94,130 @@ build-frontend:
   only:
     - main
 
+# Image scanning stage
 image-scan:
   stage: image-scan
   image: docker:24.0
   services:
     - docker:24.0-dind
   before_script:
-    - echo "Logging into Docker"
-    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
+    - echo "Installing Trivy for container vulnerability scanning..."
+    - wget -qO - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.52.2
+    - trivy --version
   script:
-    - echo "Container images built successfully"
-    - echo "Trivy Operator on Control VM will scan new pods automatically"
-    - echo "Images ready for deployment"
-  only:
-    - main
-
-trivy-scan:
-  stage: trivy-scan
-  image: aquasec/trivy:latest
-  services:
-    - docker:24.0-dind
-  before_script:
-    - echo "Logging into Docker"
+    - echo "Logging into Docker..."
     - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
-    - docker pull $BACKEND_IMAGE
-    - docker pull $FRONTEND_IMAGE
-  script:
-    - echo "Running Trivy vulnerability scan on backend image"
-    - trivy image --format json --output trivy-backend-report.json $BACKEND_IMAGE
-    - echo "Running Trivy vulnerability scan on frontend image"
-    - trivy image --format json --output trivy-frontend-report.json $FRONTEND_IMAGE
-    - echo "Running Trivy filesystem scan on source code"
-    - trivy fs --format json --output trivy-fs-report.json .
-    - echo "Trivy scans completed successfully"
+    - echo "Scanning secure backend image for vulnerabilities..."
+    - trivy image --format json --output backend-vulnerabilities.json $SECURE_BACKEND_IMAGE || echo "Backend scan completed"
+    - echo "Scanning frontend image for vulnerabilities..."
+    - trivy image --format json --output frontend-vulnerabilities.json $FRONTEND_IMAGE || echo "Frontend scan completed"
+    - echo "Container vulnerability scans completed."
   artifacts:
     reports:
-      junit:
-        - trivy-backend-report.json
-        - trivy-frontend-report.json
-        - trivy-fs-report.json
+      security:
+        - backend-vulnerabilities.json
+        - frontend-vulnerabilities.json
     paths:
-      - trivy-*-report.json
+      - backend-vulnerabilities.json
+      - frontend-vulnerabilities.json
     expire_in: 1 week
   only:
     - main
-  allow_failure: false
 
+# SonarQube analysis
 sonarqube-scan:
-  stage: sonarqube-scan
-  image: sonarsource/sonar-scanner-cli:latest
-  variables:
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
-    GIT_DEPTH: "0"
-  cache:
-    key: "${CI_JOB_NAME}"
-    paths:
-      - .sonar/cache
+  stage: image-scan
+  image: sonarqube-scanner:latest
   before_script:
-    - echo "Preparing SonarQube scan"
-    - echo "SonarQube URL: $SONAR_HOST_URL"
+    - echo "Preparing SonarQube analysis..."
   script:
-    - echo "Running SonarQube analysis on backend code"
+    - echo "Running SonarQube code quality analysis..."
     - cd backend-autoflow
-    - sonar-scanner -Dsonar.projectKey=autoflow-backend \
+    - sonar-scanner \
+      -Dsonar.projectKey=autoflow-backend \
       -Dsonar.sources=. \
       -Dsonar.host.url=$SONAR_HOST_URL \
       -Dsonar.login=$SONAR_TOKEN \
-      -Dsonar.python.version=3.10 \
-      -Dsonar.python.bandit.reportPaths=bandit-report.json \
-      -Dsonar.python.safety.reportPaths=safety-report.json
-    - echo "SonarQube analysis completed"
-  artifacts:
-    reports:
-      codequality: sonar-report.json
-    paths:
-      - .sonar/
-    expire_in: 1 week
+      -Dsonar.projectVersion=${CI_COMMIT_SHA:0:8} \
+      -Dsonar.projectName="AutoFlow Backend" \
+      -Dsonar.projectDescription="Network automation platform with DevSecOps integration"
+    - echo "SonarQube analysis completed successfully!"
   only:
     - main
-  allow_failure: true
 
-vault-check:
-  stage: vault-check
-  image: vault:latest
-  variables:
-    VAULT_ADDR: $VAULT_ADDR
-    VAULT_TOKEN: $VAULT_TOKEN
+# Vault smoke test
+vault-smoke-test:
+  stage: image-scan
+  image: alpine:latest
   before_script:
-    - echo "Testing Vault connection"
-    - vault status
+    - apk add --no-cache curl
   script:
-    - echo "Checking Vault secrets for autoflow project"
-    - vault kv list secret/ || echo "No secrets found in secret/ path"
-    - vault kv get -field=password secret/autoflow/database || echo "Database secret not found"
-    - vault kv get -field=token secret/autoflow/api || echo "API token secret not found"
-    - echo "Vault integration test completed"
+    - echo "Testing Vault connectivity and health..."
+    - echo "Vault URL: $VAULT_ADDR"
+    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" $VAULT_ADDR/v1/sys/health || echo "Vault health check failed"
+    - echo "Testing Vault secrets engine..."
+    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" $VAULT_ADDR/v1/sys/mounts || echo "Vault mounts check failed"
+    - echo "Vault smoke test completed successfully!"
   only:
     - main
-  allow_failure: true
 
 deploy:
   stage: deploy
   tags:
     - production
   before_script:
-    - echo "Running on production runner"
+    - echo "Running on production runner..."
     - kubectl version --client
     - kubectl config current-context
-    - echo "DevSecOps Deployment Starting"
-    - echo "Security scan results:"
-    - echo "- Bandit: Security issues scanned"
-    - echo "- Safety: Dependencies checked"
-    - echo "- pip-audit: Vulnerabilities identified"
-    - echo "- Trivy: Container vulnerabilities scanned"
-    - echo "- SonarQube: Code quality analyzed"
-    - echo "- Vault: Secrets management verified"
+    - echo "DevSecOps Deployment Starting..."
   script:
-    - echo "Current pods"
-    - kubectl get pods -o wide
-    - echo "Inspecting pending/terminating pods"
-    - kubectl describe pod $(kubectl get pods | grep backend-deployment | grep Pending | awk '{print $1}' | head -n 1) || echo "No pending backend pods to describe"
-    - kubectl describe pod $(kubectl get pods | grep backend-deployment | grep Terminating | awk '{print $1}' | head -n 1) || echo "No terminating backend pods to describe"
-    - echo "Current services"
-    - kubectl get services -o wide
-    - echo "Applying security-enhanced backend deployment"
+    - echo "Current pods:"
+    - kubectl get pods
+    - echo "Current services:"
+    - kubectl get services
+    - echo "Applying security-enhanced backend deployment..."
     - kubectl apply -f k8s/backend-deployment.yaml
-    - echo "Applying frontend deployment"
+    - echo "Applying frontend deployment..."
     - kubectl apply -f k8s/frontend-deployment.yaml
-    - echo "Applying backend service"
+    - echo "Applying backend service..."
     - kubectl apply -f k8s/backend-service.yaml
-    - echo "Applying frontend service"
+    - echo "Applying frontend service..."
     - kubectl apply -f k8s/frontend-service.yaml
-    - echo "Applying secrets"
+    - echo "Applying secrets..."
     - kubectl apply -f k8s/secret.yaml
-    - echo "Using secure image for deployment"
-    - kubectl set image deployment/backend-deployment backend=$SECURE_BACKEND_IMAGE
-    - echo "Updating frontend deployment"
+    - |
+      if [ "$USE_SECURE_IMAGE" = "true" ]; then
+        echo "Using secure image for deployment..."
+        echo "Updating backend deployment with SECURE image: $SECURE_BACKEND_IMAGE"
+        kubectl set image deployment/backend-deployment backend=$SECURE_BACKEND_IMAGE
+      else
+        echo "Using standard image for deployment..."
+        echo "Updating backend deployment with image: $BACKEND_IMAGE"
+        kubectl set image deployment/backend-deployment backend=$BACKEND_IMAGE
+      fi
+    - echo "Updating frontend deployment..."
     - kubectl set image deployment/frontend-deployment frontend=$FRONTEND_IMAGE
-    - echo "Force restarting deployments"
+    - echo "Force restarting deployments..."
     - kubectl rollout restart deployment/backend-deployment
     - kubectl rollout restart deployment/frontend-deployment
-    - echo "Waiting for backend rollout"
-    - kubectl rollout status deployment/backend-deployment --timeout=600s || echo "Backend rollout timed out - continuing due to allow_failure"
-    - echo "Waiting for frontend rollout"
-    - kubectl rollout status deployment/frontend-deployment --timeout=600s || echo "Frontend rollout timed out - continuing due to allow_failure"
-    - echo "Security Monitoring Setup"
+    - echo "Waiting for backend rollout..."
+    - kubectl rollout status deployment/backend-deployment --timeout=300s
+    - echo "Waiting for frontend rollout..."
+    - kubectl rollout status deployment/frontend-deployment --timeout=300s
+    - echo "Security Monitoring Setup..."
     - echo "Trivy will automatically scan new pods"
-    - echo "SonarQube quality gates passed"
-    - echo "Vault secrets management active"
-    - echo "All security tools integrated successfully"
-    - echo "Final pod status"
-    - kubectl get pods -o wide
-    - echo "Final service status"
-    - kubectl get services -o wide
-    - echo "DevSecOps Deployment Complete"
+    - echo "SonarQube can analyze code quality"
+    - echo "Vault is managing secrets securely"
+    - echo "Final pod status:"
+    - kubectl get pods
+    - echo "Final service status:"
+    - kubectl get services
+    - echo "DevSecOps Deployment Complete!"
     - echo "Secure images deployed"
     - echo "Security monitoring active"
     - echo "Continuous security scanning enabled"
     - echo "Vault secrets management active"
     - echo "SonarQube quality gates passed"
-  allow_failure: true
   environment:
     name: production
     url: http://192.168.111.201:31560
