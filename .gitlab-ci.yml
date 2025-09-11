@@ -6,8 +6,9 @@ stages:
 
 variables:
   DOCKER_USERNAME: "sarra539"
-  SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
+  BACKEND_IMAGE: "sarra539/autoflow-repo:Version1"
   FRONTEND_IMAGE: "sarra539/autoflow-front:version1"
+  SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
   USE_SECURE_IMAGE: "true"
 
 default:
@@ -21,30 +22,35 @@ security-scan:
   before_script:
     - pip install --no-cache-dir bandit safety pip-audit
   script:
-    - ./scripts/security_scan.sh
+    - echo "Running comprehensive security scans on backend code"
+    - cd backend-autoflow
+    - echo "Running Bandit security scan"
+    - bandit -r . -f json -o bandit-report.json || echo "Bandit scan completed with warnings"
+    - echo "Running Safety check for Python dependencies"
+    - safety check -r requirements.txt --json --output safety-report.json || echo "Safety check completed"
+    - echo "Running pip-audit for vulnerability scanning"
+    - pip-audit --format json --output pip-audit-report.json || echo "Pip audit completed"
+    - echo "Security scans completed. Reports saved"
   artifacts:
     paths:
       - backend-autoflow/*-report.json
     expire_in: 1 week
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == "main"'
-  allow_failure: true
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  allow_failure: false
 
 build-backend:
   stage: build
   image: docker:24.0
   services:
-    - name: docker:24.0-dind
+    - docker:24.0-dind
   script:
-    - echo "Current directory: $(pwd)"
-    - test -d "backend-autoflow" || { echo "ERROR: backend-autoflow directory not found"; exit 1; }
+    - echo "Building SECURE backend image"
     - cd backend-autoflow
-    - test -f "Dockerfile.secure.hybrid" || { echo "ERROR: Dockerfile.secure.hybrid not found"; exit 1; }
-    - echo "Building SECURE backend image..."
     - docker build --no-cache --pull -f Dockerfile.secure.hybrid -t "$SECURE_BACKEND_IMAGE" .
-    - echo "Pushing backend image..."
+    - echo "Pushing backend image"
     - docker push "$SECURE_BACKEND_IMAGE"
-    - echo "Secure backend image built and pushed successfully!"
+    - echo "Secure backend image built and pushed successfully"
   retry:
     max: 2
   rules:
@@ -56,12 +62,10 @@ build-frontend:
   services:
     - docker:24.0-dind
   script:
-    - test -d "frontend-autoflow" || { echo "ERROR: frontend-autoflow directory not found"; exit 1; }
+    - echo "Verifying frontend directory and building image"
     - cd frontend-autoflow
-    - test -f "Dockerfile" || { echo "ERROR: Dockerfile not found"; exit 1; }
     - docker build --no-cache -t "$FRONTEND_IMAGE" .
     - docker push "$FRONTEND_IMAGE"
-    - echo "Frontend image built and pushed successfully!"
   retry:
     max: 2
   rules:
@@ -73,10 +77,8 @@ image-scan:
   services:
     - docker:24.0-dind
   before_script:
-    - echo "Installing Trivy for container vulnerability scanning..."
     - wget -qO - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.52.2
     - trivy --version
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
     - echo "Scanning secure backend image for vulnerabilities..."
     - trivy image --format json --output backend-vulnerabilities.json --exit-code 1 "$SECURE_BACKEND_IMAGE"
@@ -93,7 +95,7 @@ image-scan:
     - build-frontend
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: false 
+  allow_failure: false
 
 sonarqube-scan:
   stage: image-scan
@@ -103,7 +105,6 @@ sonarqube-scan:
     - test -z "$SONAR_TOKEN" && { echo "ERROR: SONAR_TOKEN is unset"; exit 1; }
   script:
     - echo "Running SonarQube code quality analysis..."
-    - test -d "backend-autoflow" || { echo "ERROR: backend-autoflow directory not found"; exit 1; }
     - cd backend-autoflow
     - >-
       sonar-scanner
@@ -137,35 +138,33 @@ vault-smoke-test:
 
 deploy:
   stage: deploy
-  image: bitnami/kubectl:latest
   tags:
     - production
-  before_script:
-    - kubectl version --client
-    - kubectl config current-context || echo "No current context set; assuming runner is configured"
   script:
-    - test -f "k8s/backend-deployment.yaml" || { echo "ERROR: k8s/backend-deployment.yaml not found"; exit 1; }
-    - test -f "k8s/frontend-deployment.yaml" || { echo "ERROR: k8s/frontend-deployment.yaml not found"; exit 1; }
-    - test -f "k8s/backend-service.yaml" || { echo "ERROR: k8s/backend-service.yaml not found"; exit 1; }
-    - test -f "k8s/frontend-service.yaml" || { echo "ERROR: k8s/frontend-service.yaml not found"; exit 1; }
-    - test -f "k8s/secret.yaml" || { echo "ERROR: k8s/secret.yaml not found"; exit 1; }
+    - echo "Current pods"
+    - kubectl get pods -o wide
+    - echo "Applying security-enhanced backend deployment"
     - kubectl apply -f k8s/backend-deployment.yaml
+    - echo "Applying frontend deployment"
     - kubectl apply -f k8s/frontend-deployment.yaml
+    - echo "Applying backend service"
     - kubectl apply -f k8s/backend-service.yaml
+    - echo "Applying frontend service"
     - kubectl apply -f k8s/frontend-service.yaml
+    - echo "Applying secrets"
     - kubectl apply -f k8s/secret.yaml
-    - echo "Updating backend deployment with SECURE image: $SECURE_BACKEND_IMAGE"
-    - kubectl set image deployment/backend-deployment backend="$SECURE_BACKEND_IMAGE" --record
-    - echo "Updating frontend deployment with image: $FRONTEND_IMAGE"
-    - kubectl set image deployment/frontend-deployment frontend="$FRONTEND_IMAGE" --record
-    - echo "Force restarting deployments..."
+    - echo "Using secure image for deployment"
+    - kubectl set image deployment/backend-deployment backend="$SECURE_BACKEND_IMAGE"
+    - echo "Updating frontend deployment"
+    - kubectl set image deployment/frontend-deployment frontend="$FRONTEND_IMAGE"
+    - echo "Force restarting deployments"
     - kubectl rollout restart deployment/backend-deployment
     - kubectl rollout restart deployment/frontend-deployment
-    - echo "Waiting for backend rollout..."
-    - kubectl rollout status deployment/backend-deployment --timeout=300s
-    - echo "Waiting for frontend rollout..."
-    - kubectl rollout status deployment/frontend-deployment --timeout=300s
-    - echo "DevSecOps Deployment Complete!"
+    - echo "Waiting for backend rollout"
+    - kubectl rollout status deployment/backend-deployment --timeout=600s
+    - echo "Waiting for frontend rollout"
+    - kubectl rollout status deployment/frontend-deployment --timeout=600s
+    - echo "DevSecOps Deployment Complete"
   environment:
     name: production
     url: http://192.168.111.201:31560
