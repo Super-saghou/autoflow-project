@@ -99,9 +99,10 @@ image-scan:
 sonarqube-scan:
   stage: image-scan
   image: sonarsource/sonar-scanner-cli:latest
+  default:
   before_script:
-    - test -z "$SONAR_HOST_URL" && { echo "ERROR: SONAR_HOST_URL is unset"; exit 1; }
-    - test -z "$SONAR_TOKEN" && { echo "ERROR: SONAR_TOKEN is unset"; exit 1; }
+    - test -z "$DOCKER_PASSWORD" && { echo "ERROR: DOCKER_PASSWORD is unset"; exit 1; }
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
     - echo "Running SonarQube code quality analysis..."
     - test -d "backend-autoflow" || { echo "ERROR: backend-autoflow directory not found"; exit 1; }
