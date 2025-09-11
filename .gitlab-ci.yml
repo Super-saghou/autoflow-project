@@ -6,10 +6,9 @@ stages:
 
 variables:
   DOCKER_USERNAME: "sarra539"
-  # This variable is now consistent with the image built and deployed.
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
   FRONTEND_IMAGE: "sarra539/autoflow-front:version1"
-  USE_SECURE_IMAGE: "true" # Kept for potential future use or conditional logic
+  USE_SECURE_IMAGE: "true"
 
 default:
   before_script:
@@ -29,14 +28,13 @@ security-scan:
     expire_in: 1 week
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == "main"'
-  allow_failure: true # This is a project-specific choice; consider changing for production.
+  allow_failure: true
 
 build-backend:
   stage: build
   image: docker:24.0
   services:
     - name: docker:24.0-dind
-      # A volume mount for caching can be added here if needed, e.g., command: ["--storage-driver=overlay2"]
   script:
     - echo "Current directory: $(pwd)"
     - test -d "backend-autoflow" || { echo "ERROR: backend-autoflow directory not found"; exit 1; }
@@ -75,6 +73,7 @@ image-scan:
   services:
     - docker:24.0-dind
   before_script:
+    - test -z "$DOCKER_PASSWORD" && { echo "ERROR: DOCKER_PASSWORD is unset"; exit 1; }
     - echo "Installing Trivy for container vulnerability scanning..."
     - wget -qO - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.52.2
     - trivy --version
@@ -95,7 +94,6 @@ image-scan:
     - build-frontend
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-  # Enforcing failure on vulnerabilities is a core part of DevSecOps.
   allow_failure: false 
 
 sonarqube-scan:
@@ -120,7 +118,7 @@ sonarqube-scan:
     - echo "SonarQube analysis completed successfully!"
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: true # Can be set to false for critical projects.
+  allow_failure: true
 
 vault-smoke-test:
   stage: image-scan
@@ -176,4 +174,3 @@ deploy:
     - image-scan
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-  # This variabl
