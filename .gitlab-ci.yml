@@ -1,5 +1,6 @@
 stages:
   - security-scan
+  - build
 
 variables:
   DOCKER_USERNAME: "sarra539"
@@ -8,25 +9,34 @@ variables:
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
   USE_SECURE_IMAGE: "true"
 
-security-scan:
-  stage: security-scan
-  image: python:3.10-slim
+default:
   before_script:
-    - pip install bandit safety pip-audit
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+build-backend:
+  stage: build
+  image: docker:24.0
+  services:
+    - docker:24.0-dind
   script:
-    - echo "Running comprehensive security scans on backend code"
     - cd backend-autoflow
-    - echo "Running Bandit security scan"
-    - bandit -r . -f json -o bandit-report.json || echo "Bandit scan completed with warnings"
-    - echo "Running Safety check for Python dependencies"
-    - safety check -r requirements.txt --json --output safety-report.json || echo "Safety check completed"
-    - echo "Running pip-audit for vulnerability scanning"
-    - pip-audit --format json --output pip-audit-report.json || echo "Pip audit completed"
-    - echo "Security scans completed. Reports saved"
-  artifacts:
-    paths:
-      - backend-autoflow/*-report.json
-    expire_in: 1 week
+    - docker build --no-cache --pull -f Dockerfile.secure.hybrid -t "$SECURE_BACKEND_IMAGE" .
+    - docker push "$SECURE_BACKEND_IMAGE"
+  retry:
+    max: 2
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: false
+
+build-frontend:
+  stage: build
+  image: docker:24.0
+  services:
+    - docker:24.0-dind
+  script:
+    - cd frontend-autoflow
+    - docker build --no-cache -t "$FRONTEND_IMAGE" .
+    - docker push "$FRONTEND_IMAGE"
+  retry:
+    max: 2
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
