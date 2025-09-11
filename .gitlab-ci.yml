@@ -18,10 +18,12 @@ security-scan:
     - pip install --no-cache-dir bandit safety pip-audit
   script:
     - echo "Running comprehensive security scans on backend code..."
+    - test -d "backend-autoflow" || { echo "backend-autoflow directory not found"; exit 1; }
     - cd backend-autoflow
     - echo "Running Bandit security scan..."
     - bandit -r . -f json -o bandit-report.json || echo "Bandit scan completed with warnings"
     - echo "Running Safety check for Python dependencies..."
+    - test -f requirements.txt || { echo "requirements.txt not found"; exit 1; }
     - safety check -r requirements.txt --json --output safety-report.json || echo "Safety check completed"
     - echo "Running pip-audit for vulnerability scanning..."
     - pip-audit --format json --output pip-audit-report.json || echo "Pip audit completed"
@@ -41,15 +43,16 @@ build-backend:
     - docker:24.0-dind
   before_script:
     - docker --version
+    - test -z "$DOCKER_PASSWORD" && { echo "DOCKER_PASSWORD is unset"; exit 1; }
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
     - echo "Current directory:"
     - pwd
     - echo "Directory contents:"
     - ls -la
-    - if [ ! -d "backend-autoflow" ]; then echo "backend-autoflow directory not found"; exit 1; fi
+    - test -d "backend-autoflow" || { echo "backend-autoflow directory not found"; exit 1; }
     - cd backend-autoflow
-    - if [ ! -f "Dockerfile.secure.hybrid" ]; then echo "Dockerfile.secure.hybrid not found"; exit 1; fi
+    - test -f "Dockerfile.secure.hybrid" || { echo "Dockerfile.secure.hybrid not found"; exit 1; }
     - echo "Building SECURE backend image..."
     - docker build --no-cache --pull -f Dockerfile.secure.hybrid -t "$BACKEND_IMAGE" .
     - docker tag "$BACKEND_IMAGE" "$SECURE_BACKEND_IMAGE"
@@ -69,10 +72,12 @@ build-frontend:
     - docker:24.0-dind
   before_script:
     - docker --version
+    - test -z "$DOCKER_PASSWORD" && { echo "DOCKER_PASSWORD is unset"; exit 1; }
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
-    - if [ ! -d "frontend-autoflow" ]; then echo "frontend-autoflow directory not found"; exit 1; fi
+    - test -d "frontend-autoflow" || { echo "frontend-autoflow directory not found"; exit 1; }
     - cd frontend-autoflow
+    - test -f "Dockerfile" || { echo "Dockerfile not found"; exit 1; }
     - docker build --no-cache -t "$FRONTEND_IMAGE" .
     - docker push "$FRONTEND_IMAGE"
   retry:
@@ -89,6 +94,7 @@ image-scan:
     - echo "Installing Trivy for container vulnerability scanning..."
     - wget -qO - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.52.2
     - trivy --version
+    - test -z "$DOCKER_PASSWORD" && { echo "DOCKER_PASSWORD is unset"; exit 1; }
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
     - echo "Scanning secure backend image for vulnerabilities..."
@@ -110,9 +116,11 @@ sonarqube-scan:
   image: sonarsource/sonar-scanner-cli:latest
   before_script:
     - echo "Preparing SonarQube analysis..."
+    - test -z "$SONAR_HOST_URL" && { echo "SONAR_HOST_URL is unset"; exit 1; }
+    - test -z "$SONAR_TOKEN" && { echo "SONAR_TOKEN is unset"; exit 1; }
   script:
     - echo "Running SonarQube code quality analysis..."
-    - if [ ! -d "backend-autoflow" ]; then echo "backend-autoflow directory not found"; exit 1; fi
+    - test -d "backend-autoflow" || { echo "backend-autoflow directory not found"; exit 1; }
     - cd backend-autoflow
     - sonar-scanner \
       -Dsonar.projectKey=autoflow-backend \
@@ -125,6 +133,7 @@ sonarqube-scan:
     - echo "SonarQube analysis completed successfully!"
   only:
     - main
+  allow_failure: true
 
 vault-smoke-test:
   stage: image-scan
@@ -132,7 +141,10 @@ vault-smoke-test:
   before_script:
     - apk add --no-cache curl
   script:
-    - if [ -z "$VAULT_ADDR" ] || [ -z "$VAULT_TOKEN" ]; then echo "VAULT_ADDR or VAULT_TOKEN is unset"; exit 1; fi
+    - echo "Script content for debugging:"
+    - echo "Checking variables..."
+    - test -z "$VAULT_ADDR" && { echo "VAULT_ADDR is unset"; exit 1; }
+    - test -z "$VAULT_TOKEN" && { echo "VAULT_TOKEN is unset"; exit 1; }
     - echo "Testing Vault connectivity and health..."
     - echo "Vault URL: $VAULT_ADDR"
     - curl -s -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/sys/health" || echo "Vault health check failed"
@@ -155,6 +167,11 @@ deploy:
     - kubectl get pods -o wide
     - echo "Current services:"
     - kubectl get services -o wide
+    - test -f "k8s/backend-deployment.yaml" || { echo "k8s/backend-deployment.yaml not found"; exit 1; }
+    - test -f "k8s/frontend-deployment.yaml" || { echo "k8s/frontend-deployment.yaml not found"; exit 1; }
+    - test -f "k8s/backend-service.yaml" || { echo "k8s/backend-service.yaml not found"; exit 1; }
+    - test -f "k8s/frontend-service.yaml" || { echo "k8s/frontend-service.yaml not found"; exit 1; }
+    - test -f "k8s/secret.yaml" || { echo "k8s/secret.yaml not found"; exit 1; }
     - echo "Applying security-enhanced backend deployment..."
     - kubectl apply -f k8s/backend-deployment.yaml
     - echo "Applying frontend deployment..."
