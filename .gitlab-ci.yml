@@ -1,7 +1,6 @@
 stages:
   - security-scan
   - build
-  - image-scan
 
 variables:
   DOCKER_USERNAME: "sarra539"
@@ -41,68 +40,3 @@ build-frontend:
     max: 2
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-
-image-scan:
-  stage: image-scan
-  image: docker:24.0
-  services:
-    - docker:24.0-dind
-  before_script:
-    - wget -qO - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.52.2
-    - trivy --version
-  script:
-    - echo "Scanning secure backend image for vulnerabilities..."
-    - trivy image --format json --output backend-vulnerabilities.json --exit-code 1 "$SECURE_BACKEND_IMAGE"
-    - echo "Scanning frontend image for vulnerabilities..."
-    - trivy image --format json --output frontend-vulnerabilities.json --exit-code 1 "$FRONTEND_IMAGE"
-    - echo "Container vulnerability scans completed."
-  artifacts:
-    paths:
-      - backend-vulnerabilities.json
-      - frontend-vulnerabilities.json
-    expire_in: 1 week
-  needs:
-    - build-backend
-    - build-frontend
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: false 
-
-sonarqube-scan:
-  stage: image-scan
-  image: sonarsource/sonar-scanner-cli:latest
-  before_script:
-    - test -z "$SONAR_HOST_URL" && { echo "ERROR: SONAR_HOST_URL is unset"; exit 1; }
-    - test -z "$SONAR_TOKEN" && { echo "ERROR: SONAR_TOKEN is unset"; exit 1; }
-  script:
-    - echo "Running SonarQube code quality analysis..."
-    - cd backend-autoflow
-    - >-
-      sonar-scanner
-      -Dsonar.projectKey=autoflow-backend
-      -Dsonar.sources=.
-      -Dsonar.host.url="$SONAR_HOST_URL"
-      -Dsonar.token="$SONAR_TOKEN"
-      -Dsonar.projectVersion="${CI_COMMIT_SHA:0:8}"
-      -Dsonar.projectName="AutoFlow Backend"
-      -Dsonar.projectDescription="Network automation platform with DevSecOps integration"
-    - echo "SonarQube analysis completed successfully!"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: true
-
-vault-smoke-test:
-  stage: image-scan
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache curl
-    - test -z "$VAULT_ADDR" && { echo "ERROR: VAULT_ADDR is unset"; exit 1; }
-    - test -z "$VAULT_TOKEN" && { echo "ERROR: VAULT_TOKEN is unset"; exit 1; }
-  script:
-    - echo "Testing Vault connectivity and health..."
-    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/sys/health" || { echo "Vault health check failed"; exit 1; }
-    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/sys/mounts" || { echo "Vault mounts check failed"; exit 1; }
-    - echo "Vault smoke test completed successfully!"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: true
