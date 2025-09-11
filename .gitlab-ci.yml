@@ -176,3 +176,4 @@ deploy:
     - image-scan
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+  # This variabl
