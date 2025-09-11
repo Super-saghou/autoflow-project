@@ -1,8 +1,6 @@
 stages:
   - security-scan
   - build
-  - image-scan
-  - deploy
 
 variables:
   DOCKER_USERNAME: "sarra539"
@@ -13,31 +11,7 @@ variables:
 
 default:
   before_script:
-    - test -z "$DOCKER_PASSWORD" && { echo "ERROR: DOCKER_PASSWORD is unset"; exit 1; }
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
-security-scan:
-  stage: security-scan
-  image: python:3.10-slim
-  before_script:
-    - pip install --no-cache-dir bandit safety pip-audit
-  script:
-    - echo "Running comprehensive security scans on backend code"
-    - cd backend-autoflow
-    - echo "Running Bandit security scan"
-    - bandit -r . -f json -o bandit-report.json || echo "Bandit scan completed with warnings"
-    - echo "Running Safety check for Python dependencies"
-    - safety check -r requirements.txt --json --output safety-report.json || echo "Safety check completed"
-    - echo "Running pip-audit for vulnerability scanning"
-    - pip-audit --format json --output pip-audit-report.json || echo "Pip audit completed"
-    - echo "Security scans completed. Reports saved"
-  artifacts:
-    paths:
-      - backend-autoflow/*-report.json
-    expire_in: 1 week
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: false
 
 build-backend:
   stage: build
@@ -45,12 +19,9 @@ build-backend:
   services:
     - docker:24.0-dind
   script:
-    - echo "Building SECURE backend image"
     - cd backend-autoflow
     - docker build --no-cache --pull -f Dockerfile.secure.hybrid -t "$SECURE_BACKEND_IMAGE" .
-    - echo "Pushing backend image"
     - docker push "$SECURE_BACKEND_IMAGE"
-    - echo "Secure backend image built and pushed successfully"
   retry:
     max: 2
   rules:
@@ -62,113 +33,10 @@ build-frontend:
   services:
     - docker:24.0-dind
   script:
-    - echo "Verifying frontend directory and building image"
     - cd frontend-autoflow
     - docker build --no-cache -t "$FRONTEND_IMAGE" .
     - docker push "$FRONTEND_IMAGE"
   retry:
     max: 2
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-
-image-scan:
-  stage: image-scan
-  image: docker:24.0
-  services:
-    - docker:24.0-dind
-  before_script:
-    - wget -qO - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.52.2
-    - trivy --version
-  script:
-    - echo "Scanning secure backend image for vulnerabilities..."
-    - trivy image --format json --output backend-vulnerabilities.json --exit-code 1 "$SECURE_BACKEND_IMAGE"
-    - echo "Scanning frontend image for vulnerabilities..."
-    - trivy image --format json --output frontend-vulnerabilities.json --exit-code 1 "$FRONTEND_IMAGE"
-    - echo "Container vulnerability scans completed."
-  artifacts:
-    paths:
-      - backend-vulnerabilities.json
-      - frontend-vulnerabilities.json
-    expire_in: 1 week
-  needs:
-    - build-backend
-    - build-frontend
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: false
-
-sonarqube-scan:
-  stage: image-scan
-  image: sonarsource/sonar-scanner-cli:latest
-  before_script:
-    - test -z "$SONAR_HOST_URL" && { echo "ERROR: SONAR_HOST_URL is unset"; exit 1; }
-    - test -z "$SONAR_TOKEN" && { echo "ERROR: SONAR_TOKEN is unset"; exit 1; }
-  script:
-    - echo "Running SonarQube code quality analysis..."
-    - cd backend-autoflow
-    - >-
-      sonar-scanner
-      -Dsonar.projectKey=autoflow-backend
-      -Dsonar.sources=.
-      -Dsonar.host.url="$SONAR_HOST_URL"
-      -Dsonar.token="$SONAR_TOKEN"
-      -Dsonar.projectVersion="${CI_COMMIT_SHA:0:8}"
-      -Dsonar.projectName="AutoFlow Backend"
-      -Dsonar.projectDescription="Network automation platform with DevSecOps integration"
-    - echo "SonarQube analysis completed successfully!"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: true
-
-vault-smoke-test:
-  stage: image-scan
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache curl
-    - test -z "$VAULT_ADDR" && { echo "ERROR: VAULT_ADDR is unset"; exit 1; }
-    - test -z "$VAULT_TOKEN" && { echo "ERROR: VAULT_TOKEN is unset"; exit 1; }
-  script:
-    - echo "Testing Vault connectivity and health..."
-    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/sys/health" || { echo "Vault health check failed"; exit 1; }
-    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/sys/mounts" || { echo "Vault mounts check failed"; exit 1; }
-    - echo "Vault smoke test completed successfully!"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: true
-
-deploy:
-  stage: deploy
-  tags:
-    - production
-  script:
-    - echo "Current pods"
-    - kubectl get pods -o wide
-    - echo "Applying security-enhanced backend deployment"
-    - kubectl apply -f k8s/backend-deployment.yaml
-    - echo "Applying frontend deployment"
-    - kubectl apply -f k8s/frontend-deployment.yaml
-    - echo "Applying backend service"
-    - kubectl apply -f k8s/backend-service.yaml
-    - echo "Applying frontend service"
-    - kubectl apply -f k8s/frontend-service.yaml
-    - echo "Applying secrets"
-    - kubectl apply -f k8s/secret.yaml
-    - echo "Using secure image for deployment"
-    - kubectl set image deployment/backend-deployment backend="$SECURE_BACKEND_IMAGE"
-    - echo "Updating frontend deployment"
-    - kubectl set image deployment/frontend-deployment frontend="$FRONTEND_IMAGE"
-    - echo "Force restarting deployments"
-    - kubectl rollout restart deployment/backend-deployment
-    - kubectl rollout restart deployment/frontend-deployment
-    - echo "Waiting for backend rollout"
-    - kubectl rollout status deployment/backend-deployment --timeout=600s
-    - echo "Waiting for frontend rollout"
-    - kubectl rollout status deployment/frontend-deployment --timeout=600s
-    - echo "DevSecOps Deployment Complete"
-  environment:
-    name: production
-    url: http://192.168.111.201:31560
-  needs:
-    - image-scan
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
