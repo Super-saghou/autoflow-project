@@ -40,7 +40,7 @@ const ultraModernCardStyle = {
   borderRadius: 16,
   boxShadow: '0 4px 24px 0 rgba(15, 23, 42, 0.06)',
   padding: '32px',
-  marginBottom: 16, // Reduced margin
+  marginBottom: 32,
   border: '1px solid #e2e8f0',
   minHeight: 120,
   position: 'relative',
@@ -56,7 +56,7 @@ const ultraModernCardStyle = {
   }
 };
 
-// Modern metric card style
+// Modern metric card style - replacing oval/circular design
 const modernMetricCardStyle = {
   background: 'rgba(255, 255, 255, 0.95)',
   borderRadius: 12,
@@ -101,29 +101,20 @@ const professionalDataBoxStyle = {
   },
 };
 
-// New compact design for threat/alert items
-const compactItemStyle = {
-  background: 'rgba(255, 255, 255, 0.9)',
+// Modern threat/alert item style
+const modernItemStyle = {
+  background: 'rgba(255, 255, 255, 0.8)',
   borderRadius: 8,
-  padding: 12,
-  marginBottom: 8,
+  padding: 16,
+  marginBottom: 12,
   border: '1px solid #e2e8f0',
   transition: 'all 0.2s ease',
   '&:hover': {
-    backgroundColor: 'rgba(248, 250, 252, 0.95)',
+    backgroundColor: 'rgba(248, 250, 252, 0.9)',
     transform: 'translateY(-1px)',
-    boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)',
     borderColor: '#cbd5e1'
   }
-};
-
-// New compact section style
-const compactSectionStyle = {
-  background: 'rgba(248, 250, 252, 0.5)',
-  borderRadius: 8,
-  padding: 16,
-  border: '1px solid #e2e8f0',
-  marginTop: 16
 };
 
 const SecurityMonitorAgent = () => {
@@ -309,7 +300,7 @@ const SecurityMonitorAgent = () => {
     <Box>
       {/* Ultra Modern Main Control Panel */}
       <Box sx={ultraModernCardStyle}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
             <Box sx={{
               display: 'flex',
@@ -369,6 +360,17 @@ const SecurityMonitorAgent = () => {
             {getStatusIcon(monitoringStatus)}
           </Box>
         </Box>
+        
+        <Typography variant="body1" sx={{ 
+          color: '#475569', 
+          marginBottom: 4, 
+          fontSize: '1.1rem',
+          lineHeight: 1.6,
+          maxWidth: '900px'
+        }}>
+          Real-time network security monitoring with AI-powered threat detection. Monitor Cisco switch logs, 
+          detect suspicious activities, and receive intelligent security alerts with automated response capabilities.
+        </Typography>
 
         <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'center' }}>
           <Button
@@ -467,8 +469,8 @@ const SecurityMonitorAgent = () => {
         )}
       </Box>
 
-      {/* Ultra Modern Statistics Dashboard - Reduced spacing */}
-      <Grid container spacing={3} sx={{ marginBottom: 3 }}>
+      {/* Ultra Modern Statistics Dashboard - Replacing oval/circular cards */}
+      <Grid container spacing={3} sx={{ marginBottom: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={modernMetricCardStyle}>
             <CardContent sx={{ p: 3 }}>
@@ -590,10 +592,10 @@ const SecurityMonitorAgent = () => {
         </Grid>
       </Grid>
 
-      {/* Restructured Live Data Display - Single column with compact sections */}
+      {/* Ultra Modern Live Data Display */}
       <Grid container spacing={3}>
-        {/* Live Switch Logs - Full width with compact sections below */}
-        <Grid item xs={12}>
+        {/* Live Switch Logs */}
+        <Grid item xs={12} lg={6}>
           <Card sx={{ ...modernMetricCardStyle, height: 'fit-content' }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
@@ -675,172 +677,178 @@ const SecurityMonitorAgent = () => {
                   </Typography>
                 </Box>
               )}
+            </CardContent>
+          </Card>
+        </Grid>
 
-              {/* Compact Threat Detection Section */}
-              <Box sx={compactSectionStyle}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: 32,
-                      height: 32,
-                      borderRadius: 8,
-                      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                      boxShadow: '0 2px 8px rgba(239, 68, 68, 0.25)'
-                    }}>
-                      <BugReport sx={{ color: 'white', fontSize: 18 }} />
-                    </Box>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                      Threat Detection
-                    </Typography>
+        {/* Threat Detection */}
+        <Grid item xs={12} lg={3}>
+          <Card sx={{ ...modernMetricCardStyle, height: 'fit-content' }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 44,
+                    height: 44,
+                    borderRadius: 12,
+                    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)'
+                  }}>
+                    <BugReport sx={{ color: 'white', fontSize: 22 }} />
                   </Box>
-                  <IconButton 
-                    size="small" 
-                    onClick={() => setShowThreats(!showThreats)}
-                    sx={{
-                      backgroundColor: showThreats ? 'rgba(239, 68, 68, 0.1)' : 'rgba(100, 116, 139, 0.1)',
-                      '&:hover': {
-                        backgroundColor: showThreats ? 'rgba(239, 68, 68, 0.2)' : 'rgba(100, 116, 139, 0.2)'
-                      }
-                    }}
-                  >
-                    {showThreats ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                    Threats
+                  </Typography>
                 </Box>
-                
-                {showThreats ? (
-                  <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
-                    {threats.length > 0 ? (
-                      threats.map((threat, index) => (
-                        <Box key={index} sx={compactItemStyle}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                            <Chip 
-                              label={threat.severity || 'Unknown'} 
-                              size="small"
-                              sx={{ 
-                                backgroundColor: getThreatSeverityColor(threat.severity),
-                                color: 'white',
-                                fontWeight: 600,
-                                fontSize: '0.7rem',
-                                height: 20
-                              }}
-                            />
-                            <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 500, fontSize: '0.7rem' }}>
-                              {formatTimestamp(threat.timestamp)}
-                            </Typography>
-                          </Box>
-                          <Typography variant="body2" sx={{ color: '#374151', fontWeight: 500, fontSize: '0.8rem' }}>
-                            {threat.description || threat.message || 'No description available'}
-                          </Typography>
-                          {threat.source && (
-                            <Typography variant="caption" sx={{ color: '#6b7280', display: 'block', fontSize: '0.7rem' }}>
-                              Source: {threat.source}
-                            </Typography>
-                          )}
-                        </Box>
-                      ))
-                    ) : (
-                      <Box sx={{ textAlign: 'center', py: 3 }}>
-                        <Typography sx={{ color: '#94a3b8', fontStyle: 'italic', fontSize: '0.9rem' }}>
-                          {monitoringStatus === 'active' ? 'No threats detected' : 'No threat data available'}
-                        </Typography>
-                      </Box>
-                    )}
-                    <div ref={threatsEndRef} />
-                  </Box>
-                ) : (
-                  <Box sx={{ textAlign: 'center', py: 3 }}>
-                    <Typography sx={{ color: '#94a3b8', fontSize: '0.9rem' }}>
-                      Threats hidden
-                    </Typography>
-                  </Box>
-                )}
+                <IconButton 
+                  size="small" 
+                  onClick={() => setShowThreats(!showThreats)}
+                  sx={{
+                    backgroundColor: showThreats ? 'rgba(239, 68, 68, 0.1)' : 'rgba(100, 116, 139, 0.1)',
+                    '&:hover': {
+                      backgroundColor: showThreats ? 'rgba(239, 68, 68, 0.2)' : 'rgba(100, 116, 139, 0.2)'
+                    }
+                  }}
+                >
+                  {showThreats ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
               </Box>
+              
+              {showThreats ? (
+                <Box sx={{ maxHeight: 300, overflow: 'auto' }}>
+                  {threats.length > 0 ? (
+                    threats.map((threat, index) => (
+                      <Box key={index} sx={modernItemStyle}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                          <Chip 
+                            label={threat.severity || 'Unknown'} 
+                            size="small"
+                            sx={{ 
+                              backgroundColor: getThreatSeverityColor(threat.severity),
+                              color: 'white',
+                              fontWeight: 600,
+                              fontSize: '0.75rem'
+                            }}
+                          />
+                          <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 500 }}>
+                            {formatTimestamp(threat.timestamp)}
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" sx={{ color: '#374151', fontWeight: 500, mb: 1 }}>
+                          {threat.description || threat.message || 'No description available'}
+                        </Typography>
+                        {threat.source && (
+                          <Typography variant="caption" sx={{ color: '#6b7280', display: 'block' }}>
+                            Source: {threat.source}
+                          </Typography>
+                        )}
+                      </Box>
+                    ))
+                  ) : (
+                    <Box sx={{ textAlign: 'center', py: 4 }}>
+                      <Typography sx={{ color: '#94a3b8', fontStyle: 'italic' }}>
+                        {monitoringStatus === 'active' ? 'No threats detected' : 'No threat data available'}
+                      </Typography>
+                    </Box>
+                  )}
+                  <div ref={threatsEndRef} />
+                </Box>
+              ) : (
+                <Box sx={{ textAlign: 'center', py: 6 }}>
+                  <Typography sx={{ color: '#94a3b8' }}>
+                    Threats hidden
+                  </Typography>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
 
-              {/* Compact Security Alerts Section */}
-              <Box sx={compactSectionStyle}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: 32,
-                      height: 32,
-                      borderRadius: 8,
-                      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                      boxShadow: '0 2px 8px rgba(245, 158, 11, 0.25)'
-                    }}>
-                      <Notifications sx={{ color: 'white', fontSize: 18 }} />
-                    </Box>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                      Security Alerts
-                    </Typography>
+        {/* Security Alerts */}
+        <Grid item xs={12} lg={3}>
+          <Card sx={{ ...modernMetricCardStyle, height: 'fit-content' }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 44,
+                    height: 44,
+                    borderRadius: 12,
+                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                    boxShadow: '0 4px 12px rgba(245, 158, 11, 0.25)'
+                  }}>
+                    <Notifications sx={{ color: 'white', fontSize: 22 }} />
                   </Box>
-                  <IconButton 
-                    size="small" 
-                    onClick={() => setShowAlerts(!showAlerts)}
-                    sx={{
-                      backgroundColor: showAlerts ? 'rgba(245, 158, 11, 0.1)' : 'rgba(100, 116, 139, 0.1)',
-                      '&:hover': {
-                        backgroundColor: showAlerts ? 'rgba(245, 158, 11, 0.2)' : 'rgba(100, 116, 139, 0.2)'
-                      }
-                    }}
-                  >
-                    {showAlerts ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                    Alerts
+                  </Typography>
                 </Box>
-                
-                {showAlerts ? (
-                  <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
-                    {alerts.length > 0 ? (
-                      alerts.map((alert, index) => (
-                        <Box key={index} sx={compactItemStyle}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                            <Chip 
-                              label={alert.type || 'Alert'} 
-                              size="small"
-                              sx={{ 
-                                backgroundColor: '#f59e0b',
-                                color: 'white',
-                                fontWeight: 600,
-                                fontSize: '0.7rem',
-                                height: 20
-                              }}
-                            />
-                            <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 500, fontSize: '0.7rem' }}>
-                              {formatTimestamp(alert.timestamp)}
-                            </Typography>
-                          </Box>
-                          <Typography variant="body2" sx={{ color: '#374151', fontWeight: 500, fontSize: '0.8rem' }}>
-                            {alert.message || alert.description || 'No message available'}
-                          </Typography>
-                          {alert.source && (
-                            <Typography variant="caption" sx={{ color: '#6b7280', display: 'block', fontSize: '0.7rem' }}>
-                              Source: {alert.source}
-                            </Typography>
-                          )}
-                        </Box>
-                      ))
-                    ) : (
-                      <Box sx={{ textAlign: 'center', py: 3 }}>
-                        <Typography sx={{ color: '#94a3b8', fontStyle: 'italic', fontSize: '0.9rem' }}>
-                          {monitoringStatus === 'active' ? 'No alerts generated' : 'No alert data available'}
-                        </Typography>
-                      </Box>
-                    )}
-                    <div ref={alertsEndRef} />
-                  </Box>
-                ) : (
-                  <Box sx={{ textAlign: 'center', py: 3 }}>
-                    <Typography sx={{ color: '#94a3b8', fontSize: '0.9rem' }}>
-                      Alerts hidden
-                    </Typography>
-                  </Box>
-                )}
+                <IconButton 
+                  size="small" 
+                  onClick={() => setShowAlerts(!showAlerts)}
+                  sx={{
+                    backgroundColor: showAlerts ? 'rgba(245, 158, 11, 0.1)' : 'rgba(100, 116, 139, 0.1)',
+                    '&:hover': {
+                      backgroundColor: showAlerts ? 'rgba(245, 158, 11, 0.2)' : 'rgba(100, 116, 139, 0.2)'
+                    }
+                  }}
+                >
+                  {showAlerts ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
               </Box>
+              
+              {showAlerts ? (
+                <Box sx={{ maxHeight: 300, overflow: 'auto' }}>
+                  {alerts.length > 0 ? (
+                    alerts.map((alert, index) => (
+                      <Box key={index} sx={modernItemStyle}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                          <Chip 
+                            label={alert.type || 'Alert'} 
+                            size="small"
+                            sx={{ 
+                              backgroundColor: '#f59e0b',
+                              color: 'white',
+                              fontWeight: 600,
+                              fontSize: '0.75rem'
+                            }}
+                          />
+                          <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 500 }}>
+                            {formatTimestamp(alert.timestamp)}
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" sx={{ color: '#374151', fontWeight: 500, mb: 1 }}>
+                          {alert.message || alert.description || 'No message available'}
+                        </Typography>
+                        {alert.source && (
+                          <Typography variant="caption" sx={{ color: '#6b7280', display: 'block' }}>
+                            Source: {alert.source}
+                          </Typography>
+                        )}
+                      </Box>
+                    ))
+                  ) : (
+                    <Box sx={{ textAlign: 'center', py: 4 }}>
+                      <Typography sx={{ color: '#94a3b8', fontStyle: 'italic' }}>
+                        {monitoringStatus === 'active' ? 'No alerts generated' : 'No alert data available'}
+                      </Typography>
+                    </Box>
+                  )}
+                  <div ref={alertsEndRef} />
+                </Box>
+              ) : (
+                <Box sx={{ textAlign: 'center', py: 6 }}>
+                  <Typography sx={{ color: '#94a3b8' }}>
+                    Alerts hidden
+                  </Typography>
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Grid>

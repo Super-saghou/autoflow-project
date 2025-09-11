@@ -1,0 +1,2868 @@
+🔍 Cisco Switch Syslog Server with AI Threat Detection
+============================================================
+✅ Ollama connected successfully
+🔍 Switch Syslog Server listening on 0.0.0.0:514
+📡 Waiting for Cisco switch logs...
+🤖 AI Analysis: Enabled
+💡 Configure your Cisco switch with: logging host <YOUR_VM_IP>
+⚠️ Note: Port 514 requires sudo - run with: sudo python3 syslog_server.py
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:15 sarra-virtual-machine kubelet[1610]: E0909 19:29:15.819286    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The Cisco switch log message indicates an error when syncing a pod named "autoflow/frontend-deployment-79b6ff865-4ctm2". This suggests that the pod's container image is failing to pull, and Kubernetes is unable to start it.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:18 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:18.816897889+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 1 events processed
+   MEDIUM: 1
+----------------------------------------
+
+📊 Statistics: 1 events processed
+   MEDIUM: 1
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This is a log message from the Cisco switch that indicates that it stopped running a container named "StopPodSandbox" for a specific pod. The message includes information about when it stopped (2025-09-09T19:29:18) and which pod was being stopped.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:18 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:18.817066419+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 2 events processed
+   MEDIUM: 1
+   LOW: 1
+----------------------------------------
+
+📊 Statistics: 2 events processed
+   MEDIUM: 1
+   LOW: 1
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log message indicates that a container is trying to stop on September 9th at 19:29:18 UTC. However, the current state of the container is "CONTAINER_EXITED", which means it has already exited and cannot be stopped. This suggests a potential issue with the container not being properly shut down or is in an unknown state.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:18 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:18.827008115+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 3 events processed
+   MEDIUM: 1
+   LOW: 2
+----------------------------------------
+
+📊 Statistics: 3 events processed
+   MEDIUM: 1
+   LOW: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This Cisco switch log message indicates a security threat related to containerd. The "StopPodSandbox" command failed with an error indicating that the network resources for a sandbox were not properly destroyed. Additionally, there was a failure to retrieve a network configuration cache result from the weave network.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:18 sarra-virtual-machine kubelet[1610]: E0909 19:29:18.828989    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 4 events processed
+   MEDIUM: 2
+   LOW: 2
+----------------------------------------
+
+📊 Statistics: 4 events processed
+   MEDIUM: 2
+   LOW: 2
+----------------------------------------
+
+📊 Statistics: 4 events processed
+   MEDIUM: 2
+   LOW: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log indicates that the Kubernetes (kubelet) service is experiencing an issue with stopping a pod sandbox. The error message provided includes details about the rpc error code, which is "Unknown", followed by a description of what went wrong ("failed to destroy network for sandbox" and then explaining why it failed). This suggests that there might be some issue with the networking configuration or setup.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:18 sarra-virtual-machine kubelet[1610]: E0909 19:29:18.829324    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 5 events processed
+   MEDIUM: 2
+   LOW: 3
+----------------------------------------
+
+📊 Statistics: 5 events processed
+   MEDIUM: 2
+   LOW: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This log entry indicates that a pod named "sandbox" in Kubernetes has been marked for deletion due to an error. The "sandbox" is likely used as a sandbox environment by the kubelet.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:18 sarra-virtual-machine kubelet[1610]: E0909 19:29:18.829489    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 6 events processed
+   MEDIUM: 2
+   LOW: 4
+----------------------------------------
+
+📊 Statistics: 6 events processed
+   MEDIUM: 2
+   LOW: 4
+----------------------------------------
+
+📊 Statistics: 6 events processed
+   MEDIUM: 2
+   LOW: 4
+----------------------------------------
+
+📊 Statistics: 6 events processed
+   MEDIUM: 2
+   LOW: 4
+----------------------------------------
+🚨 Threat Level: MEDIUM
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:18 sarra-virtual-machine kubelet[1610]: E0909 19:29:18.829720    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 7 events processed
+   MEDIUM: 3
+   LOW: 4
+----------------------------------------
+
+📊 Statistics: 7 events processed
+   MEDIUM: 3
+   LOW: 4
+----------------------------------------
+
+📊 Statistics: 7 events processed
+   MEDIUM: 3
+   LOW: 4
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This message indicates that the Kubelet is experiencing an issue while syncing a Kubernetes pod. The error involves a failure to destroy a network for the sandbox, resulting in an Unknown error code.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:26 sarra-virtual-machine kubelet[1610]: E0909 19:29:26.818463    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 8 events processed
+   MEDIUM: 3
+   LOW: 5
+----------------------------------------
+
+📊 Statistics: 8 events processed
+   MEDIUM: 3
+   LOW: 5
+----------------------------------------
+
+📊 Statistics: 8 events processed
+   MEDIUM: 3
+   LOW: 5
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log indicates that the Kubernetes cluster is attempting to start a container named "frontend" in a deployment called "autoflow/frontend-deployment-79b6ff865-4ctm2", but it encountered an error pulling the image, which resulted in an "Error syncing pod, skipping" message.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:32 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:32.818974475+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 9 events processed
+   MEDIUM: 4
+   LOW: 5
+----------------------------------------
+
+📊 Statistics: 9 events processed
+   MEDIUM: 4
+   LOW: 5
+----------------------------------------
+
+📊 Statistics: 9 events processed
+   MEDIUM: 4
+   LOW: 5
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log message indicates that a containerized system (specifically "StopPodSandbox") is shutting down the "2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce" pod. This suggests potential insider threats, as it appears that a system administrator or someone with access to the containerized environment is attempting to shut down the pod.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:32 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:32.819520667+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 10 events processed
+   MEDIUM: 5
+   LOW: 5
+----------------------------------------
+
+📊 Statistics: 10 events processed
+   MEDIUM: 5
+   LOW: 5
+----------------------------------------
+
+📊 Statistics: 10 events processed
+   MEDIUM: 5
+   LOW: 5
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log indicates that a container named "48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582" needs to be in either "RUNNING" or "UNKNOWN" state for the Cisco switch. This suggests that a container may have exited unexpectedly, and it is recommended to investigate further to understand what caused this issue.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:32 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:32.830136778+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 11 events processed
+   MEDIUM: 5
+   LOW: 6
+----------------------------------------
+
+📊 Statistics: 11 events processed
+   MEDIUM: 5
+   LOW: 6
+----------------------------------------
+
+📊 Statistics: 11 events processed
+   MEDIUM: 5
+   LOW: 6
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This log message indicates an error in containerd's sandboxing process. The "StopPodSandbox" action failed due to a network issue with the "weave" network, which is part of the Kubernetes network stack.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:32 sarra-virtual-machine kubelet[1610]: E0909 19:29:32.831023    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 12 events processed
+   MEDIUM: 5
+   LOW: 7
+----------------------------------------
+
+📊 Statistics: 12 events processed
+   MEDIUM: 5
+   LOW: 7
+----------------------------------------
+
+📊 Statistics: 12 events processed
+   MEDIUM: 5
+   LOW: 7
+----------------------------------------
+🚨 Threat Level: LOW
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:32 sarra-virtual-machine kubelet[1610]: E0909 19:29:32.831106    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 13 events processed
+   MEDIUM: 5
+   LOW: 8
+----------------------------------------
+
+📊 Statistics: 13 events processed
+   MEDIUM: 5
+   LOW: 8
+----------------------------------------
+
+📊 Statistics: 13 events processed
+   MEDIUM: 5
+   LOW: 8
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log message indicates that the Kubernetes runtime manager (kuberuntime_manager) failed to stop a sandboxed pod. A sandbox is a container running in isolation within a privileged environment.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:32 sarra-virtual-machine kubelet[1610]: E0909 19:29:32.831177    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 14 events processed
+   MEDIUM: 5
+   LOW: 9
+----------------------------------------
+
+📊 Statistics: 14 events processed
+   MEDIUM: 5
+   LOW: 9
+----------------------------------------
+
+📊 Statistics: 14 events processed
+   MEDIUM: 5
+   LOW: 9
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log indicates that the Kubernetes (kubelet) daemon attempted to "KillPodSandbox" for a pod named "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f", but encountered an error. The failure message suggests that there was an issue with getting the network config for "weave" (a Weave networking layer) to match the expected version.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:32 sarra-virtual-machine kubelet[1610]: E0909 19:29:32.831198    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 15 events processed
+   MEDIUM: 6
+   LOW: 9
+----------------------------------------
+
+📊 Statistics: 15 events processed
+   MEDIUM: 6
+   LOW: 9
+----------------------------------------
+
+📊 Statistics: 15 events processed
+   MEDIUM: 6
+   LOW: 9
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log indicates that the Kubernetes pod "trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" failed to sync with the etcd database, resulting in an error during "KillPodSandbox" operation. This suggests a vulnerability in the system.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:40 sarra-virtual-machine kubelet[1610]: E0909 19:29:40.819107    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 16 events processed
+   MEDIUM: 6
+   LOW: 10
+----------------------------------------
+
+📊 Statistics: 16 events processed
+   MEDIUM: 6
+   LOW: 10
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The Cisco switch log message indicates that a pod was unable to start due to an error while syncing with the Docker container. This is not a security threat as it doesn't involve any sensitive information or unauthorized access.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:43 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:43.820641226+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 17 events processed
+   MEDIUM: 6
+   LOW: 11
+----------------------------------------
+
+📊 Statistics: 17 events processed
+   MEDIUM: 6
+   LOW: 11
+----------------------------------------
+
+📊 Statistics: 17 events processed
+   MEDIUM: 6
+   LOW: 11
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log indicates that a containerized environment (likely Docker) is experiencing an event where the "StopPodSandbox" command is being executed for a specific pod. This suggests that there may be a security issue or an attempt to shut down a vulnerable component of the system.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:43 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:43.820775921+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 18 events processed
+   MEDIUM: 7
+   LOW: 11
+----------------------------------------
+
+📊 Statistics: 18 events processed
+   MEDIUM: 7
+   LOW: 11
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log message indicates that a container is being stopped by the Containerd process but the current state of the container "CONTAINER_EXITED" is incorrect. This suggests that the container is not exiting properly or is in an unknown state, possibly due to misconfigured resources.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:43 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:43.835535727+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 19 events processed
+   MEDIUM: 8
+   LOW: 11
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The Cisco switch log message indicates that the containerd process failed to stop a sandbox pod. This is likely due to issues with network configuration or management.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:43 sarra-virtual-machine kubelet[1610]: E0909 19:29:43.836988    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 20 events processed
+   MEDIUM: 9
+   LOW: 11
+----------------------------------------
+
+📊 Statistics: 20 events processed
+   MEDIUM: 9
+   LOW: 11
+----------------------------------------
+
+📊 Statistics: 20 events processed
+   MEDIUM: 9
+   LOW: 11
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The "StopPodSandbox from runtime service failed" error message indicates that the Kubernetes pod sandbox has encountered a problem while trying to destroy its network resources. This suggests an issue with network configuration or management.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:43 sarra-virtual-machine kubelet[1610]: E0909 19:29:43.837112    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 21 events processed
+   MEDIUM: 10
+   LOW: 11
+----------------------------------------
+
+📊 Statistics: 21 events processed
+   MEDIUM: 10
+   LOW: 11
+----------------------------------------
+
+📊 Statistics: 21 events processed
+   MEDIUM: 10
+   LOW: 11
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The switch logs a failure to stop the "sandbox" pod in Kubernetes (kubelet). This indicates that there might be an issue with sandbox pods not being properly terminated.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:43 sarra-virtual-machine kubelet[1610]: E0909 19:29:43.837241    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 22 events processed
+   MEDIUM: 11
+   LOW: 11
+----------------------------------------
+
+📊 Statistics: 22 events processed
+   MEDIUM: 11
+   LOW: 11
+----------------------------------------
+
+📊 Statistics: 22 events processed
+   MEDIUM: 11
+   LOW: 11
+----------------------------------------
+🚨 Threat Level: HIGH
+🤖 Analysis: The log indicates that the Kubernetes controller (kubelet) is trying to "KillPodSandbox" for a specific pod ("d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"). However, it's unable to destroy the network for this sandbox ("weave") because of an error in the pod's networking configuration.
+💡 Recommendations: 
+------------------------------------------------------------
+
+🚨🚨🚨 CRITICAL ALERT 🚨🚨🚨
+⏰ Time: 2025-09-09T20:59:51.412001
+📡 Source: 192.168.111.201
+📝 Message: <30>Sep  9 19:29:43 sarra-virtual-machine kubelet[1610]: E0909 19:29:43.837241    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+🔍 Level: HIGH
+🤖 AI Analysis: The log indicates that the Kubernetes controller (kubelet) is trying to "KillPodSandbox" for a specific pod ("d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"). However, it's unable to destroy the network for this sandbox ("weave") because of an error in the pod's networking configuration.
+💡 Actions: 
+🚨🚨🚨 END ALERT 🚨🚨🚨
+
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:43 sarra-virtual-machine kubelet[1610]: E0909 19:29:43.837361    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 23 events processed
+   MEDIUM: 11
+   LOW: 11
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 23 events processed
+   MEDIUM: 11
+   LOW: 11
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: MEDIUM
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:51 sarra-virtual-machine kubelet[1610]: E0909 19:29:51.819948    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 24 events processed
+   MEDIUM: 12
+   LOW: 11
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 24 events processed
+   MEDIUM: 12
+   LOW: 11
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 24 events processed
+   MEDIUM: 12
+   LOW: 11
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The switch is experiencing an issue syncing a pod named "autoflow/frontend-deployment-79b6ff865-4ctm2". This error message indicates that there was an unsuccessful attempt to start the container for the specified image ("sarra539/autoflow-frontend:latest"). A back-off mechanism is employed, which means that if this fails multiple times, it will wait and try again.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:54 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:54.817610060+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 25 events processed
+   MEDIUM: 13
+   LOW: 11
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 25 events processed
+   MEDIUM: 13
+   LOW: 11
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 25 events processed
+   MEDIUM: 13
+   LOW: 11
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log message indicates that a containerized process (PodSandbox) named "StopPodSandbox for 2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce" has been stopped due to an issue. The "level=info" log indicates that this is a informational message.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:54 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:54.817694754+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 26 events processed
+   MEDIUM: 14
+   LOW: 11
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 26 events processed
+   MEDIUM: 14
+   LOW: 11
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log indicates that a container named "48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582" has reached an unexpected state of "CONTAINER_EXITED". This could be a sign of resource consumption or data corruption. It is recommended to check the container's current status and ensure it is properly stopped before proceeding.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:54 sarra-virtual-machine containerd[948]: time="2025-09-09T19:29:54.830830283+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 27 events processed
+   MEDIUM: 14
+   LOW: 12
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 27 events processed
+   MEDIUM: 14
+   LOW: 12
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 27 events processed
+   MEDIUM: 14
+   LOW: 12
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: AI analysis completed
+💡 Recommendations: Continue monitoring
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:54 sarra-virtual-machine kubelet[1610]: E0909 19:29:54.831009    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 28 events processed
+   MEDIUM: 15
+   LOW: 12
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 28 events processed
+   MEDIUM: 15
+   LOW: 12
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The "StopPodSandbox from runtime service failed" error in this log message indicates that a Kubernetes pod sandbox (stop-pod-sandbox) was not able to destroy its network configuration, specifically "weave". This suggests an issue with network resources or permissions. The fact that the "failed to get network cache result: decoding version from network config: unexpected end of JSON input" error may indicate a problem with the network configuration itself.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:54 sarra-virtual-machine kubelet[1610]: E0909 19:29:54.831047    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 29 events processed
+   MEDIUM: 15
+   LOW: 13
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 29 events processed
+   MEDIUM: 15
+   LOW: 13
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log indicates that the Kubernetes manager (kuberuntime_manager) encountered a failure to stop a sandbox pod named "podSandboxID". This suggests that the pod was being used for container runtime testing or simulation.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:54 sarra-virtual-machine kubelet[1610]: E0909 19:29:54.831078    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 30 events processed
+   MEDIUM: 16
+   LOW: 13
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 30 events processed
+   MEDIUM: 16
+   LOW: 13
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 30 events processed
+   MEDIUM: 16
+   LOW: 13
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 30 events processed
+   MEDIUM: 16
+   LOW: 13
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log indicates that the Kubernetes (k8s) scheduler for a virtual machine named "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" failed to "KillPodSandbox" for the pod. This action is typically performed by the scheduler to clean up and remove pods that are no longer in use.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:54 sarra-virtual-machine kubelet[1610]: E0909 19:29:54.831088    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 31 events processed
+   MEDIUM: 17
+   LOW: 13
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 31 events processed
+   MEDIUM: 17
+   LOW: 13
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 31 events processed
+   MEDIUM: 17
+   LOW: 13
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log message indicates that the Kubernetes cluster encountered an error during the pod syncing process. Specifically, it failed to "KillPodSandbox" for a given pod, resulting in a failure to destroy the network for sandbox.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:29:57 sarra-virtual-machine NetworkManager[851]: <info>  [1757442597.3908] dhcp4 (ens33): state changed new lease, address=192.168.111.201
+
+📊 Statistics: 32 events processed
+   MEDIUM: 18
+   LOW: 13
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 32 events processed
+   MEDIUM: 18
+   LOW: 13
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The DHCP4 (DHCPv4) message indicates a successful DHCP lease assignment for an IP address 192.168.111.201 on switch "sarra-virtual-machine" with the MAC address 00:11:22:33:44:55.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <86>Sep  9 19:30:01 sarra-virtual-machine CRON[36566]: pam_unix(cron:session): session opened for user root(uid=0) by (uid=0)
+
+📊 Statistics: 33 events processed
+   MEDIUM: 18
+   LOW: 14
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 33 events processed
+   MEDIUM: 18
+   LOW: 14
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log message indicates that the system has detected a valid login attempt from a remote user (user root) via the cron daemon. The fact that it's logged at a CRON level suggests that this is an event related to the system's scheduling mechanism.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <78>Sep  9 19:30:01 sarra-virtual-machine CRON[36567]: (root) CMD ([ -x /etc/init.d/anacron ] && if [ ! -d /run/systemd/system ]; then /usr/sbin/invoke-rc.d anacron start >/dev/null; fi)
+
+📊 Statistics: 34 events processed
+   MEDIUM: 19
+   LOW: 14
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 34 events processed
+   MEDIUM: 19
+   LOW: 14
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This Cisco switch log message appears to be monitoring the system for security threats. It is executing a command to start the anacron daemon if it is not already running, as well as checking if the systemd directory exists.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <86>Sep  9 19:30:01 sarra-virtual-machine CRON[36566]: pam_unix(cron:session): session closed for user root
+
+📊 Statistics: 35 events processed
+   MEDIUM: 20
+   LOW: 14
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 35 events processed
+   MEDIUM: 20
+   LOW: 14
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log message indicates that a user session has been closed by the cron daemon. Crons are scheduling daemons that can be used to automate tasks on Linux systems. The fact that this user's session was specifically shut down suggests that an unauthorized user may have accessed sensitive information or attempted to take control of the system.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:03 sarra-virtual-machine kubelet[1610]: E0909 19:30:03.825517    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 36 events processed
+   MEDIUM: 21
+   LOW: 14
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 36 events processed
+   MEDIUM: 21
+   LOW: 14
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The error message indicates that the Kubernetes pod "autoflow/frontend-deployment-79b6ff865-4ctm2" is unable to start a container from an image pulled from Docker Hub. This suggests that Docker Hub has failed to pull the image or has been blocked by some security mechanism.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:09 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:09.822044910+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 37 events processed
+   MEDIUM: 21
+   LOW: 15
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The Cisco switch log message indicates that a container is stopping for an unknown reason. This could be due to various factors such as resource depletion or misconfiguration.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:09 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:09.822210987+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 38 events processed
+   MEDIUM: 21
+   LOW: 16
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 38 events processed
+   MEDIUM: 21
+   LOW: 16
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 38 events processed
+   MEDIUM: 21
+   LOW: 16
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 38 events processed
+   MEDIUM: 21
+   LOW: 16
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 38 events processed
+   MEDIUM: 21
+   LOW: 16
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 38 events processed
+   MEDIUM: 21
+   LOW: 16
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 38 events processed
+   MEDIUM: 21
+   LOW: 16
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 38 events processed
+   MEDIUM: 21
+   LOW: 16
+   HIGH: 1
+----------------------------------------
+
+📊 Statistics: 38 events processed
+   MEDIUM: 21
+   LOW: 16
+   HIGH: 1
+----------------------------------------
+🚨 Threat Level: HIGH
+🤖 Analysis: This log message indicates that Containerd is trying to stop an unknown or unexpected container named "48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582". Given the name and context, this could be a potential security threat.
+💡 Recommendations: 
+------------------------------------------------------------
+
+🚨🚨🚨 CRITICAL ALERT 🚨🚨🚨
+⏰ Time: 2025-09-09T21:19:14.635642
+📡 Source: 192.168.111.201
+📝 Message: <30>Sep  9 19:30:09 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:09.822210987+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+🔍 Level: HIGH
+🤖 AI Analysis: This log message indicates that Containerd is trying to stop an unknown or unexpected container named "48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582". Given the name and context, this could be a potential security threat.
+💡 Actions: 
+🚨🚨🚨 END ALERT 🚨🚨🚨
+
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:09 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:09.843279615+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 39 events processed
+   MEDIUM: 21
+   LOW: 16
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 39 events processed
+   MEDIUM: 21
+   LOW: 16
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This log message indicates an error in containerd, a Docker container runtime. The specific event is that the "StopPodSandbox" operation failed due to a failure in destroying the network for a sandboxed container.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:09 sarra-virtual-machine kubelet[1610]: E0909 19:30:09.843682    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 40 events processed
+   MEDIUM: 21
+   LOW: 17
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 40 events processed
+   MEDIUM: 21
+   LOW: 17
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The "StopPodSandbox from runtime service failed" error message indicates a potential issue with the Kubernetes (kubelet) process. This message is likely caused by a failure to destroy or release network resources for a pod that was previously running in a sandbox environment.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:09 sarra-virtual-machine kubelet[1610]: E0909 19:30:09.843758    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 41 events processed
+   MEDIUM: 21
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 41 events processed
+   MEDIUM: 21
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log message indicates that a pod was unable to stop a container running within the "sandbox" context. This suggests potential sandbox-related security threats.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:09 sarra-virtual-machine kubelet[1610]: E0909 19:30:09.843830    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 42 events processed
+   MEDIUM: 22
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 42 events processed
+   MEDIUM: 22
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:09 sarra-virtual-machine kubelet[1610]: E0909 19:30:09.843850    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 43 events processed
+   MEDIUM: 23
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 43 events processed
+   MEDIUM: 23
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The Cisco switch log message indicates that the Kubernetes (kubelet) is attempting to "KillPodSandbox" for a pod. However, this operation resulted in an error, which is likely due to a network issue.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:17 sarra-virtual-machine kubelet[1610]: E0909 19:30:17.861984    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 44 events processed
+   MEDIUM: 24
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 44 events processed
+   MEDIUM: 24
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 44 events processed
+   MEDIUM: 24
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 44 events processed
+   MEDIUM: 24
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: AI analysis completed
+💡 Recommendations: Continue monitoring
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:18 sarra-virtual-machine systemd[1]: Started Run anacron jobs.
+
+📊 Statistics: 45 events processed
+   MEDIUM: 25
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 45 events processed
+   MEDIUM: 25
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 45 events processed
+   MEDIUM: 25
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This message indicates that the system is running anacron, a job scheduling tool for managing system maintenance tasks, including disk checks, software updates, and other administrative tasks. The "anacron" command started by systemd (a Linux system manager) suggests that it's setting up its internal cron-like scheduler.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <77>Sep  9 19:30:18 sarra-virtual-machine anacron[36686]: Anacron 2.3 started on 2025-09-09
+
+📊 Statistics: 46 events processed
+   MEDIUM: 26
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 46 events processed
+   MEDIUM: 26
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log message indicates that the Anacron daemon started on September 9, 2025. This is a security threat because it means malware or other malicious processes may be running on the system. Anacron is a backup and maintenance tool that can potentially be used for malicious purposes.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <77>Sep  9 19:30:18 sarra-virtual-machine anacron[36686]: Normal exit (0 jobs run)
+
+📊 Statistics: 47 events processed
+   MEDIUM: 27
+   LOW: 18
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This is a normal log message indicating that the Cisco switch has completed its maintenance cycle without encountering any security threats. The "anacron" daemon ran successfully, suggesting that the system was not vulnerable to an exploit.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:18 sarra-virtual-machine systemd[1]: anacron.service: Deactivated successfully.
+
+📊 Statistics: 48 events processed
+   MEDIUM: 27
+   LOW: 19
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 48 events processed
+   MEDIUM: 27
+   LOW: 19
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log message indicates that the system has successfully deactivated an anacron service file. Anacron is a part of the Anacronta suite used to manage and automate tasks on Unix-like systems. The fact that this service was deactivated suggests that it may have been responsible for automating certain maintenance or security-related activities, such as daily backups.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:24 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:24.822721824+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 49 events processed
+   MEDIUM: 28
+   LOW: 19
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 49 events processed
+   MEDIUM: 28
+   LOW: 19
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 49 events processed
+   MEDIUM: 28
+   LOW: 19
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This message appears to be a security alert regarding a containerization platform (likely Docker) stopping a process called "StopPodSandbox" for a specific pod. The "2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce" refers to the pod's ID. This action suggests a potential issue with security or configuration, such as potential lateral movement or data exposure.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:24 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:24.822872912+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 50 events processed
+   MEDIUM: 29
+   LOW: 19
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 50 events processed
+   MEDIUM: 29
+   LOW: 19
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 50 events processed
+   MEDIUM: 29
+   LOW: 19
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The message is indicating that a container named "48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582" needs to be in the running or unknown state for it to stop successfully. This suggests that there might not be a container running with this name, which could indicate a misconfiguration or issue.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:24 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:24.845349566+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 51 events processed
+   MEDIUM: 29
+   LOW: 20
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 51 events processed
+   MEDIUM: 29
+   LOW: 20
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 51 events processed
+   MEDIUM: 29
+   LOW: 20
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log message indicates that the containerd service on a Cisco switch has encountered an error while trying to stop a pod in the "Sandbox" network. The error specifically mentions failing to destroy the network for the sandbox and having issues with getting a cached result from the weave network.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:24 sarra-virtual-machine kubelet[1610]: E0909 19:30:24.845790    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 52 events processed
+   MEDIUM: 30
+   LOW: 20
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 52 events processed
+   MEDIUM: 30
+   LOW: 20
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log message indicates that the Kubernetes (kubelet) service is stopping a pod in the "Sarra-virtual-machine" namespace from running. This could be due to various reasons such as network issues or resource constraints.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:24 sarra-virtual-machine kubelet[1610]: E0909 19:30:24.847811    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 53 events processed
+   MEDIUM: 30
+   LOW: 21
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log indicates that a pod within the Kubernetes sandbox has failed to stop. This failure could be due to various reasons such as resource constraints or misconfiguration of containerd.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:24 sarra-virtual-machine kubelet[1610]: E0909 19:30:24.847919    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 54 events processed
+   MEDIUM: 31
+   LOW: 21
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 54 events processed
+   MEDIUM: 31
+   LOW: 21
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 54 events processed
+   MEDIUM: 31
+   LOW: 21
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The Cisco switch log message indicates that the Kubernetes (kubelet) service failed to kill a pod sandbox due to an error in getting the "weave" network configuration.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:24 sarra-virtual-machine kubelet[1610]: E0909 19:30:24.847945    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 55 events processed
+   MEDIUM: 32
+   LOW: 21
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 55 events processed
+   MEDIUM: 32
+   LOW: 21
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log message indicates that the Kubernetes (kubelet) agent is experiencing an error syncing a pod. The error appears to be related to trying to destroy a network sandbox for a specific pod.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:29 sarra-virtual-machine kubelet[1610]: E0909 19:30:29.833371    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 56 events processed
+   MEDIUM: 33
+   LOW: 21
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 56 events processed
+   MEDIUM: 33
+   LOW: 21
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This Cisco switch log message indicates an error in the Kubernetes (kubelet) pod synchronization process. The kubelet is unable to start a container for a specific pod due to image pull back-off. The message logs the error with more context, including the container name and its ID.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:36 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:36.819207348+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 57 events processed
+   MEDIUM: 33
+   LOW: 22
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 57 events processed
+   MEDIUM: 33
+   LOW: 22
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 57 events processed
+   MEDIUM: 33
+   LOW: 22
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This log message appears to be a message from Docker containerd, an open-source container runtime for Linux. The log indicates that a stop operation was performed on a "PodSandbox" named "2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce". This type of message is typically generated when a container is stopped and the associated pod is also terminated.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:36 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:36.819350713+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 58 events processed
+   MEDIUM: 33
+   LOW: 23
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 58 events processed
+   MEDIUM: 33
+   LOW: 23
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log message indicates that a container on a Cisco switch is trying to stop but cannot do so due to its current state being "CONTAINER_EXITED". This could be a sign of a security threat as it suggests a potential issue with an unresponsive or malicious container.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:36 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:36.834761737+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 59 events processed
+   MEDIUM: 34
+   LOW: 23
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 59 events processed
+   MEDIUM: 34
+   LOW: 23
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 59 events processed
+   MEDIUM: 34
+   LOW: 23
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:36 sarra-virtual-machine kubelet[1610]: E0909 19:30:36.836840    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 60 events processed
+   MEDIUM: 35
+   LOW: 23
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The "StopPodSandbox from runtime service failed" error indicates a problem with the Kubernetes pod sandbox. This typically occurs when there is an issue with network configuration or dependencies.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:36 sarra-virtual-machine kubelet[1610]: E0909 19:30:36.836922    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 61 events processed
+   MEDIUM: 35
+   LOW: 24
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 61 events processed
+   MEDIUM: 35
+   LOW: 24
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log indicates that a Kubernetes pod was unable to stop the "sandbox" container due to an error. This suggests potential security risks, as sandboxed containers are typically isolated from the main workloads.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:36 sarra-virtual-machine kubelet[1610]: E0909 19:30:36.837007    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 62 events processed
+   MEDIUM: 36
+   LOW: 24
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 62 events processed
+   MEDIUM: 36
+   LOW: 24
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This log message indicates that the Kubernetes (kubelet) agent encountered an error when attempting to "KillPodSandbox" for a specific pod. The error is caused by a failed network operation.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:36 sarra-virtual-machine kubelet[1610]: E0909 19:30:36.837029    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 63 events processed
+   MEDIUM: 36
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 63 events processed
+   MEDIUM: 36
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log indicates that the Kubernetes (kubelet) service was unable to successfully destroy a pod's network configuration due to an error. The "KillPodSandbox" command failed with an unknown error code.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:40 sarra-virtual-machine kubelet[1610]: E0909 19:30:40.829907    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 64 events processed
+   MEDIUM: 37
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 64 events processed
+   MEDIUM: 37
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 64 events processed
+   MEDIUM: 37
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 64 events processed
+   MEDIUM: 37
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log message indicates that the Kubernetes pod "autoflow/frontend-deployment-79b6ff865-4ctm2" encountered an error syncing with its container image. Specifically, the issue lies in the fact that the pod was unable to start a container from a pull reference ("frontend") due to an error when trying to pull the image.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:49 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:49.824343028+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 65 events processed
+   MEDIUM: 38
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 65 events processed
+   MEDIUM: 38
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This Cisco switch log message indicates that a container named "sarra-virtual-machine" has stopped using the "StopPodSandbox" service. The "level=info" level suggests that this is an informational event.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:49 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:49.827360583+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 66 events processed
+   MEDIUM: 39
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 66 events processed
+   MEDIUM: 39
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log message indicates that a container on the Cisco switch is about to exit due to not being in a running or unknown state. The container ID mentioned ("48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582") suggests that it's a container from the containerd project.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:49 sarra-virtual-machine containerd[948]: time="2025-09-09T19:30:49.852437077+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 67 events processed
+   MEDIUM: 40
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 67 events processed
+   MEDIUM: 40
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The containerd log indicates that the "StopPodSandbox" command failed to stop a pod for a specific reason. The failure occurred because the "weave" network was not properly cached due to an unexpected error in decoding a network configuration file.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:49 sarra-virtual-machine kubelet[1610]: E0909 19:30:49.853157    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 68 events processed
+   MEDIUM: 41
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 68 events processed
+   MEDIUM: 41
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 68 events processed
+   MEDIUM: 41
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log indicates that the Kubernetes pod "Sarra-virtual-machine" is experiencing a failure to stop its sandbox service. This is due to an error in the network configuration of the "weave" network.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:49 sarra-virtual-machine kubelet[1610]: E0909 19:30:49.855889    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 69 events processed
+   MEDIUM: 42
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 69 events processed
+   MEDIUM: 42
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The "Failed to stop sandbox" error indicates that the Kubernetes pod with ID "sandboxID" contained in the containerd runtime manager failed to shut down. This suggests a potential security threat where an attacker might have exploited a vulnerability to keep a malicious process running indefinitely.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:49 sarra-virtual-machine kubelet[1610]: E0909 19:30:49.856140    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 70 events processed
+   MEDIUM: 43
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 70 events processed
+   MEDIUM: 43
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The message indicates that the kubelet service failed to destroy a pod sandbox called "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f". This is because it was unable to retrieve the network configuration for the "weave" network, which is necessary for sandbox destruction.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:49 sarra-virtual-machine kubelet[1610]: E0909 19:30:49.856173    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 71 events processed
+   MEDIUM: 44
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 71 events processed
+   MEDIUM: 44
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 71 events processed
+   MEDIUM: 44
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The "Error syncing pod" message indicates that the Kubernetes pod is unable to sync with the cluster, likely due to a network issue. This can be caused by various factors such as incorrect or missing network configurations, misconfigured pods, or network latency issues.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:30:53 sarra-virtual-machine kubelet[1610]: E0909 19:30:53.825080    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 72 events processed
+   MEDIUM: 45
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 72 events processed
+   MEDIUM: 45
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log message indicates that the Kubernetes scheduler (kubelet) encountered an error syncing a pod named "autoflow/frontend-deployment-79b6ff865-4ctm2". This error occurred because the container image for this deployment, "sarra539/autoflow-frontend:latest", failed to pull due to a back-off attempt.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:00 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:00.821246874+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 73 events processed
+   MEDIUM: 46
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 73 events processed
+   MEDIUM: 46
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 73 events processed
+   MEDIUM: 46
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This is a security-related event on the Cisco switch that appears to be related to containerd, which is a container runtime. The log message indicates that "StopPodSandbox" has been triggered for a container with the label "2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce". This suggests that this container may have been compromised or is no longer in use.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:00 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:00.821370175+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 74 events processed
+   MEDIUM: 47
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 74 events processed
+   MEDIUM: 47
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 74 events processed
+   MEDIUM: 47
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The switch log message indicates that a container named "48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582" must be stopped, but its current state is not in a running or unknown state. The container is currently exited, which suggests that the stop operation may pose a risk to the system.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:00 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:00.857335242+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 75 events processed
+   MEDIUM: 48
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: A failed stop operation on a PodSandbox container resulted in an error. The "weave" network was unable to be cached, which could indicate a security vulnerability in the Docker network configuration.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:00 sarra-virtual-machine kubelet[1610]: E0909 19:31:00.861030    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 76 events processed
+   MEDIUM: 49
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 76 events processed
+   MEDIUM: 49
+   LOW: 25
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The "StopPodSandbox from runtime service failed" error message indicates that the Kubernetes Pod Sandbox service is unable to destroy a network resource, specifically "weave". This suggests that there may be an issue with the pod's configuration or setup.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:00 sarra-virtual-machine kubelet[1610]: E0909 19:31:00.865622    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 77 events processed
+   MEDIUM: 49
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 77 events processed
+   MEDIUM: 49
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The "Failed to stop sandbox" error message indicates that the Kubernetes (kubernetes) manager was unable to successfully shut down a container running in a sandbox environment. This suggests potential vulnerabilities or issues with the containerization platform.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:00 sarra-virtual-machine kubelet[1610]: E0909 19:31:00.865740    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 78 events processed
+   MEDIUM: 50
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 78 events processed
+   MEDIUM: 50
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 78 events processed
+   MEDIUM: 50
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log indicates that the Kubernetes (kubelet) service encountered a "KillPodSandbox" failure for a pod named "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f". This is likely due to an issue with the network configuration, specifically that it was unable to destroy the network associated with the sandbox.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:00 sarra-virtual-machine kubelet[1610]: E0909 19:31:00.865765    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 79 events processed
+   MEDIUM: 51
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 79 events processed
+   MEDIUM: 51
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log indicates that a vulnerability scan is in progress for the "trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" pod. The scan appears to be encountering an issue with destroying a network configuration, which could potentially lead to security breaches or vulnerabilities.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:07 sarra-virtual-machine kubelet[1610]: E0909 19:31:07.838556    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 80 events processed
+   MEDIUM: 52
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 80 events processed
+   MEDIUM: 52
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The Cisco switch log message indicates that the Kubernetes (kubelet) is experiencing an issue with syncing a pod named "autoflow/frontend-deployment-79b6ff865-4ctm2". The error message explains that it's unable to start the container with the specified image pull backoff.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:11 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:11.820612936+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 81 events processed
+   MEDIUM: 53
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 81 events processed
+   MEDIUM: 53
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 81 events processed
+   MEDIUM: 53
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log message indicates that a containerd process is stopping the "PodSandbox" for an IP address "2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce". This suggests that the process running within the PodSandbox may be accessing sensitive data or resources, and stopping it could potentially compromise security.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:11 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:11.820734748+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 82 events processed
+   MEDIUM: 54
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 82 events processed
+   MEDIUM: 54
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The given log indicates that a container is being stopped but the current state of the container is "CONTAINER_EXITED", which means it has been removed from service. However, the message also mentions that the container must be in either the running or unknown state for the operation to proceed.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:11 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:11.846516016+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 83 events processed
+   MEDIUM: 55
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 83 events processed
+   MEDIUM: 55
+   LOW: 26
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This Cisco switch log message indicates a security threat related to containerization. Specifically, it seems that the "StopPodSandbox" operation was not successful because the "network weave" resource could not be successfully retrieved.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:11 sarra-virtual-machine kubelet[1610]: E0909 19:31:11.847122    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 84 events processed
+   MEDIUM: 55
+   LOW: 27
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 84 events processed
+   MEDIUM: 55
+   LOW: 27
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log indicates a failed operation to destroy the "PodSandbox" network for the Kubernetes cluster. The error message includes information about an RPC (Remote Procedure Call) failure with code 0x0909, which suggests a networking issue.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:11 sarra-virtual-machine kubelet[1610]: E0909 19:31:11.850554    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 85 events processed
+   MEDIUM: 55
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 85 events processed
+   MEDIUM: 55
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The "Failed to stop sandbox" message indicates that the Kubernetes cluster attempted to shut down a container in the sandbox environment but was unable to do so. This could be due to various reasons such as resource constraints, conflicts with other pods, or incorrect pod management.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:11 sarra-virtual-machine kubelet[1610]: E0909 19:31:11.850992    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 86 events processed
+   MEDIUM: 56
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 86 events processed
+   MEDIUM: 56
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log indicates that the Kubernetes (kubelet) service encountered an error when trying to "KillPodSandbox" for a specific pod. This error is related to a network issue with the "weave" network.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:11 sarra-virtual-machine kubelet[1610]: E0909 19:31:11.851182    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 87 events processed
+   MEDIUM: 57
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 87 events processed
+   MEDIUM: 57
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 87 events processed
+   MEDIUM: 57
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The Cisco switch log message indicates that the Kubelet is trying to kill a pod sandbox (d1bd9ae7-a8fc-47a6-a339-d8beae8f345f) due to an error syncing with a network configuration. Specifically, it's trying to get a cached result from the network config for "weave" but encountering an unknown error code.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:20 sarra-virtual-machine kubelet[1610]: E0909 19:31:20.824559    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 88 events processed
+   MEDIUM: 58
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 88 events processed
+   MEDIUM: 58
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log message indicates that the Kubernetes pod "autoflow/frontend-deployment-79b6ff865-4ctm2" is experiencing an error during synchronization. Specifically, it says that the "StartContainer" operation failed to start due to a failed image pull for the container "sarra539/autoflow-frontend:latest". The message also includes information about the pod's ID and UID.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:22 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:22.821409747+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 89 events processed
+   MEDIUM: 59
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 89 events processed
+   MEDIUM: 59
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 89 events processed
+   MEDIUM: 59
+   LOW: 28
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log message is indicating that a container run has been stopped because the "StopPodSandbox" action was triggered for the pod with ID "2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce". This is likely a maintenance or upgrade action.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:22 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:22.823541621+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 90 events processed
+   MEDIUM: 59
+   LOW: 29
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log message indicates that a container is being stopped due to a mismatch between its current state ("CONTAINER_EXITED") and the expected state when the container is removed from the switch (running or unknown state). This suggests a potential issue with the container's removal process, rather than an actual security threat.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:22 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:22.839090283+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 91 events processed
+   MEDIUM: 59
+   LOW: 30
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 91 events processed
+   MEDIUM: 59
+   LOW: 30
+   HIGH: 2
+----------------------------------------
+
+📊 Statistics: 91 events processed
+   MEDIUM: 59
+   LOW: 30
+   HIGH: 2
+----------------------------------------
+🚨 Threat Level: HIGH
+🤖 Analysis: A container security threat is detected. The message indicates that the "StopPodSandbox" command failed for a specific sandbox instance with the error message showing a network-related issue ("failed to destroy network for sandbox") and a cache result error ("decoded version from network config: unexpected end of JSON input").
+💡 Recommendations: 
+------------------------------------------------------------
+
+🚨🚨🚨 CRITICAL ALERT 🚨🚨🚨
+⏰ Time: 2025-09-09T22:22:45.241774
+📡 Source: 192.168.111.201
+📝 Message: <30>Sep  9 19:31:22 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:22.839090283+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+🔍 Level: HIGH
+🤖 AI Analysis: A container security threat is detected. The message indicates that the "StopPodSandbox" command failed for a specific sandbox instance with the error message showing a network-related issue ("failed to destroy network for sandbox") and a cache result error ("decoded version from network config: unexpected end of JSON input").
+💡 Actions: 
+🚨🚨🚨 END ALERT 🚨🚨🚨
+
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:22 sarra-virtual-machine kubelet[1610]: E0909 19:31:22.839640    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 92 events processed
+   MEDIUM: 59
+   LOW: 30
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 92 events processed
+   MEDIUM: 59
+   LOW: 30
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 92 events processed
+   MEDIUM: 59
+   LOW: 30
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 92 events processed
+   MEDIUM: 59
+   LOW: 30
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 92 events processed
+   MEDIUM: 59
+   LOW: 30
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 92 events processed
+   MEDIUM: 59
+   LOW: 30
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:22 sarra-virtual-machine kubelet[1610]: E0909 19:31:22.839718    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 93 events processed
+   MEDIUM: 60
+   LOW: 30
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 93 events processed
+   MEDIUM: 60
+   LOW: 30
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 93 events processed
+   MEDIUM: 60
+   LOW: 30
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log indicates that the Kubernetes manager (kuberuntime_manager) failed to stop a pod named "SandboxID" with ID "2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce". This is likely related to sandboxing, which is a security feature that restricts the execution of commands within a container.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:22 sarra-virtual-machine kubelet[1610]: E0909 19:31:22.839796    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 94 events processed
+   MEDIUM: 61
+   LOW: 30
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 94 events processed
+   MEDIUM: 61
+   LOW: 30
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The "KillPodSandbox" command failed for a pod due to an error in getting the network configuration. This indicates that there was an issue with the pod's network settings or configuration.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:22 sarra-virtual-machine kubelet[1610]: E0909 19:31:22.839817    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 95 events processed
+   MEDIUM: 61
+   LOW: 31
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 95 events processed
+   MEDIUM: 61
+   LOW: 31
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This log message indicates an error during the "Kubelet" component's process to synchronize with a pod. The kubelet is responsible for creating and managing pods in the Kubernetes cluster.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:31 sarra-virtual-machine kubelet[1610]: E0909 19:31:31.835729    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 96 events processed
+   MEDIUM: 61
+   LOW: 32
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 96 events processed
+   MEDIUM: 61
+   LOW: 32
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log indicates that a pod with the name "autoflow/frontend-deployment-79b6ff865-4ctm2" is experiencing an error while syncing. The reason for this error is that it's unable to pull the image "sarra539/autoflow-frontend:latest". This suggests that there might be issues with the image being pulled, which could be a security threat if left unchecked.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:37 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:37.844703202+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 97 events processed
+   MEDIUM: 62
+   LOW: 32
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 97 events processed
+   MEDIUM: 62
+   LOW: 32
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 97 events processed
+   MEDIUM: 62
+   LOW: 32
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log message indicates that the Cisco switch has detected a pod stopping for a container. The message includes a timestamp, log level, and the reason for the stop (time="2025-09-09T19:31:37.844703+01:00").
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:37 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:37.844819774+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 98 events processed
+   MEDIUM: 63
+   LOW: 32
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 98 events processed
+   MEDIUM: 63
+   LOW: 32
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log message indicates that a container named "48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582" must be in a running or unknown state. This is because the container is being stopped, and it's mentioned that its current state is "CONTAINER_EXITED".
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:37 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:37.898045543+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 99 events processed
+   MEDIUM: 63
+   LOW: 33
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 99 events processed
+   MEDIUM: 63
+   LOW: 33
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 99 events processed
+   MEDIUM: 63
+   LOW: 33
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The Cisco switch log message indicates a failure to destroy a network for the "Sandbox" resource named "2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce". This is likely due to an error in the switch's ability to handle network configurations or a mismatch between expected and actual JSON input.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:37 sarra-virtual-machine kubelet[1610]: E0909 19:31:37.899386    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 100 events processed
+   MEDIUM: 64
+   LOW: 33
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 100 events processed
+   MEDIUM: 64
+   LOW: 33
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This log message indicates that the Kubernetes control plane has encountered an issue with a pod's network configuration. The "StopPodSandbox from runtime service failed" error message suggests that there was an attempt to stop or terminate a sandboxed container (pod), but this action was not successful.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:37 sarra-virtual-machine kubelet[1610]: E0909 19:31:37.902527    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 101 events processed
+   MEDIUM: 64
+   LOW: 34
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 101 events processed
+   MEDIUM: 64
+   LOW: 34
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log indicates that the Kubernetes pod "sandboxID" with ID "2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce" has failed to stop, suggesting potential sandboxing issues.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:37 sarra-virtual-machine kubelet[1610]: E0909 19:31:37.905967    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 102 events processed
+   MEDIUM: 65
+   LOW: 34
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 102 events processed
+   MEDIUM: 65
+   LOW: 34
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This log indicates that the Kubernetes (kubelet) service encountered a failure to "KillPodSandbox" for a given pod. The error message suggests that there was an issue with accessing a network resource called "weave", likely due to a configuration or caching problem.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:37 sarra-virtual-machine kubelet[1610]: E0909 19:31:37.906026    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 103 events processed
+   MEDIUM: 65
+   LOW: 35
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 103 events processed
+   MEDIUM: 65
+   LOW: 35
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The pod is attempting to kill the sandbox for a Kubernetes deployment but encountering an error when trying to destroy the network. This could be indicative of a misconfigured or malicious pod.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:46 sarra-virtual-machine kubelet[1610]: E0909 19:31:46.821233    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 104 events processed
+   MEDIUM: 65
+   LOW: 36
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 104 events processed
+   MEDIUM: 65
+   LOW: 36
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 104 events processed
+   MEDIUM: 65
+   LOW: 36
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The Cisco switch log message indicates that a pod is unable to start a container due to a failed image pull. The error message includes the failure reason ("Back-off pulling image ...") and the specific pod name ("autoflow/frontend-deployment-79b6ff865-4ctm2").
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:52 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:52.820241149+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 105 events processed
+   MEDIUM: 66
+   LOW: 36
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This message indicates that a Docker container is stopping the time-based pod "PodSandbox" for a specific reason.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:52 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:52.821271297+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 106 events processed
+   MEDIUM: 67
+   LOW: 36
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 106 events processed
+   MEDIUM: 67
+   LOW: 36
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 106 events processed
+   MEDIUM: 67
+   LOW: 36
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log message indicates that a container in the containerd process is being stopped. However, the current state of the container is "CONTAINER_EXITED", which suggests that it has already exited. This could indicate an issue with the container's exit or a misconfigured container. Further investigation would be necessary to determine the cause.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 19:31:52 sarra-virtual-machine containerd[948]: time="2025-09-09T19:31:52.850879154+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 107 events processed
+   MEDIUM: 67
+   LOW: 37
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 107 events processed
+   MEDIUM: 67
+   LOW: 37
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The switch log indicates that the containerd process is attempting to stop a sandbox, but its request to destroy a network for this purpose has failed. This suggests that the containerd process may not have permission or resources to perform this action.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:32 sarra-virtual-machine kubelet[1610]: E0909 20:06:32.821698    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 108 events processed
+   MEDIUM: 68
+   LOW: 37
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 108 events processed
+   MEDIUM: 68
+   LOW: 37
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The error message indicates that a Kubernetes pod is unable to start, specifically because the container image for "frontend" cannot be pulled from Docker Hub. This is likely due to a network issue or an IP block on Docker Hub preventing the pod from accessing the image.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:40 sarra-virtual-machine containerd[948]: time="2025-09-09T20:06:40.819679045+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 109 events processed
+   MEDIUM: 68
+   LOW: 38
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 109 events processed
+   MEDIUM: 68
+   LOW: 38
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This Cisco switch log message indicates a security threat. It appears that the "StopPodSandbox" command was executed with a specific pod ID ("2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce") on a virtual machine named "sarra-virtual-machine".
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:40 sarra-virtual-machine containerd[948]: time="2025-09-09T20:06:40.820864876+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 110 events processed
+   MEDIUM: 69
+   LOW: 38
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 110 events processed
+   MEDIUM: 69
+   LOW: 38
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log message indicates that a container is trying to stop but cannot proceed due to the current state being "CONTAINER_EXITED". This suggests that the container may have exited prematurely or not been properly stopped. However, there are no indications of malicious activity.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:40 sarra-virtual-machine containerd[948]: time="2025-09-09T20:06:40.841462550+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 111 events processed
+   MEDIUM: 69
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 111 events processed
+   MEDIUM: 69
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 111 events processed
+   MEDIUM: 69
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log message indicates that a container runtime (likely Docker) has encountered an error while trying to stop the "PodSandbox" for a specific container. The error involves failing to destroy a network, specifically the "weave" network, which is being used by the sandbox.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:40 sarra-virtual-machine kubelet[1610]: E0909 20:06:40.842452    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 112 events processed
+   MEDIUM: 70
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 112 events processed
+   MEDIUM: 70
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The Cisco switch log message indicates that the "StopPodSandbox from runtime service failed" error is occurring. This suggests a potential security issue related to pods running on the Kubernetes cluster.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:40 sarra-virtual-machine kubelet[1610]: E0909 20:06:40.842546    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 113 events processed
+   MEDIUM: 71
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 113 events processed
+   MEDIUM: 71
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The podSandboxID is a containerd reference to the "sandbox" container. This indicates that there was an attempt by a malicious entity to sandbox their container on the Kubernetes cluster. However, due to an error in kubernetes_manager, it failed to stop this sandbox pod.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:40 sarra-virtual-machine kubelet[1610]: E0909 20:06:40.842628    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 114 events processed
+   MEDIUM: 72
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 114 events processed
+   MEDIUM: 72
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 114 events processed
+   MEDIUM: 72
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The "KillPodSandbox" operation was attempted on a pod named "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f". However, the "KillPodSandbox" request failed with an error code of Unknown and description.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:40 sarra-virtual-machine kubelet[1610]: E0909 20:06:40.842651    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 115 events processed
+   MEDIUM: 73
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 115 events processed
+   MEDIUM: 73
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This Cisco switch log message indicates a potential issue with the Kubernetes (kubelet) component syncing a pod. The "Error syncing pod" message suggests that there's an error in killing a sandboxed container for one of the pods, which is likely due to an underlying network configuration problem.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:47 sarra-virtual-machine kubelet[1610]: E0909 20:06:47.828569    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 116 events processed
+   MEDIUM: 74
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 116 events processed
+   MEDIUM: 74
+   LOW: 39
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This log indicates an error syncing a Kubernetes pod, specifically the "frontend" deployment. The issue is related to attempting to start a container using an image that has been pulled from Docker, but the image is not available.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:54 sarra-virtual-machine containerd[948]: time="2025-09-09T20:06:54.819515167+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 117 events processed
+   MEDIUM: 74
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 117 events processed
+   MEDIUM: 74
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The message indicates that the containerd process is stopping a PodSandbox for a specific container. This could be a sign of an issue with the container or a security vulnerability.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:54 sarra-virtual-machine containerd[948]: time="2025-09-09T20:06:54.819650626+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 118 events processed
+   MEDIUM: 75
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 118 events processed
+   MEDIUM: 75
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 118 events processed
+   MEDIUM: 75
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log message indicates that a container on the Cisco switch is in the "CONTAINER_EXITED" state but has an unknown current status. The container name is "48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582". This suggests that there might be a security risk associated with this container, as it is not currently running or in an unknown state.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:54 sarra-virtual-machine containerd[948]: time="2025-09-09T20:06:54.845353999+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 119 events processed
+   MEDIUM: 76
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 119 events processed
+   MEDIUM: 76
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 119 events processed
+   MEDIUM: 76
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The Cisco switch log message indicates that the containerd process has encountered a failure when stopping a sandbox pod. Specifically, it failed to destroy the network for the "weave" sandbox.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.845985    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 120 events processed
+   MEDIUM: 77
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 120 events processed
+   MEDIUM: 77
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 120 events processed
+   MEDIUM: 77
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 120 events processed
+   MEDIUM: 77
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The log indicates that the Kubernetes (kubelet) service encountered an error while stopping the "PodSandbox" runtime in the system. Specifically, it reported an RPC (Remote Procedure Call) error with code 0x0909 and description "failed to destroy network for sandbox".
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.846100    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 121 events processed
+   MEDIUM: 78
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 121 events processed
+   MEDIUM: 78
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The podSandboxID indicates that a sandbox container was unable to stop cleanly. This could be due to various reasons such as resource contention or network issues.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.846201    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 122 events processed
+   MEDIUM: 79
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 122 events processed
+   MEDIUM: 79
+   LOW: 40
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This message indicates a failed attempt by the Kubernetes (kubelet) component to "KillPodSandbox" for a specific pod. The error is related to a network issue caused by a missing or incorrect `weave` network configuration.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.846228    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 123 events processed
+   MEDIUM: 79
+   LOW: 41
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 123 events processed
+   MEDIUM: 79
+   LOW: 41
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 123 events processed
+   MEDIUM: 79
+   LOW: 41
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The "Error syncing pod" message indicates that the Kubernetes (Kubelet) service was unable to successfully synchronize a pod's network configuration. This suggests that there may be issues with the network setup or configuration of one or more pods.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:07:01 sarra-virtual-machine kubelet[1610]: E0909 20:07:01.823287    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 124 events processed
+   MEDIUM: 80
+   LOW: 41
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 124 events processed
+   MEDIUM: 80
+   LOW: 41
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The message indicates that the kubelet process encountered an error syncing a pod named "autoflow/frontend-deployment-79b6ff865-4ctm2". This is because the Kubernetes pod's container image, "sarra539/autoflow-frontend:latest", failed to pull due to being stuck in "ImagePullBackOff" status.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:07:06 sarra-virtual-machine containerd[948]: time="2025-09-09T20:07:06.821462471+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 125 events processed
+   MEDIUM: 81
+   LOW: 41
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 125 events processed
+   MEDIUM: 81
+   LOW: 41
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: This is a normal event log message from a containerized system. The message indicates that the "StopPodSandbox" command has been executed for the pod with the name "2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce".
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:07:06 sarra-virtual-machine containerd[948]: time="2025-09-09T20:07:06.821742384+01:00" level=info msg="Container to stop \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" must be in running or unknown state, current state \"CONTAINER_EXITED\""
+
+📊 Statistics: 126 events processed
+   MEDIUM: 81
+   LOW: 42
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 126 events processed
+   MEDIUM: 81
+   LOW: 42
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 126 events processed
+   MEDIUM: 81
+   LOW: 42
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 126 events processed
+   MEDIUM: 81
+   LOW: 42
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log message indicates that a container is trying to stop but cannot do so because the container with ID "48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582" is in an unknown state. This suggests that either the container has been manually deleted or its state was not properly set before attempting to stop it.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:07:06 sarra-virtual-machine containerd[948]: time="2025-09-09T20:07:06.837007689+01:00" level=error msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\" failed" error="failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 127 events processed
+   MEDIUM: 81
+   LOW: 43
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 127 events processed
+   MEDIUM: 81
+   LOW: 43
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log indicates that the containerd process has encountered a problem destroying a network (in this case, the "weave" network) for a sandbox. The error message suggests that there was an issue with decoding the network configuration to extract its version.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838501    1610 remote_runtime.go:222] "StopPodSandbox from runtime service failed" err="rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input" podSandboxID="2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"
+
+📊 Statistics: 128 events processed
+   MEDIUM: 82
+   LOW: 43
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 128 events processed
+   MEDIUM: 82
+   LOW: 43
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The message indicates that a Kubernetes pod sandbox (StopPodSandbox) is experiencing an issue while trying to destroy its network resources. The error code suggests that the network configuration has been altered or corrupted.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838819    1610 kuberuntime_manager.go:1377] "Failed to stop sandbox" podSandboxID={"Type":"containerd","ID":"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce"}
+
+📊 Statistics: 129 events processed
+   MEDIUM: 83
+   LOW: 43
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 129 events processed
+   MEDIUM: 83
+   LOW: 43
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: LOW
+🤖 Analysis: The log message indicates that the Kubernetes pod "sandbox" (ID: 2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce) has failed to stop, which may be a sign of a sandbox or isolation issue. This could potentially allow malicious containers to remain active and pose security risks.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838912    1610 kubelet.go:2049] failed to "KillPodSandbox" for "d1bd9ae7-a8fc-47a6-a339-d8beae8f345f" with KillPodSandboxError: "rpc error: code = Unknown desc = failed to destroy network for sandbox \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\": failed to get network \"weave\" cached result: decoding version from network config: unexpected end of JSON input"
+
+📊 Statistics: 130 events processed
+   MEDIUM: 83
+   LOW: 44
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 130 events processed
+   MEDIUM: 83
+   LOW: 44
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 130 events processed
+   MEDIUM: 83
+   LOW: 44
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: AI analysis completed
+💡 Recommendations: Continue monitoring
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838936    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"" pod="trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" podUID="d1bd9ae7-a8fc-47a6-a339-d8beae8f345f"
+
+📊 Statistics: 131 events processed
+   MEDIUM: 84
+   LOW: 44
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 131 events processed
+   MEDIUM: 84
+   LOW: 44
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 131 events processed
+   MEDIUM: 84
+   LOW: 44
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This log message indicates that the Kubernetes pod "trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg" failed to "KillPodSandbox" due to a network error. The log shows an error in killing the sandbox, specifically with an Unknown code and description.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:07:13 sarra-virtual-machine kubelet[1610]: E0909 20:07:13.822201    1610 pod_workers.go:1298] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"frontend\" with ImagePullBackOff: \"Back-off pulling image \\\"sarra539/autoflow-frontend:latest\\\"\"" pod="autoflow/frontend-deployment-79b6ff865-4ctm2" podUID="221ac89e-6d43-4c4a-aaa8-d4208962abdb"
+
+📊 Statistics: 132 events processed
+   MEDIUM: 85
+   LOW: 44
+   HIGH: 3
+----------------------------------------
+
+📊 Statistics: 132 events processed
+   MEDIUM: 85
+   LOW: 44
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: This Cisco switch log message indicates that a Kubernetes pod is experiencing an error during the syncing process. The specific issue is related to image pulling for a container.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:
+📝 <30>Sep  9 20:07:19 sarra-virtual-machine containerd[948]: time="2025-09-09T20:07:19.822258973+01:00" level=info msg="StopPodSandbox for \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\""
+
+📊 Statistics: 133 events processed
+   MEDIUM: 86
+   LOW: 44
+   HIGH: 3
+----------------------------------------
+🚨 Threat Level: MEDIUM
+🤖 Analysis: The "StopPodSandbox" message indicates that a container running on the Cisco switch is being suspended by an external process. This could be a security threat as it suggests that malicious activity is being contained or isolated.
+💡 Recommendations: 
+------------------------------------------------------------
+
+📥 Received log from 192.168.111.201:

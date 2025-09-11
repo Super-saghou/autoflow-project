@@ -1,549 +1,1309 @@
 {
   "logs": [
     {
-      "timestamp": "2025-08-22T16:42:55.212320",
-      "message": "<133>69: *Mar  1 01:29:50.831: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
+      "timestamp": "2025-09-09T21:51:35.081892",
+      "message": "<30>Sep  9 19:30:36 sarra-virtual-machine kubelet[1610]: E0909 19:30:36.837029    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-22T16:44:24.743528",
-      "message": "<133>70: *Mar  1 01:29:51.831: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down",
+      "timestamp": "2025-09-09T21:53:25.571687",
+      "message": "<30>Sep  9 19:30:40 sarra-virtual-machine kubelet[1610]: E0909 19:30:40.829907    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-22T16:46:38.947092",
-      "message": "<131>71: *Mar  1 01:30:37.331: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "timestamp": "2025-09-09T21:54:24.058051",
+      "message": "<30>Sep  9 19:30:49 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:30:49.824343028+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-22T16:53:13.410129",
-      "message": "<133>72: *Mar  1 01:30:38.331: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up",
+      "timestamp": "2025-09-09T21:55:37.614573",
+      "message": "<30>Sep  9 19:30:49 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:30:49.827360583+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-22T16:56:10.326318",
-      "message": "<133>73: *Mar  1 01:34:48.459: %SYS-5-CONFIG_I: Configured from console by console",
+      "timestamp": "2025-09-09T21:56:47.552023",
+      "message": "<30>Sep  9 19:30:49 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:30:49.852437077+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-22T16:56:39.149427",
-      "message": "<133>74: *Mar  1 01:35:54.643: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
+      "timestamp": "2025-09-09T21:57:52.504310",
+      "message": "<30>Sep  9 19:30:49 sarra-virtual-machine kubelet[1610]: E0909 19:30:49.853157    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-22T18:30:56.889263",
-      "message": "<133>79: *Mar  1 02:53:34.663: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
+      "timestamp": "2025-09-09T21:59:10.073321",
+      "message": "<30>Sep  9 19:30:49 sarra-virtual-machine kubelet[1610]: E0909 19:30:49.855889    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T19:13:18.741445",
-      "message": "<131>52: *Mar  1 02:00:29.215: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "timestamp": "2025-09-09T22:00:16.124999",
+      "message": "<30>Sep  9 19:30:49 sarra-virtual-machine kubelet[1610]: E0909 19:30:49.856140    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T19:20:54.034504",
-      "message": "<133>53: *Mar  1 02:00:30.215: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up",
+      "timestamp": "2025-09-09T22:01:20.792676",
+      "message": "<30>Sep  9 19:30:49 sarra-virtual-machine kubelet[1610]: E0909 19:30:49.856173    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T19:21:49.293675",
-      "message": "<133>54: *Mar  1 02:06:08.235: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
+      "timestamp": "2025-09-09T22:02:36.729767",
+      "message": "<30>Sep  9 19:30:53 sarra-virtual-machine kubelet[1610]: E0909 19:30:53.825080    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T19:22:28.246808",
-      "message": "<133>55: *Mar  1 02:08:03.567: %SYS-5-CONFIG_I: Configured from console by console",
+      "timestamp": "2025-09-09T22:04:03.586026",
+      "message": "<30>Sep  9 19:31:00 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:00.821246874+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T20:06:48.326890",
-      "message": "<133>56: *Mar  1 02:57:20.627: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
+      "timestamp": "2025-09-09T22:05:23.648081",
+      "message": "<30>Sep  9 19:31:00 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:00.821370175+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T20:07:27.046057",
-      "message": "<131>57: *Mar  1 02:57:23.415: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "timestamp": "2025-09-09T22:06:18.817775",
+      "message": "<30>Sep  9 19:31:00 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:00.857335242+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T20:19:17.130709",
-      "message": "<133>58: *Mar  1 03:09:07.963: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
+      "timestamp": "2025-09-09T22:07:17.177312",
+      "message": "<30>Sep  9 19:31:00 sarra-virtual-machine kubelet[1610]: E0909 19:31:00.861030    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T20:53:40.212368",
-      "message": "<133>59: *Mar  1 03:39:36.455: %SYS-5-CONFIG_I: Configured from console by console",
+      "timestamp": "2025-09-09T22:08:15.720127",
+      "message": "<30>Sep  9 19:31:00 sarra-virtual-machine kubelet[1610]: E0909 19:31:00.865622    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T20:55:11.676849",
-      "message": "<133>60: *Mar  1 03:42:44.895: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
+      "timestamp": "2025-09-09T22:09:24.956963",
+      "message": "<30>Sep  9 19:31:00 sarra-virtual-machine kubelet[1610]: E0909 19:31:00.865740    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T22:14:35.934900",
-      "message": "<133>61: *Mar  1 04:49:55.306: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
+      "timestamp": "2025-09-09T22:10:37.005073",
+      "message": "<30>Sep  9 19:31:00 sarra-virtual-machine kubelet[1610]: E0909 19:31:00.865765    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T22:50:18.641484",
-      "message": "<133>62: *Mar  1 05:22:41.814: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
+      "timestamp": "2025-09-09T22:11:47.281243",
+      "message": "<30>Sep  9 19:31:07 sarra-virtual-machine kubelet[1610]: E0909 19:31:07.838556    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T22:51:49.157586",
-      "message": "<131>63: *Mar  1 05:22:44.094: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "timestamp": "2025-09-09T22:12:58.350532",
+      "message": "<30>Sep  9 19:31:11 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:11.820612936+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-24T00:15:33.529329",
-      "message": "<131>64: *Mar  1 06:31:33.490: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "timestamp": "2025-09-09T22:14:18.506184",
+      "message": "<30>Sep  9 19:31:11 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:11.820734748+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-24T00:26:06.240139",
-      "message": "<133>65: *Mar  1 06:39:05.410: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
+      "timestamp": "2025-09-09T22:15:11.519366",
+      "message": "<30>Sep  9 19:31:11 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:11.846516016+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-24T00:28:56.282159",
-      "message": "<131>66: *Mar  1 06:40:16.350: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "timestamp": "2025-09-09T22:16:11.568872",
+      "message": "<30>Sep  9 19:31:11 sarra-virtual-machine kubelet[1610]: E0909 19:31:11.847122    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-24T00:29:35.238492",
-      "message": "<133>67: *Mar  1 06:42:32.346: %SYS-5-CONFIG_I: Configured from console by console",
+      "timestamp": "2025-09-09T22:17:09.106065",
+      "message": "<30>Sep  9 19:31:11 sarra-virtual-machine kubelet[1610]: E0909 19:31:11.850554    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-24T00:42:01.919296",
-      "message": "<133>68: *Mar  1 06:51:07.878: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
+      "timestamp": "2025-09-09T22:18:09.208117",
+      "message": "<30>Sep  9 19:31:11 sarra-virtual-machine kubelet[1610]: E0909 19:31:11.850992    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-24T00:43:09.879453",
-      "message": "<133>69: *Mar  1 06:51:09.026: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down",
+      "timestamp": "2025-09-09T22:19:28.232638",
+      "message": "<30>Sep  9 19:31:11 sarra-virtual-machine kubelet[1610]: E0909 19:31:11.851182    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-24T00:45:24.852151",
-      "message": "<131>70: *Mar  1 06:51:11.058: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "timestamp": "2025-09-09T22:20:41.659797",
+      "message": "<30>Sep  9 19:31:20 sarra-virtual-machine kubelet[1610]: E0909 19:31:20.824559    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
       "level": "info",
       "source": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-24T00:46:33.646003",
-      "message": "<133>71: *Mar  1 06:51:12.058: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up",
+      "timestamp": "2025-09-09T22:21:52.235608",
+      "message": "<30>Sep  9 19:31:22 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:22.821409747+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:22:45.235925",
+      "message": "<30>Sep  9 19:31:22 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:22.823541621+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:23:55.861243",
+      "message": "<30>Sep  9 19:31:22 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:22.839090283+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:27:17.498996",
+      "message": "<30>Sep  9 19:31:22 sarra-virtual-machine kubelet[1610]: E0909 19:31:22.839640    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:28:29.281015",
+      "message": "<30>Sep  9 19:31:22 sarra-virtual-machine kubelet[1610]: E0909 19:31:22.839718    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:29:28.428093",
+      "message": "<30>Sep  9 19:31:22 sarra-virtual-machine kubelet[1610]: E0909 19:31:22.839796    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:30:29.456652",
+      "message": "<30>Sep  9 19:31:22 sarra-virtual-machine kubelet[1610]: E0909 19:31:22.839817    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:31:42.905281",
+      "message": "<30>Sep  9 19:31:31 sarra-virtual-machine kubelet[1610]: E0909 19:31:31.835729    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:32:52.055724",
+      "message": "<30>Sep  9 19:31:37 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:37.844703202+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:34:03.331482",
+      "message": "<30>Sep  9 19:31:37 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:37.844819774+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:35:38.511675",
+      "message": "<30>Sep  9 19:31:37 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:37.898045543+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:36:42.900815",
+      "message": "<30>Sep  9 19:31:37 sarra-virtual-machine kubelet[1610]: E0909 19:31:37.899386    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:37:38.041023",
+      "message": "<30>Sep  9 19:31:37 sarra-virtual-machine kubelet[1610]: E0909 19:31:37.902527    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:38:32.727819",
+      "message": "<30>Sep  9 19:31:37 sarra-virtual-machine kubelet[1610]: E0909 19:31:37.905967    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:39:30.385901",
+      "message": "<30>Sep  9 19:31:37 sarra-virtual-machine kubelet[1610]: E0909 19:31:37.906026    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:40:57.976991",
+      "message": "<30>Sep  9 19:31:46 sarra-virtual-machine kubelet[1610]: E0909 19:31:46.821233    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:41:48.950074",
+      "message": "<30>Sep  9 19:31:52 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:52.820241149+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:42:57.709000",
+      "message": "<30>Sep  9 19:31:52 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:52.821271297+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:44:01.941736",
+      "message": "<30>Sep  9 19:31:52 sarra-virtual-machine containerd[948]: time=\"2025-09-09T19:31:52.850879154+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:45:01.688166",
+      "message": "<30>Sep  9 20:06:32 sarra-virtual-machine kubelet[1610]: E0909 20:06:32.821698    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:46:07.661667",
+      "message": "<30>Sep  9 20:06:40 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:06:40.819679045+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:47:00.964823",
+      "message": "<30>Sep  9 20:06:40 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:06:40.820864876+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:48:24.992668",
+      "message": "<30>Sep  9 20:06:40 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:06:40.841462550+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:49:39.947787",
+      "message": "<30>Sep  9 20:06:40 sarra-virtual-machine kubelet[1610]: E0909 20:06:40.842452    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:50:39.939188",
+      "message": "<30>Sep  9 20:06:40 sarra-virtual-machine kubelet[1610]: E0909 20:06:40.842546    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:51:57.959582",
+      "message": "<30>Sep  9 20:06:40 sarra-virtual-machine kubelet[1610]: E0909 20:06:40.842628    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:53:17.130632",
+      "message": "<30>Sep  9 20:06:40 sarra-virtual-machine kubelet[1610]: E0909 20:06:40.842651    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:54:16.911712",
+      "message": "<30>Sep  9 20:06:47 sarra-virtual-machine kubelet[1610]: E0909 20:06:47.828569    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:55:16.188044",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:06:54.819515167+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:56:51.535837",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:06:54.819650626+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T22:57:54.169021",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:06:54.845353999+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:00:08.903920",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.845985    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:01:07.103899",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.846100    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:02:14.097406",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.846201    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:03:24.001450",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.846228    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:04:47.672088",
+      "message": "<30>Sep  9 20:07:01 sarra-virtual-machine kubelet[1610]: E0909 20:07:01.823287    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:05:47.493035",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:07:06.821462471+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:07:35.666098",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:07:06.821742384+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:08:40.788726",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:07:06.837007689+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:09:38.734551",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838501    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:10:49.832246",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838819    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:12:23.014371",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838912    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:13:34.670400",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838936    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:14:30.810710",
+      "message": "<30>Sep  9 20:07:13 sarra-virtual-machine kubelet[1610]: E0909 20:07:13.822201    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:15:23.743781",
+      "message": "<30>Sep  9 20:07:19 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:07:19.822258973+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:16:41.706553",
+      "message": "<30>Sep  9 20:07:19 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:07:19.822417630+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:17:41.835666",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:43:07.832604580+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:18:34.813520",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:43:07.832710259+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:19:47.421067",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:43:07.853265906+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:20:56.897160",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine kubelet[1610]: E0909 20:43:07.853600    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:22:06.704023",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine kubelet[1610]: E0909 20:43:07.853686    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:23:13.729985",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine kubelet[1610]: E0909 20:43:07.857751    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:45:20.866942",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:24.266453860+01:00\" level=info msg=\"trying next host\" error=\"pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\" host=registry-1.docker.io",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:46:07.731035",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:24.269439512+01:00\" level=error msg=\"PullImage \\\"sarra539/autoflow-frontend:latest\\\" failed\" error=\"failed to pull and unpack image \\\"docker.io/sarra539/autoflow-frontend:latest\\\": failed to resolve reference \\\"docker.io/sarra539/autoflow-frontend:latest\\\": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:47:10.026691",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:24.269660622+01:00\" level=info msg=\"stop pulling image docker.io/sarra539/autoflow-frontend:latest: active requests=0, bytes read=5069\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:48:46.874552",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine kubelet[1610]: E0909 22:44:24.270815    1610 remote_image.go:180] \"PullImage from image service failed\" err=\"rpc error: code = Unknown desc = failed to pull and unpack image \\\"docker.io/sarra539/autoflow-frontend:latest\\\": failed to resolve reference \\\"docker.io/sarra539/autoflow-frontend:latest\\\": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\" image=\"sarra539/autoflow-frontend:latest\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:49:50.938542",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine kubelet[1610]: E0909 22:44:24.270906    1610 kuberuntime_image.go:55] \"Failed to pull image\" err=\"failed to pull and unpack image \\\"docker.io/sarra539/autoflow-frontend:latest\\\": failed to resolve reference \\\"docker.io/sarra539/autoflow-frontend:latest\\\": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\" image=\"sarra539/autoflow-frontend:latest\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:51:24.156593",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine kubelet[1610]: E0909 22:44:24.271174    1610 kuberuntime_manager.go:1258] container &Container{Name:frontend,Image:sarra539/autoflow-frontend:latest,Command:[],Args:[],WorkingDir:,Ports:[]ContainerPort{ContainerPort{Name:http,HostPort:0,ContainerPort:80,Protocol:TCP,HostIP:,},},Env:[]EnvVar{EnvVar{Name:REACT_APP_API_URL,Value:,ValueFrom:&EnvVarSource{FieldRef:nil,ResourceFieldRef:nil,ConfigMapKeyRef:&ConfigMapKeySelector{LocalObjectReference:LocalObjectReference{Name:autoflow-config,},Key:REACT_APP_API_URL,Optional:nil,},SecretKeyRef:nil,},},EnvVar{Name:REACT_APP_WS_URL,Value:,ValueFrom:&EnvVarSource{FieldRef:nil,ResourceFieldRef:nil,ConfigMapKeyRef:&ConfigMapKeySelector{LocalObjectReference:LocalObjectReference{Name:autoflow-config,},Key:REACT_APP_WS_URL,Optional:nil,},SecretKeyRef:nil,},},},Resources:ResourceRequirements{Limits:ResourceList{cpu: {{200 -3} {<nil>} 200m DecimalSI},memory: {{536870912 0} {<nil>}  BinarySI},},Requests:ResourceList{cpu: {{100 -3} {<nil>}",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:52:47.263744",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine kubelet[1610]: E0909 22:44:24.271231    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ErrImagePull: \\\"failed to pull and unpack image \\\\\\\"docker.io/sarra539/autoflow-frontend:latest\\\\\\\": failed to resolve reference \\\\\\\"docker.io/sarra539/autoflow-frontend:latest\\\\\\\": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:53:51.008601",
+      "message": "<30>Sep  9 22:44:32 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:32.821516443+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:55:12.781597",
+      "message": "<30>Sep  9 22:44:32 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:32.821630887+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:56:34.183853",
+      "message": "<30>Sep  9 22:44:32 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:32.845493386+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T10:53:01.550383",
+      "message": "<134>51: *Mar  1 00:00:13.587: %DHCP-6-ADDRESS_ASSIGN: Interface FastEthernet0/0 assigned DHCP address 192.168.111.198, mask 255.255.255.0, hostname ESW1",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T10:53:38.515063",
+      "message": "<134>52: ",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T10:54:34.168859",
+      "message": "<134>53: *Mar  1 00:06:01.319: %SEC-6-IPACCESSLOGDP: list SCAN_LOG permitted icmp 192.168.111.254 -> 192.168.111.198 (8/0), 1 packet ",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T11:04:07.895077",
+      "message": "<134>54: *Mar  1 00:15:14.643: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T11:19:14.552198",
+      "message": "<134>55: *Mar  1 00:31:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T11:34:28.031443",
+      "message": "<134>56: *Mar  1 00:46:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T11:55:10.043861",
+      "message": "<134>57: *Mar  1 01:01:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T12:06:10.533940",
+      "message": "<134>58: *Mar  1 01:16:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T12:24:54.157216",
+      "message": "<134>59: *Mar  1 01:31:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T12:41:14.743721",
+      "message": "<134>60: *Mar  1 01:46:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T12:59:29.977143",
+      "message": "<134>61: *Mar  1 02:01:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "level": "info",
+      "source": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T13:17:01.158917",
+      "message": "<134>62: *Mar  1 02:16:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
       "level": "info",
       "source": "192.168.111.198"
     }
   ],
   "threats": [
     {
-      "timestamp": "2025-08-22T16:42:55.212393",
+      "timestamp": "2025-09-09T22:50:39.939216",
       "type": "Interface State Change - MEDIUM",
       "severity": "medium",
-      "description": "The switch log message indicates that the FastEthernet0/1 interface has changed from an administratively up state to down. This typically occurs due to a hardware failure or degradation.",
+      "description": "The podSandboxID is a containerd reference to the \"sandbox\" container. This indicates that there was an attempt by a malicious entity to sandbox their container on the Kubernetes cluster. However, due to an error in kubernetes_manager, it failed to stop this sandbox pod.",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-22T16:44:24.743553",
+      "timestamp": "2025-09-09T22:51:57.959605",
       "type": "Interface State Change - MEDIUM",
       "severity": "medium",
-      "description": "The switch logged an event indicating that the FastEthernet0/1 interface was brought down. This could indicate a hardware failure or a network configuration issue.",
+      "description": "The \"KillPodSandbox\" operation was attempted on a pod named \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\". However, the \"KillPodSandbox\" request failed with an error code of Unknown and description.",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-22T16:46:38.947122",
+      "timestamp": "2025-09-09T22:53:17.130662",
       "type": "Interface State Change - MEDIUM",
       "severity": "medium",
-      "description": "The switch has gone down. This is a normal operation for most network devices as they periodically reset to save power.",
+      "description": "This Cisco switch log message indicates a potential issue with the Kubernetes (kubelet) component syncing a pod. The \"Error syncing pod\" message suggests that there's an error in killing a sandboxed container for one of the pods, which is likely due to an underlying network configuration problem.",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-22T16:53:13.410163",
-      "type": "Interface State Change - MEDIUM",
-      "severity": "medium",
-      "description": "The \"Line protocol on Interface FastEthernet0/1, changed state to up\" line indicates that a connection to the interface is being established or terminated. This could be due to various reasons such as connecting a new device to the network, disconnecting an old one, or adjusting settings.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-22T16:56:10.326345",
-      "type": "Interface State Change - MEDIUM",
-      "severity": "medium",
-      "description": "This log indicates that the switch was configured from the console by another device. This is a potential security threat as it could allow for unauthorized access to the network.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-22T16:56:39.149458",
-      "type": "Interface State Change - MEDIUM",
-      "severity": "medium",
-      "description": "The log message indicates that the Cisco switch was configured from a console session by a remote user named sarra on port vty0 (192.168.111.190). This suggests an unauthorized access attempt to the switch.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-22T18:30:56.889290",
-      "type": "Interface State Change - MEDIUM",
-      "severity": "medium",
-      "description": "The log message indicates that an administratively down interface (FastEthernet0/1) on a Cisco switch has been changed to this state. This could potentially be due to malicious activity such as unauthorized port forwarding or network mapping.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-23T19:13:18.741477",
+      "timestamp": "2025-09-09T22:54:16.911873",
       "type": "Interface State Change - LOW",
       "severity": "low",
-      "description": "The Cisco switch log message indicates that the interface FastEthernet0/1 has changed state from down to up. This is a normal operation and does not indicate any security threats.",
+      "description": "This log indicates an error syncing a Kubernetes pod, specifically the \"frontend\" deployment. The issue is related to attempting to start a container using an image that has been pulled from Docker, but the image is not available.",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T19:20:54.034528",
+      "timestamp": "2025-09-09T22:55:16.188073",
       "type": "Interface State Change - MEDIUM",
       "severity": "medium",
-      "description": "This log indicates a switch is changing from \"down\" to \"up\" on an interface. The \"LINEPROTO-5-UPDOWN\" code typically corresponds to the Line Protocol status.",
+      "description": "The message indicates that the containerd process is stopping a PodSandbox for a specific container. This could be a sign of an issue with the container or a security vulnerability.",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T19:21:49.293704",
+      "timestamp": "2025-09-09T22:56:51.535865",
       "type": "Interface State Change - MEDIUM",
       "severity": "medium",
-      "description": "This Cisco switch log message indicates that the switch was configured by a remote user (sarra) from the console port on an IP address of 192.168.111.190.",
+      "description": "This log message indicates that a container on the Cisco switch is in the \"CONTAINER_EXITED\" state but has an unknown current status. The container name is \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\". This suggests that there might be a security risk associated with this container, as it is not currently running or in an unknown state.",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T19:22:28.246977",
+      "timestamp": "2025-09-09T22:57:54.169050",
       "type": "Interface State Change - MEDIUM",
       "severity": "medium",
-      "description": "This log indicates that a Cisco switch has been configured from the console port (console) by another console. This suggests that an attacker could have potentially gained access to the switch's configuration through this method.",
+      "description": "The Cisco switch log message indicates that the containerd process has encountered a failure when stopping a sandbox pod. Specifically, it failed to destroy the network for the \"weave\" sandbox.",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T20:06:48.326918",
+      "timestamp": "2025-09-09T23:00:08.903940",
       "type": "Interface State Change - MEDIUM",
       "severity": "medium",
-      "description": "The switch is reporting an administratively down state for interface FastEthernet0/1. This indicates that the interface has failed to receive data packets or is not functioning properly, which could be a sign of a hardware issue or a software problem.",
+      "description": "The log indicates that the Kubernetes (kubelet) service encountered an error while stopping the \"PodSandbox\" runtime in the system. Specifically, it reported an RPC (Remote Procedure Call) error with code 0x0909 and description \"failed to destroy network for sandbox\".",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T20:07:27.046066",
+      "timestamp": "2025-09-09T23:01:07.103926",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The podSandboxID indicates that a sandbox container was unable to stop cleanly. This could be due to various reasons such as resource contention or network issues.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:02:14.097440",
       "type": "Interface State Change - LOW",
       "severity": "low",
-      "description": "The Cisco switch is logging the \" Interface FastEthernet0/1, changed state to up\" message, indicating that an interface on a network device has been brought up or down. This type of event is typically not indicative of a security threat.",
+      "description": "This message indicates a failed attempt by the Kubernetes (kubelet) component to \"KillPodSandbox\" for a specific pod. The error is related to a network issue caused by a missing or incorrect `weave` network configuration.",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T20:19:17.130739",
+      "timestamp": "2025-09-09T23:03:24.001480",
       "type": "Interface State Change - MEDIUM",
       "severity": "medium",
-      "description": "This Cisco switch log message indicates that the system was configured from the console by a user named sarra on port vty0 with an IP address of 192.168.111.190.",
+      "description": "The \"Error syncing pod\" message indicates that the Kubernetes (Kubelet) service was unable to successfully synchronize a pod's network configuration. This suggests that there may be issues with the network setup or configuration of one or more pods.",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-23T20:53:40.212394",
-      "type": "Interface State Change - LOW",
-      "severity": "low",
-      "description": "This log indicates that the Cisco switch was configured from a console connection by another device.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-23T20:55:11.676879",
-      "type": "Interface State Change - LOW",
-      "severity": "low",
-      "description": "The log message indicates that the Cisco switch has been configured from a remote location (sarra) using VTY0 port on a specific IP address (192.168.111.190). This is not suspicious in itself as it's a legitimate configuration process.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-23T22:14:35.934934",
-      "type": "Interface State Change - LOW",
-      "severity": "low",
-      "description": "The Cisco switch logged the configuration from the console to the vty0 interface on 192.168.111.190.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-23T22:50:18.641500",
-      "type": "Interface State Change - LOW",
-      "severity": "low",
-      "description": "The switch has changed from administratively up to down state, indicating that it is now in a non-operational or failed state. This can be an indication of a hardware issue, such as a faulty cable or a component failure.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-23T22:51:49.157604",
-      "type": "Interface State Change - LOW",
-      "severity": "low",
-      "description": "The switch logged an interface change from down to up on FastEthernet0/1. This is a normal event as the connection was likely restored or re-established after being offline for maintenance or other reasons.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-24T00:15:33.529359",
+      "timestamp": "2025-09-09T23:04:47.672151",
       "type": "Interface State Change - MEDIUM",
       "severity": "medium",
-      "description": "The Cisco switch log message indicates that the FastEthernet0/1 interface has changed from down to up. This could be due to a variety of reasons such as a network issue, hardware failure, or a software problem.",
+      "description": "The message indicates that the kubelet process encountered an error syncing a pod named \"autoflow/frontend-deployment-79b6ff865-4ctm2\". This is because the Kubernetes pod's container image, \"sarra539/autoflow-frontend:latest\", failed to pull due to being stuck in \"ImagePullBackOff\" status.",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-24T00:26:06.240173",
-      "type": "Interface State Change - MEDIUM",
-      "severity": "medium",
-      "description": "The switch has been configured from the console by a remote user (sarra) via vty0 on the 192.168.111.190 IP address.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-24T00:28:56.282170",
-      "type": "Interface State Change - MEDIUM",
-      "severity": "medium",
-      "description": "The Cisco switch log message indicates a port change from down to up on FastEthernet0/1. This is typically an indication of successful configuration or setup of the interface.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-24T00:29:35.238520",
+      "timestamp": "2025-09-09T23:05:47.493063",
       "type": "Interface State Change - LOW",
       "severity": "low",
-      "description": "The given Cisco switch log message indicates that the device was configured from a console connection. This is not typically considered a security threat.",
+      "description": "This is a normal event log message from a containerized system. The message indicates that the \"StopPodSandbox\" command has been executed for the pod with the name \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\".",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-24T00:42:01.919331",
-      "type": "Interface State Change - MEDIUM",
-      "severity": "medium",
-      "description": "This Cisco switch log message indicates that an interface on the switch has changed from administratively up to down. An administratively down interface is not a problem in itself, but if it is a critical or high-priority port (typically Port 1), this change could indicate a potential security threat.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-24T00:43:09.879463",
-      "type": "Interface State Change - MEDIUM",
-      "severity": "medium",
-      "description": "The log message indicates that a line protocol is being lost on Interface FastEthernet0/1. This could be due to various reasons such as a network issue, a problem with the port itself, or an intrusion attempt.",
-      "source_ip": "192.168.111.198"
-    },
-    {
-      "timestamp": "2025-08-24T00:45:24.852167",
+      "timestamp": "2025-09-09T23:07:35.666166",
       "type": "Interface State Change - LOW",
       "severity": "low",
-      "description": "This Cisco switch log message indicates that the interface on Ethernet 0/1 has changed from down to up state.",
+      "description": "The log message indicates that a container is trying to stop but cannot do so because the container with ID \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" is in an unknown state. This suggests that either the container has been manually deleted or its state was not properly set before attempting to stop it.",
       "source_ip": "192.168.111.198"
     },
     {
-      "timestamp": "2025-08-24T00:46:33.646028",
+      "timestamp": "2025-09-09T23:08:40.788890",
       "type": "Interface State Change - MEDIUM",
       "severity": "medium",
-      "description": "The Cisco switch logs a state change event indicating that the line protocol on Interface FastEthernet0/1 has been changed from DOWN to UP. This is typically a normal operational event for switches, but in some cases it could be indicative of a security threat.",
+      "description": "This log indicates that the containerd process has encountered a problem destroying a network (in this case, the \"weave\" network) for a sandbox. The error message suggests that there was an issue with decoding the network configuration to extract its version.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:09:38.734580",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The message indicates that a Kubernetes pod sandbox (StopPodSandbox) is experiencing an issue while trying to destroy its network resources. The error code suggests that the network configuration has been altered or corrupted.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:10:49.832275",
+      "type": "Interface State Change - LOW",
+      "severity": "low",
+      "description": "The log message indicates that the Kubernetes pod \"sandbox\" (ID: 2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce) has failed to stop, which may be a sign of a sandbox or isolation issue. This could potentially allow malicious containers to remain active and pose security risks.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:12:23.014409",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "AI analysis completed",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:13:34.670426",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This log message indicates that the Kubernetes pod \"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" failed to \"KillPodSandbox\" due to a network error. The log shows an error in killing the sandbox, specifically with an Unknown code and description.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:14:30.810742",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This Cisco switch log message indicates that a Kubernetes pod is experiencing an error during the syncing process. The specific issue is related to image pulling for a container.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:15:23.743800",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The \"StopPodSandbox\" message indicates that a container running on the Cisco switch is being suspended by an external process. This could be a security threat as it suggests that malicious activity is being contained or isolated.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:16:41.706582",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The log message indicates that the container \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" is being stopped, but its current state is not \"CONTAINER_EXITED\". This suggests that there might be an issue with the container's exit status.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:17:41.835688",
+      "type": "Interface State Change - LOW",
+      "severity": "low",
+      "description": "This Cisco switch log message indicates a security threat. The event is related to a container application (containerd) that stopped running for an unknown reason. It's likely a symptom of a larger issue, but there's no indication of malicious intent.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:18:34.813550",
+      "type": "Interface State Change - LOW",
+      "severity": "low",
+      "description": "The container is trying to stop a process but instead shows the current state as CONTAINER_EXITED, which indicates the process has already finished running. This suggests that there might be an issue with how the container is being managed or configured.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:19:47.421099",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This Cisco switch log message indicates that a containerd pod was terminated due to an error. The pod was trying to destroy a network called \"weave\" but failed, which resulted in the loss of access to that network.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:20:56.897184",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:22:06.704047",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The message indicates that the Kubernetes \"sandbox\" pod was unable to stop successfully. This suggests potential issues with container isolation or confinement.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:23:13.730016",
+      "type": "Interface State Change - LOW",
+      "severity": "low",
+      "description": "This log message indicates that a Kubernetes (kubelet) pod named \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" failed to destroy the network associated with its sandbox. The failure is due to an unknown error when trying to get the cached result of the \"weave\" network from a JSON configuration file.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:45:20.866972",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This Cisco switch log message indicates that the containerd service is trying to access a registry host (registry-1.docker.io) but encounters an error due to insufficient scope permissions. The error message suggests that the repository may require authorization or authentication.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:46:07.731064",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This Cisco switch log message indicates a security threat due to the \"pull access denied\" error when attempting to pull an image from Docker. The error occurs because the repository 'sarra539/autoflow-frontend:latest' does not exist or requires authorization.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:47:10.026716",
+      "type": "Interface State Change - LOW",
+      "severity": "low",
+      "description": "This log message indicates that the containerd service in a virtual machine is stopping to pull an image. The image being pulled is Docker.io/sarra539/autoflow-frontend:latest.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:48:46.874575",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:49:50.938572",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This log message indicates that a Kubernetes image, \"sarra539/autoflow-frontend:latest\", failed to pull due to insufficient authorization. The `pull access denied` error is caused by the repository not existing or requiring authorization.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:51:24.156625",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This log indicates that the Kubernetes controller manager is attempting to manage a container named 'frontend' on a virtual machine. The container appears to be running a specific image ('sarra539/autoflow-frontend:latest') and has a few environment variables set, including `REACT_APP_API_URL` and `REACT_APP_WS_URL`. This suggests that the application is likely using these URLs for some purpose.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:52:47.263779",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This log indicates that the Kubernetes pod \"autoflow/frontend-deployment-79b6ff865-4ctm2\" encountered an error while syncing with the master node. The error is related to the image pull process, specifically due to a lack of access permissions or authorization.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:53:51.008632",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This log entry indicates that the Containerd daemon (a process manager for container orchestration systems like Docker) has stopped a \"Pod\" named \"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\". The log also provides the time and date of the event.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:55:12.781627",
+      "type": "Interface State Change - LOW",
+      "severity": "low",
+      "description": "This log message indicates that the container \"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\" is in an unknown state, which means it needs to be stopped. The current state of the container is \"CONTAINER_EXITED\", suggesting that it was previously running but has now exited.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-09T23:56:34.183889",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The Cisco switch log message indicates a security threat by mentioning the failure to destroy a network resource (\"StopPodSandbox\") and an error in caching a network result. This suggests that there may be some form of malicious activity or misconfiguration affecting network operations.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T10:53:01.550420",
+      "type": "Interface State Change - LOW",
+      "severity": "low",
+      "description": "This log entry indicates that a Cisco switch has assigned an IP address (192.168.111.198) to its interface FastEthernet0/0 through Dynamic Host Configuration Protocol (DHCP). The DHCP address is part of the IP network 192.168.111.0, which seems to be a private IP range for a local network.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T10:53:38.515104",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This Cisco switch log message indicates that an unusual activity has been detected. The \"52\" at the beginning of the log is likely a timestamp or time stamp, but its significance in this context remains unclear without further information.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T10:54:34.168898",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The Cisco switch is logging an allowed ICMP (Internet Control Message Protocol) packet to the IPACCESSLOGDP. This allows a potential hacker to scan for open ports on the switch, which could potentially reveal sensitive information.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T11:04:07.895177",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The switch is logging a permitted access event for a UDP packet coming from 192.168.111.254 with port number 67 to 192.168.111.198 with port number 68.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T11:19:14.552238",
+      "type": "Interface State Change - LOW",
+      "severity": "low",
+      "description": "This log message indicates that a UDP (User Datagram Protocol) packet is allowed to pass through the switch's IP access control list (ACL), allowing traffic from 192.168.111.254 to 192.168.111.198 with a specific source port and destination port.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T11:34:28.031573",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This Cisco switch log message indicates that a permit has been granted for incoming UDP traffic on port 67 (SNMPv3) from IP address 192.168.111.254 to IP address 192.168.111.198.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T11:55:10.043896",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "The log message indicates that a UDP packet is being allowed to pass through the switch with source IP address 192.168.111.254 (a local network) and destination IP address 192.168.111.198 (an external network). This could be a potential security threat, as it allows a malicious host on the internal network to send a UDP packet to an external host.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T12:06:10.533986",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This log message indicates that an unauthorized UDP packet is being allowed to pass through the switch's IP access list (SEC-6) filter. The scan_log protocol is used for security testing, but the packet is coming from a different IP address and port than the intended destination.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T12:24:54.157281",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This log message indicates that a UDP (User Datagram Protocol) packet has been allowed to pass through the switch from an internal IP address (192.168.111.254) to an external IP address (192.168.111.198).",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T12:41:14.743763",
+      "type": "Interface State Change - LOW",
+      "severity": "low",
+      "description": "This Cisco switch log message indicates that a permitted UDP connection is being established between two IP addresses. The `SCAN_LOG` keyword suggests that this is related to scanning operations.",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T12:59:29.977183",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This log message indicates a potential security threat. The \"SCAN_LOG\" access attempt was permitted on port 68 (TCP) from a remote IP address (192.168.111.254).",
+      "source_ip": "192.168.111.198"
+    },
+    {
+      "timestamp": "2025-09-11T13:17:01.158954",
+      "type": "Interface State Change - MEDIUM",
+      "severity": "medium",
+      "description": "This log entry indicates that a UDP traffic is being allowed into the switch from an external IP address (192.168.111.254) to another external IP address (192.168.111.198). The source and destination ports are 67 (SCP) and 68 respectively, which suggests that it's some kind of file transfer protocol (FTP).",
       "source_ip": "192.168.111.198"
     }
   ],
   "alerts": [
     {
-      "timestamp": "2025-08-22T16:42:55.212405",
+      "timestamp": "2025-09-09T22:50:39.939225",
       "level": "Warning",
       "title": "Interface State Change - MEDIUM",
-      "message": "<133>69: *Mar  1 01:29:50.831: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
+      "message": "<30>Sep  9 20:06:40 sarra-virtual-machine kubelet[1610]: E0909 20:06:40.842546    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-22T16:44:24.743562",
+      "timestamp": "2025-09-09T22:51:57.959613",
       "level": "Warning",
       "title": "Interface State Change - MEDIUM",
-      "message": "<133>70: *Mar  1 01:29:51.831: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down",
+      "message": "<30>Sep  9 20:06:40 sarra-virtual-machine kubelet[1610]: E0909 20:06:40.842628    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-22T16:46:38.947130",
+      "timestamp": "2025-09-09T22:53:17.130670",
       "level": "Warning",
       "title": "Interface State Change - MEDIUM",
-      "message": "<131>71: *Mar  1 01:30:37.331: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "message": "<30>Sep  9 20:06:40 sarra-virtual-machine kubelet[1610]: E0909 20:06:40.842651    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-22T16:53:13.410171",
-      "level": "Warning",
-      "title": "Interface State Change - MEDIUM",
-      "message": "<133>72: *Mar  1 01:30:38.331: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-22T16:56:10.326355",
-      "level": "Warning",
-      "title": "Interface State Change - MEDIUM",
-      "message": "<133>73: *Mar  1 01:34:48.459: %SYS-5-CONFIG_I: Configured from console by console",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-22T16:56:39.149468",
-      "level": "Warning",
-      "title": "Interface State Change - MEDIUM",
-      "message": "<133>74: *Mar  1 01:35:54.643: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-22T18:30:56.889299",
-      "level": "Warning",
-      "title": "Interface State Change - MEDIUM",
-      "message": "<133>79: *Mar  1 02:53:34.663: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-23T19:13:18.741487",
+      "timestamp": "2025-09-09T22:54:16.911887",
       "level": "Info",
       "title": "Interface State Change - LOW",
-      "message": "<131>52: *Mar  1 02:00:29.215: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "message": "<30>Sep  9 20:06:47 sarra-virtual-machine kubelet[1610]: E0909 20:06:47.828569    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-23T19:20:54.034536",
+      "timestamp": "2025-09-09T22:55:16.188081",
       "level": "Warning",
       "title": "Interface State Change - MEDIUM",
-      "message": "<133>53: *Mar  1 02:00:30.215: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:06:54.819515167+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-23T19:21:49.293713",
+      "timestamp": "2025-09-09T22:56:51.535874",
       "level": "Warning",
       "title": "Interface State Change - MEDIUM",
-      "message": "<133>54: *Mar  1 02:06:08.235: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:06:54.819650626+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-23T19:22:28.246989",
+      "timestamp": "2025-09-09T22:57:54.169060",
       "level": "Warning",
       "title": "Interface State Change - MEDIUM",
-      "message": "<133>55: *Mar  1 02:08:03.567: %SYS-5-CONFIG_I: Configured from console by console",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:06:54.845353999+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-23T20:06:48.326926",
+      "timestamp": "2025-09-09T23:00:08.903948",
       "level": "Warning",
       "title": "Interface State Change - MEDIUM",
-      "message": "<133>56: *Mar  1 02:57:20.627: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.845985    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-23T20:07:27.046069",
+      "timestamp": "2025-09-09T23:01:07.103935",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.846100    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:02:14.097451",
       "level": "Info",
       "title": "Interface State Change - LOW",
-      "message": "<131>57: *Mar  1 02:57:23.415: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.846201    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-23T20:19:17.130760",
+      "timestamp": "2025-09-09T23:03:24.001490",
       "level": "Warning",
       "title": "Interface State Change - MEDIUM",
-      "message": "<133>58: *Mar  1 03:09:07.963: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
+      "message": "<30>Sep  9 20:06:54 sarra-virtual-machine kubelet[1610]: E0909 20:06:54.846228    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-23T20:53:40.212403",
-      "level": "Info",
-      "title": "Interface State Change - LOW",
-      "message": "<133>59: *Mar  1 03:39:36.455: %SYS-5-CONFIG_I: Configured from console by console",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-23T20:55:11.676888",
-      "level": "Info",
-      "title": "Interface State Change - LOW",
-      "message": "<133>60: *Mar  1 03:42:44.895: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-23T22:14:35.934953",
-      "level": "Info",
-      "title": "Interface State Change - LOW",
-      "message": "<133>61: *Mar  1 04:49:55.306: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-23T22:50:18.641505",
-      "level": "Info",
-      "title": "Interface State Change - LOW",
-      "message": "<133>62: *Mar  1 05:22:41.814: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-23T22:51:49.157609",
-      "level": "Info",
-      "title": "Interface State Change - LOW",
-      "message": "<131>63: *Mar  1 05:22:44.094: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-24T00:15:33.529369",
+      "timestamp": "2025-09-09T23:04:47.672160",
       "level": "Warning",
       "title": "Interface State Change - MEDIUM",
-      "message": "<131>64: *Mar  1 06:31:33.490: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "message": "<30>Sep  9 20:07:01 sarra-virtual-machine kubelet[1610]: E0909 20:07:01.823287    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-24T00:26:06.240183",
-      "level": "Warning",
-      "title": "Interface State Change - MEDIUM",
-      "message": "<133>65: *Mar  1 06:39:05.410: %SYS-5-CONFIG_I: Configured from console by sarra on vty0 (192.168.111.190)",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-24T00:28:56.282172",
-      "level": "Warning",
-      "title": "Interface State Change - MEDIUM",
-      "message": "<131>66: *Mar  1 06:40:16.350: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-24T00:29:35.238529",
+      "timestamp": "2025-09-09T23:05:47.493072",
       "level": "Info",
       "title": "Interface State Change - LOW",
-      "message": "<133>67: *Mar  1 06:42:32.346: %SYS-5-CONFIG_I: Configured from console by console",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:07:06.821462471+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-24T00:42:01.919341",
-      "level": "Warning",
-      "title": "Interface State Change - MEDIUM",
-      "message": "<133>68: *Mar  1 06:51:07.878: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-24T00:43:09.879465",
-      "level": "Warning",
-      "title": "Interface State Change - MEDIUM",
-      "message": "<133>69: *Mar  1 06:51:09.026: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down",
-      "recommendation": ""
-    },
-    {
-      "timestamp": "2025-08-24T00:45:24.852172",
+      "timestamp": "2025-09-09T23:07:35.666175",
       "level": "Info",
       "title": "Interface State Change - LOW",
-      "message": "<131>70: *Mar  1 06:51:11.058: %LINK-3-UPDOWN: Interface FastEthernet0/1, changed state to up",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:07:06.821742384+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
       "recommendation": ""
     },
     {
-      "timestamp": "2025-08-24T00:46:33.646034",
+      "timestamp": "2025-09-09T23:08:40.788906",
       "level": "Warning",
       "title": "Interface State Change - MEDIUM",
-      "message": "<133>71: *Mar  1 06:51:12.058: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:07:06.837007689+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:09:38.734590",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838501    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:10:49.832284",
+      "level": "Info",
+      "title": "Interface State Change - LOW",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838819    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:12:23.014419",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838912    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "recommendation": "Continue monitoring"
+    },
+    {
+      "timestamp": "2025-09-09T23:13:34.670434",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 20:07:06 sarra-virtual-machine kubelet[1610]: E0909 20:07:06.838936    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"KillPodSandbox\\\" for \\\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\\\" with KillPodSandboxError: \\\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\\\\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\\\\\": failed to get network \\\\\\\"weave\\\\\\\" cached result: decoding version from network config: unexpected end of JSON input\\\"\" pod=\"trivy-system/scan-vulnerabilityreport-58c54c6854-cnlrg\" podUID=\"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:14:30.810753",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 20:07:13 sarra-virtual-machine kubelet[1610]: E0909 20:07:13.822201    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ImagePullBackOff: \\\"Back-off pulling image \\\\\\\"sarra539/autoflow-frontend:latest\\\\\\\"\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:15:23.743806",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 20:07:19 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:07:19.822258973+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:16:41.706590",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 20:07:19 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:07:19.822417630+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:17:41.835696",
+      "level": "Info",
+      "title": "Interface State Change - LOW",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:43:07.832604580+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:18:34.813561",
+      "level": "Info",
+      "title": "Interface State Change - LOW",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:43:07.832710259+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:19:47.421108",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine containerd[948]: time=\"2025-09-09T20:43:07.853265906+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:20:56.897192",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine kubelet[1610]: E0909 20:43:07.853600    1610 remote_runtime.go:222] \"StopPodSandbox from runtime service failed\" err=\"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\" podSandboxID=\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:22:06.704057",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine kubelet[1610]: E0909 20:43:07.853686    1610 kuberuntime_manager.go:1377] \"Failed to stop sandbox\" podSandboxID={\"Type\":\"containerd\",\"ID\":\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\"}",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:23:13.730025",
+      "level": "Info",
+      "title": "Interface State Change - LOW",
+      "message": "<30>Sep  9 20:43:07 sarra-virtual-machine kubelet[1610]: E0909 20:43:07.857751    1610 kubelet.go:2049] failed to \"KillPodSandbox\" for \"d1bd9ae7-a8fc-47a6-a339-d8beae8f345f\" with KillPodSandboxError: \"rpc error: code = Unknown desc = failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:45:20.866981",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:24.266453860+01:00\" level=info msg=\"trying next host\" error=\"pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\" host=registry-1.docker.io",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:46:07.731075",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:24.269439512+01:00\" level=error msg=\"PullImage \\\"sarra539/autoflow-frontend:latest\\\" failed\" error=\"failed to pull and unpack image \\\"docker.io/sarra539/autoflow-frontend:latest\\\": failed to resolve reference \\\"docker.io/sarra539/autoflow-frontend:latest\\\": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:47:10.026725",
+      "level": "Info",
+      "title": "Interface State Change - LOW",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:24.269660622+01:00\" level=info msg=\"stop pulling image docker.io/sarra539/autoflow-frontend:latest: active requests=0, bytes read=5069\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:48:46.874583",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine kubelet[1610]: E0909 22:44:24.270815    1610 remote_image.go:180] \"PullImage from image service failed\" err=\"rpc error: code = Unknown desc = failed to pull and unpack image \\\"docker.io/sarra539/autoflow-frontend:latest\\\": failed to resolve reference \\\"docker.io/sarra539/autoflow-frontend:latest\\\": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\" image=\"sarra539/autoflow-frontend:latest\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:49:50.938582",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine kubelet[1610]: E0909 22:44:24.270906    1610 kuberuntime_image.go:55] \"Failed to pull image\" err=\"failed to pull and unpack image \\\"docker.io/sarra539/autoflow-frontend:latest\\\": failed to resolve reference \\\"docker.io/sarra539/autoflow-frontend:latest\\\": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\" image=\"sarra539/autoflow-frontend:latest\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:51:24.156635",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine kubelet[1610]: E0909 22:44:24.271174    1610 kuberuntime_manager.go:1258] container &Container{Name:frontend,Image:sarra539/autoflow-frontend:latest,Command:[],Args:[],WorkingDir:,Ports:[]ContainerPort{ContainerPort{Name:http,HostPort:0,ContainerPort:80,Protocol:TCP,HostIP:,},},Env:[]EnvVar{EnvVar{Name:REACT_APP_API_URL,Value:,ValueFrom:&EnvVarSource{FieldRef:nil,ResourceFieldRef:nil,ConfigMapKeyRef:&ConfigMapKeySelector{LocalObjectReference:LocalObjectReference{Name:autoflow-config,},Key:REACT_APP_API_URL,Optional:nil,},SecretKeyRef:nil,},},EnvVar{Name:REACT_APP_WS_URL,Value:,ValueFrom:&EnvVarSource{FieldRef:nil,ResourceFieldRef:nil,ConfigMapKeyRef:&ConfigMapKeySelector{LocalObjectReference:LocalObjectReference{Name:autoflow-config,},Key:REACT_APP_WS_URL,Optional:nil,},SecretKeyRef:nil,},},},Resources:ResourceRequirements{Limits:ResourceList{cpu: {{200 -3} {<nil>} 200m DecimalSI},memory: {{536870912 0} {<nil>}  BinarySI},},Requests:ResourceList{cpu: {{100 -3} {<nil>}",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:52:47.263809",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 22:44:24 sarra-virtual-machine kubelet[1610]: E0909 22:44:24.271231    1610 pod_workers.go:1298] \"Error syncing pod, skipping\" err=\"failed to \\\"StartContainer\\\" for \\\"frontend\\\" with ErrImagePull: \\\"failed to pull and unpack image \\\\\\\"docker.io/sarra539/autoflow-frontend:latest\\\\\\\": failed to resolve reference \\\\\\\"docker.io/sarra539/autoflow-frontend:latest\\\\\\\": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed\\\"\" pod=\"autoflow/frontend-deployment-79b6ff865-4ctm2\" podUID=\"221ac89e-6d43-4c4a-aaa8-d4208962abdb\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:53:51.008643",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 22:44:32 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:32.821516443+01:00\" level=info msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\"\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:55:12.781637",
+      "level": "Info",
+      "title": "Interface State Change - LOW",
+      "message": "<30>Sep  9 22:44:32 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:32.821630887+01:00\" level=info msg=\"Container to stop \\\"48b318c52f5eb382f2f3e409b001201bf4a5ef7c6f79833e383caddeabf7c582\\\" must be in running or unknown state, current state \\\"CONTAINER_EXITED\\\"\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-09T23:56:34.183900",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<30>Sep  9 22:44:32 sarra-virtual-machine containerd[948]: time=\"2025-09-09T22:44:32.845493386+01:00\" level=error msg=\"StopPodSandbox for \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\" failed\" error=\"failed to destroy network for sandbox \\\"2bab0c7d99d26af1fba94c770ef64b597d554a05f2cc7b629dae8cd715356dce\\\": failed to get network \\\"weave\\\" cached result: decoding version from network config: unexpected end of JSON input\"",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T10:53:01.550434",
+      "level": "Info",
+      "title": "Interface State Change - LOW",
+      "message": "<134>51: *Mar  1 00:00:13.587: %DHCP-6-ADDRESS_ASSIGN: Interface FastEthernet0/0 assigned DHCP address 192.168.111.198, mask 255.255.255.0, hostname ESW1",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T10:53:38.515117",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<134>52: ",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T10:54:34.168910",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<134>53: *Mar  1 00:06:01.319: %SEC-6-IPACCESSLOGDP: list SCAN_LOG permitted icmp 192.168.111.254 -> 192.168.111.198 (8/0), 1 packet ",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T11:04:07.895193",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<134>54: *Mar  1 00:15:14.643: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T11:19:14.552251",
+      "level": "Info",
+      "title": "Interface State Change - LOW",
+      "message": "<134>55: *Mar  1 00:31:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T11:34:28.031586",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<134>56: *Mar  1 00:46:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T11:55:10.043909",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<134>57: *Mar  1 01:01:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T12:06:10.533998",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<134>58: *Mar  1 01:16:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T12:24:54.157294",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<134>59: *Mar  1 01:31:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T12:41:14.743777",
+      "level": "Info",
+      "title": "Interface State Change - LOW",
+      "message": "<134>60: *Mar  1 01:46:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T12:59:29.977195",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<134>61: *Mar  1 02:01:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
+      "recommendation": ""
+    },
+    {
+      "timestamp": "2025-09-11T13:17:01.158966",
+      "level": "Warning",
+      "title": "Interface State Change - MEDIUM",
+      "message": "<134>62: *Mar  1 02:16:01.319: %SEC-6-IPACCESSLOGP: list SCAN_LOG permitted udp 192.168.111.254(67) -> 192.168.111.198(68), 1 packet ",
       "recommendation": ""
     }
   ],
-  "last_update": "2025-08-24T00:46:33.646041"
+  "last_update": "2025-09-11T13:17:01.158989"
 }

@@ -4169,6 +4169,9 @@ const Dashboard = () => {
                   <div style={{ fontSize: 64, color: '#6366f1', marginRight: 18 }}>🧑‍💼</div>
                   <div>
                     <h2 style={{ fontSize: 40, fontWeight: 900, margin: 0, color: '#6366f1', letterSpacing: 2, textShadow: '0 2px 12px #e0e7ff' }}>AI Agents</h2>
+                    <p style={{ color: '#0ea5e9', fontSize: 22, margin: 0, marginTop: 10, maxWidth: 800, fontWeight: 600, letterSpacing: 1 }}>
+                      Full agentic automation: enter a network security or config prompt and let the agents (3-step workflow) do the real work—preprompt, AI, playbook, execution. See real logs and results below.
+                    </p>
                   </div>
                 </div>
                 {/* Prompt Input and Results */}

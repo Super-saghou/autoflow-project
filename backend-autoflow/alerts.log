@@ -376,3 +376,7 @@
 [2025-08-04T23:25:21.280Z] [WARNING] High CPU load: 2.11 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.11","value":2.11}}
 [2025-08-04T23:25:21.304Z] [WARNING] High CPU load: 2.11 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.11","value":2.11}}
 [2025-08-04T23:25:21.332Z] [WARNING] High CPU load: 2.11 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.11","value":2.11}}
+[2025-09-04T00:25:15.794Z] [WARNING] High CPU load: 2.64 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.64","value":2.64}}
+[2025-09-04T00:25:15.817Z] [WARNING] High CPU load: 2.64 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.64","value":2.64}}
+[2025-09-04T00:25:15.853Z] [WARNING] High CPU load: 2.64 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.64","value":2.64}}
+[2025-09-04T00:25:15.866Z] [WARNING] High CPU load: 2.64 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.64","value":2.64}}
