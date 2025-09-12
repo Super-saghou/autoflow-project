@@ -14,7 +14,7 @@ variables:
 # SonarQube Code Quality Analysis
 sonarqube-scan:
   stage: security-scan
-  image: sonarqube:latest
+  image: sonarsource/sonar-scanner-cli:latest
   script:
     - sonar-scanner
       -Dsonar.projectKey=autoflow-project
