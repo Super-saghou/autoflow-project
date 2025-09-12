@@ -11,6 +11,20 @@ variables:
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:NewTagUpdate"
   USE_SECURE_IMAGE: "true"
 
+# SonarQube Code Quality Analysis
+sonarqube-scan:
+  stage: security-scan
+  image: sonarqube:latest
+  script:
+    - sonar-scanner
+      -Dsonar.projectKey=autoflow-project
+      -Dsonar.sources=.
+      -Dsonar.host.url=$SONAR_HOST_URL
+      -Dsonar.login=$SONAR_TOKEN
+  only:
+    - main
+
+# Python Security Scanning
 security-scan:
   stage: security-scan
   image: python:3.10-slim
@@ -34,6 +48,7 @@ security-scan:
       - backend-autoflow/pip-audit-report.json
     expire_in: 1 week
 
+# Build Backend
 build-backend:
   stage: build
   image: docker:24.0
@@ -49,6 +64,7 @@ build-backend:
   only:
     - main
 
+# Build Frontend
 build-frontend:
   stage: build
   image: docker:24.0
@@ -64,6 +80,7 @@ build-frontend:
   only:
     - main
 
+# Container Security Scanning with Trivy
 image-scan:
   stage: image-scan
   image: docker:24.0
@@ -86,6 +103,7 @@ image-scan:
   only:
     - main
 
+# Deploy to Kubernetes
 deploy:
   stage: deploy
   image: alpine/k8s:1.28.2
