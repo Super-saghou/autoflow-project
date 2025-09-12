@@ -27,8 +27,6 @@ security-scan:
     - pip-audit --format json --output pip-audit-report.json || echo "Pip audit completed"
     - echo "Security scans completed. Reports saved."
   artifacts:
-    reports:
-      security: bandit-report.json
     paths:
       - backend-autoflow/*-report.json
     expire_in: 1 week
@@ -99,10 +97,6 @@ image-scan:
     - trivy image --format json --output frontend-vulnerabilities.json "$FRONTEND_IMAGE" || echo "Frontend scan completed"
     - echo "Container vulnerability scans completed."
   artifacts:
-    reports:
-      security:
-        - backend-vulnerabilities.json
-        - frontend-vulnerabilities.json
     paths:
       - backend-vulnerabilities.json
       - frontend-vulnerabilities.json
