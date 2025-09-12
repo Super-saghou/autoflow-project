@@ -6,9 +6,9 @@ stages:
 
 variables:
   DOCKER_USERNAME: "sarra539"
-  BACKEND_IMAGE: "sarra539/autoflow-repo:Version1"
-  FRONTEND_IMAGE: "sarra539/autoflow-front:version1"
-  SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
+  BACKEND_IMAGE: "sarra539/autoflow-repo:NewTagUpdate"
+  FRONTEND_IMAGE: "sarra539/autoflow-front:NewTagUpdateFront"
+  SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:NewTagUpdate"
   USE_SECURE_IMAGE: "true"
 
 security-scan:
@@ -88,9 +88,10 @@ image-scan:
 
 deploy:
   stage: deploy
-  image: bitnami/kubectl:latest
+  image: alpine/k8s:1.28.2
   script:
     - echo "Deploying to Kubernetes..."
     - kubectl apply -f k8s/
+    - echo "Deployment completed successfully"
   only:
     - main
