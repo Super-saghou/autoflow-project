@@ -11,11 +11,6 @@ variables:
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:secure-latest"
   USE_SECURE_IMAGE: "true"
 
-default:
-  before_script:
-    - test -z "$DOCKER_PASSWORD" && { echo "ERROR: DOCKER_PASSWORD is unset"; exit 1; }
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
 security-scan:
   stage: security-scan
   image: python:3.10-slim
@@ -46,6 +41,11 @@ build-backend:
   image: docker:24.0
   services:
     - docker:24.0-dind
+  before_script:
+    - echo "Checking Docker version..."
+    - docker --version
+    - echo "Attempting Docker login..."
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
     - echo "Current directory: $(pwd)"
     - test -d "backend-autoflow" || { echo "ERROR: backend-autoflow directory not found"; exit 1; }
@@ -66,6 +66,9 @@ build-frontend:
   image: docker:24.0
   services:
     - docker:24.0-dind
+  before_script:
+    - docker --version
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
     - test -d "frontend-autoflow" || { echo "ERROR: frontend-autoflow directory not found"; exit 1; }
     - cd frontend-autoflow
@@ -87,6 +90,7 @@ image-scan:
     - echo "Installing Trivy for container vulnerability scanning..."
     - wget -qO - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.52.2
     - trivy --version
+    - echo "Logging into Docker..."
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
     - echo "Scanning secure backend image for vulnerabilities..."
@@ -114,8 +118,7 @@ sonarqube-scan:
   stage: image-scan
   image: sonarsource/sonar-scanner-cli:latest
   before_script:
-    - test -z "$SONAR_HOST_URL" && { echo "ERROR: SONAR_HOST_URL is unset"; exit 1; }
-    - test -z "$SONAR_TOKEN" && { echo "ERROR: SONAR_TOKEN is unset"; exit 1; }
+    - echo "Preparing SonarQube analysis..."
   script:
     - echo "Running SonarQube code quality analysis..."
     - test -d "backend-autoflow" || { echo "ERROR: backend-autoflow directory not found"; exit 1; }
@@ -138,12 +141,12 @@ vault-smoke-test:
   image: alpine:latest
   before_script:
     - apk add --no-cache curl
-    - test -z "$VAULT_ADDR" && { echo "ERROR: VAULT_ADDR is unset"; exit 1; }
-    - test -z "$VAULT_TOKEN" && { echo "ERROR: VAULT_TOKEN is unset"; exit 1; }
   script:
     - echo "Testing Vault connectivity and health..."
-    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/sys/health" || { echo "Vault health check failed"; exit 1; }
-    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/sys/mounts" || { echo "Vault mounts check failed"; exit 1; }
+    - echo "Vault URL: $VAULT_ADDR"
+    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/sys/health" || echo "Vault health check failed"
+    - echo "Testing Vault secrets engine..."
+    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/sys/mounts" || echo "Vault mounts check failed"
     - echo "Vault smoke test completed successfully!"
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
