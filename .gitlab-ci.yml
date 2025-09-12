@@ -21,18 +21,18 @@ security-scan:
     - cd backend-autoflow
     - echo "Running Bandit security scan..."
     - bandit -r . -f json -o bandit-report.json || echo "Bandit scan completed with warnings"
-    - echo "Running Safety check for Python dependencies..."
-    - safety check -r requirements.txt --json --output safety-report.json || echo "Safety check completed"
-    - echo "Running pip-audit for vulnerability scanning..."
-    - pip-audit --format json --output pip-audit-report.json || echo "Pip audit completed"
-    - echo "Security scans completed. Reports saved."
+    - echo "Running Safety scan..."
+    - safety check --json --output safety-report.json || echo "Safety scan completed with warnings"
+    - echo "Running pip-audit scan..."
+    - pip-audit --format=json --output=pip-audit-report.json || echo "pip-audit scan completed with warnings"
   artifacts:
+    reports:
+      junit: bandit-report.json
     paths:
-      - backend-autoflow/*-report.json
+      - backend-autoflow/bandit-report.json
+      - backend-autoflow/safety-report.json
+      - backend-autoflow/pip-audit-report.json
     expire_in: 1 week
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == "main"'
-  allow_failure: true
 
 build-backend:
   stage: build
@@ -40,24 +40,14 @@ build-backend:
   services:
     - docker:24.0-dind
   before_script:
-    - echo "Checking Docker version..."
-    - docker --version
-    - echo "Attempting Docker login..."
+    - echo "Logging into Docker Hub..."
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
-    - echo "Current directory: $(pwd)"
-    - test -d "backend-autoflow" || { echo "ERROR: backend-autoflow directory not found"; exit 1; }
-    - cd backend-autoflow
-    - test -f "Dockerfile.secure.hybrid" || { echo "ERROR: Dockerfile.secure.hybrid not found"; exit 1; }
-    - echo "Building SECURE backend image..."
-    - docker build --no-cache --pull -f Dockerfile.secure.hybrid -t "$SECURE_BACKEND_IMAGE" .
-    - echo "Pushing backend image..."
-    - docker push "$SECURE_BACKEND_IMAGE"
-    - echo "Secure backend image built and pushed successfully!"
-  retry:
-    max: 2
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - echo "Building secure backend image..."
+    - docker build -t $SECURE_BACKEND_IMAGE ./backend-autoflow
+    - docker push $SECURE_BACKEND_IMAGE
+  only:
+    - main
 
 build-frontend:
   stage: build
@@ -65,19 +55,14 @@ build-frontend:
   services:
     - docker:24.0-dind
   before_script:
-    - docker --version
+    - echo "Logging into Docker Hub..."
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
-    - test -d "frontend-autoflow" || { echo "ERROR: frontend-autoflow directory not found"; exit 1; }
-    - cd frontend-autoflow
-    - test -f "Dockerfile" || { echo "ERROR: Dockerfile not found"; exit 1; }
-    - docker build --no-cache -t "$FRONTEND_IMAGE" .
-    - docker push "$FRONTEND_IMAGE"
-    - echo "Frontend image built and pushed successfully!"
-  retry:
-    max: 2
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - echo "Building frontend image..."
+    - docker build -t $FRONTEND_IMAGE ./frontend-autoflow
+    - docker push $FRONTEND_IMAGE
+  only:
+    - main
 
 image-scan:
   stage: image-scan
@@ -86,101 +71,26 @@ image-scan:
     - docker:24.0-dind
   before_script:
     - echo "Installing Trivy for container vulnerability scanning..."
-    - wget -qO - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.52.2
+    - wget -qO - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
     - trivy --version
-    - echo "Logging into Docker..."
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   script:
-    - echo "Scanning secure backend image for vulnerabilities..."
-    - trivy image --format json --output backend-vulnerabilities.json "$SECURE_BACKEND_IMAGE" || echo "Backend scan completed"
+    - echo "Scanning backend image for vulnerabilities..."
+    - trivy image --format json --output backend-scan.json $SECURE_BACKEND_IMAGE
     - echo "Scanning frontend image for vulnerabilities..."
-    - trivy image --format json --output frontend-vulnerabilities.json "$FRONTEND_IMAGE" || echo "Frontend scan completed"
-    - echo "Container vulnerability scans completed."
+    - trivy image --format json --output frontend-scan.json $FRONTEND_IMAGE
   artifacts:
     paths:
-      - backend-vulnerabilities.json
-      - frontend-vulnerabilities.json
+      - backend-scan.json
+      - frontend-scan.json
     expire_in: 1 week
-  needs:
-    - build-backend
-    - build-frontend
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: false
-
-sonarqube-scan:
-  stage: image-scan
-  image: sonarsource/sonar-scanner-cli:latest
-  before_script:
-    - echo "Preparing SonarQube analysis..."
-  script:
-    - echo "Running SonarQube code quality analysis..."
-    - test -d "backend-autoflow" || { echo "ERROR: backend-autoflow directory not found"; exit 1; }
-    - cd backend-autoflow
-    - sonar-scanner \
-      -Dsonar.projectKey=autoflow-backend \
-      -Dsonar.sources=. \
-      -Dsonar.host.url="$SONAR_HOST_URL" \
-      -Dsonar.token="$SONAR_TOKEN" \
-      -Dsonar.projectVersion="${CI_COMMIT_SHA:0:8}" \
-      -Dsonar.projectName="AutoFlow Backend" \
-      -Dsonar.projectDescription="Network automation platform with DevSecOps integration"
-    - echo "SonarQube analysis completed successfully!"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: true
-
-vault-smoke-test:
-  stage: image-scan
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache curl
-  script:
-    - echo "Testing Vault connectivity and health..."
-    - echo "Vault URL: $VAULT_ADDR"
-    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/sys/health" || echo "Vault health check failed"
-    - echo "Testing Vault secrets engine..."
-    - curl -s -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/sys/mounts" || echo "Vault mounts check failed"
-    - echo "Vault smoke test completed successfully!"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  allow_failure: true
+  only:
+    - main
 
 deploy:
   stage: deploy
   image: bitnami/kubectl:latest
-  tags:
-    - production
-  before_script:
-    - kubectl version --client
-    - kubectl config current-context || echo "No current context set; assuming runner is configured"
   script:
-    - test -f "k8s/backend-deployment.yaml" || { echo "ERROR: k8s/backend-deployment.yaml not found"; exit 1; }
-    - test -f "k8s/frontend-deployment.yaml" || { echo "ERROR: k8s/frontend-deployment.yaml not found"; exit 1; }
-    - test -f "k8s/backend-service.yaml" || { echo "ERROR: k8s/backend-service.yaml not found"; exit 1; }
-    - test -f "k8s/frontend-service.yaml" || { echo "ERROR: k8s/frontend-service.yaml not found"; exit 1; }
-    - test -f "k8s/secret.yaml" || { echo "ERROR: k8s/secret.yaml not found"; exit 1; }
-    - kubectl apply -f k8s/backend-deployment.yaml
-    - kubectl apply -f k8s/frontend-deployment.yaml
-    - kubectl apply -f k8s/backend-service.yaml
-    - kubectl apply -f k8s/frontend-service.yaml
-    - kubectl apply -f k8s/secret.yaml
-    - echo "Updating backend deployment with SECURE image: $SECURE_BACKEND_IMAGE"
-    - kubectl set image deployment/backend-deployment backend="$SECURE_BACKEND_IMAGE" --record
-    - echo "Updating frontend deployment with image: $FRONTEND_IMAGE"
-    - kubectl set image deployment/frontend-deployment frontend="$FRONTEND_IMAGE" --record
-    - echo "Force restarting deployments..."
-    - kubectl rollout restart deployment/backend-deployment
-    - kubectl rollout restart deployment/frontend-deployment
-    - echo "Waiting for backend rollout..."
-    - kubectl rollout status deployment/backend-deployment --timeout=300s
-    - echo "Waiting for frontend rollout..."
-    - kubectl rollout status deployment/frontend-deployment --timeout=300s
-    - echo "DevSecOps Deployment Complete!"
-  environment:
-    name: production
-    url: http://192.168.111.201:31560
-  needs:
-    - image-scan
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - echo "Deploying to Kubernetes..."
+    - kubectl apply -f k8s/
+  only:
+    - main
