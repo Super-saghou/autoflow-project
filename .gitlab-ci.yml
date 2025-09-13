@@ -11,15 +11,22 @@ variables:
   SECURE_BACKEND_IMAGE: "sarra539/autoflow-repo:NewTagUpdate"
   USE_SECURE_IMAGE: "true"
 
-# SonarQube Code Quality Analysis
+# SonarQube Code Quality Analysis with SSH Tunnel
 sonarqube-scan:
   stage: security-scan
-  image: sonarsource/sonar-scanner-cli:latest
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client sonar-scanner
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - ssh-keyscan -H 196.178.195.157 >> ~/.ssh/known_hosts
+    - ssh -f -N -L 9000:localhost:31334 root@196.178.195.157
   script:
     - sonar-scanner
       -Dsonar.projectKey=autoflow-project
       -Dsonar.sources=.
-      -Dsonar.host.url=$SONAR_HOST_URL
+      -Dsonar.host.url=http://localhost:9000
       -Dsonar.login=$SONAR_TOKEN
   only:
     - main
