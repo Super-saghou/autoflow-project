@@ -49,6 +49,7 @@ sonarcloud-check:
   script:
     - sonar-scanner
       -Dsonar.projectKey=autoflow-project
+      -Dsonar.organization=sarra-gharbia
       -Dsonar.sources=.
       -Dsonar.host.url=${SONAR_HOST_URL}
       -Dsonar.login=$SONAR_TOKEN
