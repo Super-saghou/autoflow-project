@@ -51,6 +51,7 @@ sonarcloud-check:
       -Dsonar.projectKey=sarra.bngharbia_autoflow-project 
       -Dsonar.organization=sarra-bngharbia
       -Dsonar.sources=.
+      -Dsonar.exclusions=**/venv/**,**/node_modules/**,**/backend-autoflow-backup/**,**/ansible_collections/**
       -Dsonar.host.url=${SONAR_HOST_URL}
       -Dsonar.login=$SONAR_TOKEN
       -Dsonar.c.file.suffixes=-
