@@ -1372,8 +1372,29 @@ app.post('/api/configure-dhcp', async (req, res) => {
     console.error('DHCP configuration error:', err);
     res.status(500).json({ error: 'Server error', details: err.message });
   }
+
 });
 
+// Add the missing create-dhcp route
+app.post('/api/create-dhcp', async (req, res) => {
+  try {
+    const response = await fetch(`${FLASK_API_URL}/api/create-dhcp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(req.body)
+    });
+
+    const result = await response.json();
+    res.status(response.status).json(result);
+  } catch (err) {
+    console.error('DHCP creation error:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// New API endpoint for STP configuration
 // New API endpoint for STP configuration
 app.post('/api/configure-stp', async (req, res) => {
   const { switchIp, enabled, mode, portConfigs } = req.body;

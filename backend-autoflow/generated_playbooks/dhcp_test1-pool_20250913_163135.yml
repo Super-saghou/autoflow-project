@@ -1,0 +1,25 @@
+- name: Configure DHCP Pool test1-pool
+  hosts: all
+  gather_facts: false
+  vars:
+    ansible_network_os: ios
+    ansible_connection: network_cli
+    enabled: true
+  tasks:
+  - name: Configure DHCP pool test1-pool
+    ios_config:
+      lines:
+      - ip dhcp pool test1-pool
+      - network 192.168.200.0 255.255.255.0
+      - default-router 192.168.200.1
+      - dns-server 8.8.8.8
+      - lease 24
+      - exit
+  - name: Configure DHCP excluded addresses 192.168.200.11 to 192.168.200.254
+    ios_config:
+      lines:
+      - ip dhcp excluded-address 192.168.200.11 192.168.200.254
+  - name: Enable DHCP service
+    ios_config:
+      lines:
+      - service dhcp

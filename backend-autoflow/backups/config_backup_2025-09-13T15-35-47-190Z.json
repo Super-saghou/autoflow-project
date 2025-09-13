@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-09-13T15:35:47.190Z",
+  "version": "1.0",
+  "type": "configuration",
+  "files": {
+    "package.json": "{\n  \"name\": \"backend-autoflow\",\n  \"version\": \"1.0.0\",\n  \"main\": \"server.js\",\n  \"scripts\": {\n    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n    \"start\": \"node server.js\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"autoflow-project \"\n  },\n  \"author\": \"\",\n  \"license\": \"ISC\",\n  \"keywords\": [],\n  \"type\": \"module\",\n  \"dependencies\": {\n    \"@langchain/core\": \"^0.3.56\",\n    \"@langchain/openai\": \"^0.5.10\",\n    \"@xterm/addon-fit\": \"^0.10.0\",\n    \"bcryptjs\": \"^2.4.3\",\n    \"cookie-parser\": \"^1.4.7\",\n    \"cors\": \"^2.8.5\",\n    \"csurf\": \"^1.11.0\",\n    \"dotenv\": \"^16.5.0\",\n    \"express\": \"^5.1.0\",\n    \"express-rate-limit\": \"^8.0.1\",\n    \"express-validator\": \"^7.2.1\",\n    \"helmet\": \"^8.1.0\",\n    \"jsonwebtoken\": \"^9.0.2\",\n    \"mongoose\": \"^8.13.2\",\n    \"node-ssh\": \"^13.2.1\",\n    \"recharts\": \"^3.2.0\",\n    \"socket.io\": \"^4.8.1\",\n    \"xterm-addon-fit\": \"^0.8.0\"\n  },\n  \"description\": \"\"\n}\n",
+    "requirements.txt": "Flask==2.3.3\nFlask-CORS==4.0.0\nPyYAML>=6.0.2\nansible==8.5.0\nparamiko==3.3.1\nrequests==2.31.0 \nlangchain==0.0.350\nlangchain-community==0.0.10\nlangchain-openai==0.0.2\nopenai>=1.6.1,<2.0.0\npython-dotenv==1.0.0 ",
+    "inventory.ini": "[targets]\nswitch1 ansible_host=192.168.111.198 ansible_network_os=ios ansible_connection=network_cli ansible_user=sarra ansible_password=sarra ansible_become=yes ansible_become_method=enable ansible_become_password=sarra ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'\n\n[all:vars]\nansible_python_interpreter=/usr/bin/python3\n",
+    "playbook.yml": "---\n- name: VLAN Creation\n  hosts: all\n  gather_facts: false\n  tasks:\n    - name: Create VLAN using ios_config\n      ios_config:\n        lines:\n          - vlan 70\n          - name vlan70NEW\n        parents: configure terminal\n      register: vlan_result\n      \n    - name: Show VLAN result\n      debug:\n        var: vlan_result\n",
+    "temp_inventory.yml": "\n    all:\n      hosts:\n        switch1:\n          ansible_host: 192.168.111.198\n          ansible_port: 22\n          ansible_user: sarra\n          ansible_connection: ansible.netcommon.network_cli\n          ansible_network_os: cisco.ios.ios\n    "
+  },
+  "environment": {}
+}

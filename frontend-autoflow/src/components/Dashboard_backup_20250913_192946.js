@@ -1089,7 +1089,6 @@ const Dashboard = () => {
   };
 
   return (
-    <>
     <div
       className={`dashboard-container ${theme}`}
       style={{
@@ -3195,6 +3194,48 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Advanced Settings */}
+                  <div style={{ background: '#fff', borderRadius: 20, padding: '28px', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.06)' }}>
+                    <h3 style={{ color: '#6b7280', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      🔧 Advanced Settings
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Log Level</label>
+                        <select style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}>
+                          <option value="error">Error Only</option>
+                          <option value="warn">Warning</option>
+                          <option value="info">Info</option>
+                          <option value="debug">Debug</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>API Rate Limit (req/min)</label>
+                        <input 
+                          type="number" 
+                          defaultValue="100" 
+                          min="10" 
+                          max="1000"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#374151' }}>Database Connection Pool</label>
+                        <input 
+                          type="number" 
+                          defaultValue="10" 
+                          min="1" 
+                          max="50"
+                          style={{ width: '100%', padding: '10px', border: '2px solid #e5e7eb', borderRadius: 8, fontSize: 14 }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <input type="checkbox" id="enableDebug" />
+                        <label htmlFor="enableDebug" style={{ fontWeight: 600, color: '#374151' }}>Enable Debug Mode</label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Action Buttons */}
@@ -4345,7 +4386,6 @@ const Dashboard = () => {
         onClose={() => setAiPromptModalOpen(false)}
       />
     </div>
-    </>
   );
 };
 

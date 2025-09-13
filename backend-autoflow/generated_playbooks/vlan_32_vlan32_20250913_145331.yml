@@ -1,0 +1,16 @@
+- name: Create VLAN 32 - vlan32
+  hosts: all
+  gather_facts: false
+  vars:
+    ansible_network_os: ios
+    ansible_connection: network_cli
+    vlan_id: 32
+    vlan_name: vlan32
+    interfaces: []
+  tasks:
+  - name: Ensure VLAN 32 exists (old-style NM-16ESW)
+    ios_command:
+      commands:
+      - vlan database
+      - vlan 32 name vlan32
+      - exit

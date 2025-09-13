@@ -801,6 +801,16 @@ const Topology = () => {
           8/12 devices
         </span>
       </div>
+       {/* Terminal Modal */}
+      {terminalOpen && (
+        <TerminalModal 
+          device={selectedDevice} 
+          onClose={() => {
+            setTerminalOpen(false);
+            setSelectedDevice(null);
+          }} 
+        />
+      )}
     </div>
   );
 };
