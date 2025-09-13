@@ -36,6 +36,7 @@
     "react-scripts": "^5.0.1",
     "react-toastify": "^11.0.5",
     "react-tooltip": "^5.28.1",
+    "recharts": "^3.2.0",
     "resolve-url-loader": "^5.0.0",
     "rimraf": "^5.0.10",
     "socket.io": "^4.8.1",

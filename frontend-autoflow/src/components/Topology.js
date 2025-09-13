@@ -361,7 +361,7 @@ const Topology = () => {
         <div style={{ fontSize: 48, color: '#3b82f6' }}>🌐</div>
         <div>
           <h2 style={{ margin: 0, color: '#1e3a8a', fontSize: 28, fontWeight: 800 }}>Network Topology</h2>
-          <p style={{ margin: '8px 0 0 0', color: '#64748b', fontSize: 16 }}>Click on devices to open SSH terminal</p>
+          
         </div>
       </div>
       
@@ -427,12 +427,381 @@ const Topology = () => {
         </span>
       </div>
       
-      {/* Terminal Modal */}
-      {terminalOpen && (
-        <TerminalModal device={selectedDevice} onClose={() => setTerminalOpen(false)} />
-      )}
+      
+      {/* Organized Network Topology Layout with Proper Spacing */}
+      
+      {/* Top Row - Core Infrastructure */}
+      {/* Router - Top Right */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 500,
+          top: 100,
+          width: 70,
+          height: 70,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: 'rgba(255,255,255,0.9)',
+          borderRadius: 14,
+          padding: '10px',
+          boxShadow: '0 4px 12px rgba(59,130,246,0.15)',
+          border: '2px solid #06b6d4'
+        }}
+        title="Core Router"
+      >
+        <div style={{ 
+          width: 36, 
+          height: 36, 
+          background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+          borderRadius: 8,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: 18,
+          fontWeight: 'bold'
+        }}>
+          📡
+        </div>
+        <span style={{ 
+          fontWeight: 700, 
+          color: '#0891b2', 
+          fontSize: 11, 
+          marginTop: 6,
+          textAlign: 'center'
+        }}>
+          RTR1
+        </span>
+      </div>
+
+      {/* Left Column - Access Switches with proper spacing */}
+      {/* SW5 - Top Left */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 50,
+          top: 100,
+          width: 65,
+          height: 65,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: 'rgba(255,255,255,0.8)',
+          borderRadius: 12,
+          padding: '8px',
+          boxShadow: '0 3px 10px rgba(59,130,246,0.12)',
+          opacity: 0.9
+        }}
+        title="Access Switch"
+      >
+        <div style={{ 
+          width: 32, 
+          height: 32, 
+          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+          borderRadius: 6,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: 16,
+          fontWeight: 'bold'
+        }}>
+          🔌
+        </div>
+        <span style={{ 
+          fontWeight: 600, 
+          color: '#dc2626', 
+          fontSize: 10, 
+          marginTop: 4,
+          textAlign: 'center'
+        }}>
+          SW5
+        </span>
+      </div>
+
+      {/* SW3 - Middle Left */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 50,
+          top: 200,
+          width: 65,
+          height: 65,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: 'rgba(255,255,255,0.8)',
+          borderRadius: 12,
+          padding: '8px',
+          boxShadow: '0 3px 10px rgba(59,130,246,0.12)',
+          opacity: 0.9
+        }}
+        title="Access Switch"
+      >
+        <div style={{ 
+          width: 32, 
+          height: 32, 
+          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+          borderRadius: 6,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: 16,
+          fontWeight: 'bold'
+        }}>
+          🔌
+        </div>
+        <span style={{ 
+          fontWeight: 600, 
+          color: '#d97706', 
+          fontSize: 10, 
+          marginTop: 4,
+          textAlign: 'center'
+        }}>
+          SW3
+        </span>
+      </div>
+
+      {/* Right Column - Access Switches with proper spacing */}
+      {/* SW2 - Top Right */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 650,
+          top: 100,
+          width: 65,
+          height: 65,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: 'rgba(255,255,255,0.8)',
+          borderRadius: 12,
+          padding: '8px',
+          boxShadow: '0 3px 10px rgba(59,130,246,0.12)',
+          opacity: 0.9
+        }}
+        title="Access Switch"
+      >
+        <div style={{ 
+          width: 32, 
+          height: 32, 
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          borderRadius: 6,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: 16,
+          fontWeight: 'bold'
+        }}>
+          🔌
+        </div>
+        <span style={{ 
+          fontWeight: 600, 
+          color: '#059669', 
+          fontSize: 10, 
+          marginTop: 4,
+          textAlign: 'center'
+        }}>
+          SW2
+        </span>
+      </div>
+
+      {/* SW4 - Middle Right */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 650,
+          top: 200,
+          width: 65,
+          height: 65,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: 'rgba(255,255,255,0.8)',
+          borderRadius: 12,
+          padding: '8px',
+          boxShadow: '0 3px 10px rgba(59,130,246,0.12)',
+          opacity: 0.9
+        }}
+        title="Access Switch"
+      >
+        <div style={{ 
+          width: 32, 
+          height: 32, 
+          background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+          borderRadius: 6,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: 16,
+          fontWeight: 'bold'
+        }}>
+          🔌
+        </div>
+        <span style={{ 
+          fontWeight: 600, 
+          color: '#7c3aed', 
+          fontSize: 10, 
+          marginTop: 4,
+          textAlign: 'center'
+        }}>
+          SW4
+        </span>
+      </div>
+
+      {/* Bottom Row - Data Centers and Server with proper spacing */}
+      {/* Sfax Data Center - Bottom Left */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 50,
+          top: 350,
+          width: 90,
+          height: 90,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: 'rgba(255,255,255,0.9)',
+          borderRadius: 16,
+          padding: '12px',
+          boxShadow: '0 4px 16px rgba(59,130,246,0.2)',
+          border: '3px solid #1e40af'
+        }}
+        title="Sfax Data Center"
+      >
+        <div style={{ 
+          width: 44, 
+          height: 44, 
+          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+          borderRadius: 10,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: 22,
+          fontWeight: 'bold'
+        }}>
+          🏢
+        </div>
+        <span style={{ 
+          fontWeight: 700, 
+          color: '#1e40af', 
+          fontSize: 12, 
+          marginTop: 8,
+          textAlign: 'center'
+        }}>
+          Sfax DC
+        </span>
+        <span style={{ 
+          color: '#64748b', 
+          fontSize: 10, 
+          marginTop: 2,
+          textAlign: 'center'
+        }}>
+          12/15 devices
+        </span>
+      </div>
+
+      {/* Server - Bottom Center */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 350,
+          top: 380,
+          width: 70,
+          height: 70,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: 'rgba(255,255,255,0.9)',
+          borderRadius: 14,
+          padding: '10px',
+          boxShadow: '0 4px 12px rgba(59,130,246,0.15)',
+          border: '2px solid #84cc16'
+        }}
+        title="Network Server"
+      >
+        <div style={{ 
+          width: 36, 
+          height: 36, 
+          background: 'linear-gradient(135deg, #84cc16 0%, #65a30d 100%)',
+          borderRadius: 8,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: 18,
+          fontWeight: 'bold'
+        }}>
+          🖥️
+        </div>
+        <span style={{ 
+          fontWeight: 700, 
+          color: '#65a30d', 
+          fontSize: 11, 
+          marginTop: 6,
+          textAlign: 'center'
+        }}>
+          SRV1
+        </span>
+      </div>
+
+      {/* Rades Data Center - Bottom Right */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 650,
+          top: 350,
+          width: 90,
+          height: 90,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: 'rgba(255,255,255,0.9)',
+          borderRadius: 16,
+          padding: '12px',
+          boxShadow: '0 4px 16px rgba(59,130,246,0.2)',
+          border: '3px solid #10b981'
+        }}
+        title="Rades Data Center"
+      >
+        <div style={{ 
+          width: 44, 
+          height: 44, 
+          background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+          borderRadius: 10,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: 22,
+          fontWeight: 'bold'
+        }}>
+          🏢
+        </div>
+        <span style={{ 
+          fontWeight: 700, 
+          color: '#059669', 
+          fontSize: 12, 
+          marginTop: 8,
+          textAlign: 'center'
+        }}>
+          Rades DC
+        </span>
+        <span style={{ 
+          color: '#64748b', 
+          fontSize: 10, 
+          marginTop: 2,
+          textAlign: 'center'
+        }}>
+          8/12 devices
+        </span>
+      </div>
     </div>
   );
 };
-
 export default Topology;

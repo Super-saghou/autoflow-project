@@ -18,6 +18,7 @@ import SecurityAgentDashboard from './SecurityAgentDashboard';
 import AIPromptModal from './AIPromptModal';
 import AgentPromptSection from './AgentPromptSection';
 import SecurityMonitorAgent from './SecurityMonitorAgent';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import AclsSection from './AclsSection';
 import RoleBadge from './RoleBadge';
 import AccessDenied from './AccessDenied';
@@ -1342,7 +1343,7 @@ const Dashboard = () => {
             </li>
           </ul>
         </div>
-        <div className="main-content" style={{ flex: 1, padding: '40px', background: 'rgba(245,245,247,0.05)', color: '#1A2A44' }}>
+        <div className="main-content" style={{ flex: 1, padding: '40px', background: 'rgba(245,245,247,0.05)', color: '#1A2A44', marginLeft: '280px' }}>
           <button
             onClick={toggleAccount}
             className="account-button"
@@ -1433,35 +1434,116 @@ const Dashboard = () => {
                   <div>
                     <h2 className="home-header-accent" style={{ background: 'linear-gradient(135deg, #4052D6 0%, #667eea 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Welcome, {userProfile.username}!</h2>
                                                               <p style={{ color: '#464196', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
-                      Your centralized hub for network management and automation. Monitor your network, configure devices, and manage your infrastructure from one place.
+                      Steg's unified platform for network management, automation, and security.
                     </p>
                   </div>
                 </div>
                 {/* First Row - 3 widgets distributed evenly */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32, marginBottom: 32 }}>
-                  {/* Quick Stats */}
+                  {/* Quick Stats with Progress Bars + Icons */}
                   <div className="home-widget" style={{ 
                     border: '3px solid #ffffff', 
                     boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
                   }}>
-                    <h3>Quick Stats</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className="stat-label">Connected Devices</span>
-                        <span className="stat-value">{devices.filter(d => d.status === 'online' || d.status === '🟢 Online').length}/{devices.length}</span>
+                    <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 20px 0' }}>Steg Network Status</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                      
+                      {/* Sfax Data Center */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <div style={{ fontSize: 20, color: '#3b82f6' }}>🏢</div>
+                          <span style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>Sfax Data Center</span>
+                          <span style={{ color: '#10b981', fontWeight: 700, fontSize: 14, marginLeft: 'auto' }}>12/15</span>
+                        </div>
+                        <div style={{ 
+                          width: '100%', 
+                          height: '8px', 
+                          backgroundColor: '#e5e7eb', 
+                          borderRadius: '4px', 
+                          overflow: 'hidden' 
+                        }}>
+                          <div style={{ 
+                            width: '80%', 
+                            height: '100%', 
+                            backgroundColor: '#10b981', 
+                            borderRadius: '4px',
+                            transition: 'width 0.8s ease-in-out', animation: 'pulse 2s infinite'
+                          }}></div>
+                        </div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className="stat-label">SSH Sessions</span>
-                        <span className="stat-value">{activeSSHSessions || 0}</span>
+
+                      {/* Rades Data Center */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <div style={{ fontSize: 20, color: '#3b82f6' }}>🏢</div>
+                          <span style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>Rades Data Center</span>
+                          <span style={{ color: '#10b981', fontWeight: 700, fontSize: 14, marginLeft: 'auto' }}>8/12</span>
+                        </div>
+                        <div style={{ 
+                          width: '100%', 
+                          height: '8px', 
+                          backgroundColor: '#e5e7eb', 
+                          borderRadius: '4px', 
+                          overflow: 'hidden' 
+                        }}>
+                          <div style={{ 
+                            width: '67%', 
+                            height: '100%', 
+                            backgroundColor: '#fbbf24', 
+                            borderRadius: '4px',
+                            transition: 'width 0.8s ease-in-out', animation: 'pulse 2s infinite'
+                          }}></div>
+                        </div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className="stat-label">Active VLANs</span>
-                        <span className="stat-value">{vlans.filter(v => v.status === 'active' || v.status === 'Active').length || 5}</span>
+
+                      {/* Internet Bandwidth */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <div style={{ fontSize: 20, color: '#3b82f6' }}>🌐</div>
+                          <span style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>Internet Bandwidth</span>
+                          <span style={{ color: '#3b82f6', fontWeight: 700, fontSize: 14, marginLeft: 'auto' }}>2.5/5 Gbps</span>
+                        </div>
+                        <div style={{ 
+                          width: '100%', 
+                          height: '8px', 
+                          backgroundColor: '#e5e7eb', 
+                          borderRadius: '4px', 
+                          overflow: 'hidden' 
+                        }}>
+                          <div style={{ 
+                            width: '50%', 
+                            height: '100%', 
+                            backgroundColor: '#3b82f6', 
+                            borderRadius: '4px',
+                            transition: 'width 0.8s ease-in-out', animation: 'pulse 2s infinite'
+                          }}></div>
+                        </div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className="stat-label">API Status</span>
-                        <span className="stat-value" style={{ color: '#10b981' }}>🟢 Online</span>
+
+                      {/* Network Health */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <div style={{ fontSize: 20, color: '#3b82f6' }}>💚</div>
+                          <span style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>Network Health</span>
+                          <span style={{ color: '#10b981', fontWeight: 700, fontSize: 14, marginLeft: 'auto' }}>Excellent</span>
+                        </div>
+                        <div style={{ 
+                          width: '100%', 
+                          height: '8px', 
+                          backgroundColor: '#e5e7eb', 
+                          borderRadius: '4px', 
+                          overflow: 'hidden' 
+                        }}>
+                          <div style={{ 
+                            width: '95%', 
+                            height: '100%', 
+                            backgroundColor: '#10b981', 
+                            borderRadius: '4px',
+                            transition: 'width 0.8s ease-in-out', animation: 'pulse 2s infinite'
+                          }}></div>
+                        </div>
                       </div>
+
                     </div>
                   </div>
                   
@@ -1546,7 +1628,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  {/* System Status */}
+                  {/* System Status with Circular Gauges */}
                   <div style={{ 
                     background: '#ffffff', 
                     borderRadius: 20, 
@@ -1554,39 +1636,184 @@ const Dashboard = () => {
                     border: '3px solid #ffffff',
                     boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
                   }}>
-                    <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>System Status</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>CPU Usage</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 60, height: 8, background: '#e5e7eb', borderRadius: 4, overflow: 'hidden' }}>
-                            <div style={{ width: '25%', height: '100%', background: '#10b981' }}></div>
-                          </div>
-                          <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 14 }}>25%</span>
+                    <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 24px 0' }}>System Status</h3>
+                    
+                    {/* Gauges Grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                      
+                      {/* CPU Usage Gauge */}
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ position: 'relative', width: '120px', height: '60px', margin: '0 auto 12px auto' }}>
+                          {/* Gauge Background */}
+                          <svg width="120" height="60" style={{ position: 'absolute', top: 0, left: 0 }}>
+                            <defs>
+                              <linearGradient id="cpuGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#10b981" />
+                                <stop offset="100%" stopColor="#fbbf24" />
+                              </linearGradient>
+                            </defs>
+                            <path
+                              d="M 20 50 A 40 40 0 0 1 100 50"
+                              stroke="#e5e7eb"
+                              strokeWidth="8"
+                              fill="none"
+                            />
+                            <path
+                              d="M 20 50 A 40 40 0 0 1 100 50"
+                              stroke="url(#cpuGradient)"
+                              strokeWidth="8"
+                              fill="none"
+                              strokeDasharray="251.2"
+                              strokeDashoffset="188.4"
+                              style={{ transition: 'stroke-dashoffset 1.2s ease-in-out', animation: 'gaugePulse 3s infinite' }}
+                            />
+                          </svg>
+                          {/* Needle */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: '2px',
+                            height: '30px',
+                            background: '#1e40af',
+                            transformOrigin: 'bottom center',
+                            transform: 'translate(-50%, -100%) rotate(45deg)',
+                            borderRadius: '1px'
+                          }}></div>
+                          {/* Center dot */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: '8px',
+                            height: '8px',
+                            background: '#1e40af',
+                            borderRadius: '50%',
+                            transform: 'translate(-50%, -50%)'
+                          }}></div>
                         </div>
+                        <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14, marginBottom: '4px' }}>CPU Usage</div>
+                        <div style={{ color: '#10b981', fontWeight: 700, fontSize: 18 }}>25%</div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Memory Usage</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 60, height: 8, background: '#e5e7eb', borderRadius: 4, overflow: 'hidden' }}>
-                            <div style={{ width: '45%', height: '100%', background: '#fbbf24' }}></div>
-                          </div>
-                          <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 14 }}>45%</span>
+
+                      {/* Memory Usage Gauge */}
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ position: 'relative', width: '120px', height: '60px', margin: '0 auto 12px auto' }}>
+                          {/* Gauge Background */}
+                          <svg width="120" height="60" style={{ position: 'absolute', top: 0, left: 0 }}>
+                            <defs>
+                              <linearGradient id="memoryGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#10b981" />
+                                <stop offset="100%" stopColor="#ef4444" />
+                              </linearGradient>
+                            </defs>
+                            <path
+                              d="M 20 50 A 40 40 0 0 1 100 50"
+                              stroke="#e5e7eb"
+                              strokeWidth="8"
+                              fill="none"
+                            />
+                            <path
+                              d="M 20 50 A 40 40 0 0 1 100 50"
+                              stroke="url(#memoryGradient)"
+                              strokeWidth="8"
+                              fill="none"
+                              strokeDasharray="251.2"
+                              strokeDashoffset="138.16"
+                              style={{ transition: 'stroke-dashoffset 1.2s ease-in-out', animation: 'gaugePulse 3s infinite' }}
+                            />
+                          </svg>
+                          {/* Needle */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: '2px',
+                            height: '30px',
+                            background: '#1e40af',
+                            transformOrigin: 'bottom center',
+                            transform: 'translate(-50%, -100%) rotate(81deg)',
+                            borderRadius: '1px'
+                          }}></div>
+                          {/* Center dot */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: '8px',
+                            height: '8px',
+                            background: '#1e40af',
+                            borderRadius: '50%',
+                            transform: 'translate(-50%, -50%)'
+                          }}></div>
                         </div>
+                        <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14, marginBottom: '4px' }}>Memory Usage</div>
+                        <div style={{ color: '#fbbf24', fontWeight: 700, fontSize: 18 }}>45%</div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Network I/O</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 60, height: 8, background: '#e5e7eb', borderRadius: 4, overflow: 'hidden' }}>
-                            <div style={{ width: '70%', height: '100%', background: '#8b5cf6' }}></div>
-                          </div>
-                          <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 14 }}>70%</span>
+
+                      {/* Network I/O Gauge */}
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ position: 'relative', width: '120px', height: '60px', margin: '0 auto 12px auto' }}>
+                          {/* Gauge Background */}
+                          <svg width="120" height="60" style={{ position: 'absolute', top: 0, left: 0 }}>
+                            <defs>
+                              <linearGradient id="networkGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#10b981" />
+                                <stop offset="100%" stopColor="#ef4444" />
+                              </linearGradient>
+                            </defs>
+                            <path
+                              d="M 20 50 A 40 40 0 0 1 100 50"
+                              stroke="#e5e7eb"
+                              strokeWidth="8"
+                              fill="none"
+                            />
+                            <path
+                              d="M 20 50 A 40 40 0 0 1 100 50"
+                              stroke="url(#networkGradient)"
+                              strokeWidth="8"
+                              fill="none"
+                              strokeDasharray="251.2"
+                              strokeDashoffset="75.36"
+                              style={{ transition: 'stroke-dashoffset 1.2s ease-in-out', animation: 'gaugePulse 3s infinite' }}
+                            />
+                          </svg>
+                          {/* Needle */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: '2px',
+                            height: '30px',
+                            background: '#1e40af',
+                            transformOrigin: 'bottom center',
+                            transform: 'translate(-50%, -100%) rotate(126deg)',
+                            borderRadius: '1px'
+                          }}></div>
+                          {/* Center dot */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: '8px',
+                            height: '8px',
+                            background: '#1e40af',
+                            borderRadius: '50%',
+                            transform: 'translate(-50%, -50%)'
+                          }}></div>
                         </div>
+                        <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14, marginBottom: '4px' }}>Network I/O</div>
+                        <div style={{ color: '#8b5cf6', fontWeight: 700, fontSize: 18 }}>70%</div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#ea580c', fontWeight: 600 }}>Uptime</span>
-                        <span style={{ color: '#1e40af', fontWeight: 700, fontSize: 14 }}>15d 8h 32m</span>
+
+                      {/* Uptime Display */}
+                      <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <div style={{ fontSize: '32px', marginBottom: '8px' }}>⏱️</div>
+                        <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14, marginBottom: '4px' }}>System Uptime</div>
+                        <div style={{ color: '#10b981', fontWeight: 700, fontSize: 16 }}>15d 8h 32m</div>
+                        <div style={{ color: '#6b7280', fontWeight: 500, fontSize: 12, marginTop: '4px' }}>99.9% SLA</div>
                       </div>
+
                     </div>
                   </div>
                 </div>
@@ -1634,7 +1861,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  {/* Network Overview */}
+                  {/* Network Overview with Charts */}
                   <div style={{ 
                     background: '#ffffff', 
                     borderRadius: 20, 
@@ -1642,23 +1869,68 @@ const Dashboard = () => {
                     border: '3px solid #ffffff',
                     boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
                   }}>
-                    <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Network Overview</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#B7410E', fontWeight: 600 }}>Active Ports</span>
-                        <span style={{ color: '#B7410E', fontWeight: 700, fontSize: 18 }}>24/48</span>
+                    <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 20px 0' }}>Network Overview</h3>
+                    
+                    {/* Charts Grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', height: '300px' }}>
+                      {/* Device Status Pie Chart */}
+                      <div>
+                        <h4 style={{ color: '#1e40af', fontWeight: 600, fontSize: 14, margin: '0 0 10px 0', textAlign: 'center' }}>Device Status</h4>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={[
+                                { name: 'Online', value: 1, color: '#10b981' },
+                                { name: 'Offline', value: 3, color: '#ef4444' }
+                              ]}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={30}
+                              outerRadius={60}
+                              paddingAngle={5}
+                              dataKey="value"
+                            >
+                              {[
+                                { name: 'Online', value: 1, color: '#10b981' },
+                                { name: 'Offline', value: 3, color: '#ef4444' }
+                              ].map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <RechartsTooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#B7410E', fontWeight: 600 }}>Bandwidth Usage</span>
-                        <span style={{ color: '#B7410E', fontWeight: 700, fontSize: 18 }}>68%</span>
+                      
+                      {/* Port Usage Bar Chart */}
+                      <div>
+                        <h4 style={{ color: '#1e40af', fontWeight: 600, fontSize: 14, margin: '0 0 10px 0', textAlign: 'center' }}>Port Usage</h4>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={[
+                            { name: 'Cisco 3725', used: 24, total: 48 },
+                            { name: 'Aruba 2930F', used: 0, total: 48 },
+                            { name: 'HP 2530', used: 0, total: 24 },
+                            { name: 'Juniper EX2200', used: 0, total: 24 }
+                          ]}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                            <XAxis dataKey="name" fontSize={10} />
+                            <YAxis fontSize={10} />
+                            <RechartsTooltip />
+                            <Bar dataKey="used" fill="#3b82f6" radius={[2, 2, 0, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#B7410E', fontWeight: 600 }}>Security Events</span>
-                        <span style={{ color: '#B7410E', fontWeight: 700, fontSize: 18 }}>2</span>
+                    </div>
+                    
+                    {/* Bottom Stats Row */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '20px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#f8fafc', borderRadius: '8px' }}>
+                        <span style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>Bandwidth Usage</span>
+                        <span style={{ color: '#3b82f6', fontWeight: 700, fontSize: 16 }}>68%</span>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#B7410E', fontWeight: 600 }}>Backup Status</span>
-                        <span style={{ color: '#B7410E', fontWeight: 700, fontSize: 18 }}>Up to date</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#f8fafc', borderRadius: '8px' }}>
+                        <span style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>Security Events</span>
+                        <span style={{ color: '#ef4444', fontWeight: 700, fontSize: 16 }}>2</span>
                       </div>
                     </div>
                   </div>
@@ -1753,46 +2025,6 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  {/* Recent Activity */}
-                  <div style={{ 
-                    background: '#ffffff', 
-                    borderRadius: 20, 
-                    padding: '28px', 
-                    border: '3px solid #ffffff',
-                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
-                  }}>
-                    <h3 style={{ color: '#1e40af', fontWeight: 700, fontSize: 20, margin: '0 0 16px 0' }}>Recent Activity</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: '1px solid rgba(64, 82, 214, 0.1)' }}>
-                        <div style={{ fontSize: 16, color: '#4052D6' }}>🔐</div>
-                        <div>
-                          <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>SSH connection to Cisco 3725</div>
-                          <div style={{ color: '#666', fontSize: 12 }}>2 minutes ago</div>
-                      </div>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: '1px solid rgba(64, 82, 214, 0.1)' }}>
-                        <div style={{ fontSize: 16, color: '#10b981' }}>🔀</div>
-                        <div>
-                          <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>VLAN 100 created on Aruba 2930F</div>
-                          <div style={{ color: '#666', fontSize: 12 }}>15 minutes ago</div>
-                      </div>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: '1px solid rgba(64, 82, 214, 0.1)' }}>
-                        <div style={{ fontSize: 16, color: '#fbbf24' }}>📊</div>
-                        <div>
-                          <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>MAC table refreshed on HP 2530</div>
-                          <div style={{ color: '#666', fontSize: 12 }}>1 hour ago</div>
-                    </div>
-                  </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
-                        <div style={{ fontSize: 16, color: '#4052D6' }}>💾</div>
-                        <div>
-                          <div style={{ color: '#1e40af', fontWeight: 600, fontSize: 14 }}>System backup completed</div>
-                          <div style={{ color: '#666', fontSize: 12 }}>3 hours ago</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
 
                 </div>
               </div>
@@ -4201,7 +4433,7 @@ const Dashboard = () => {
                   <div>
                     <h2 style={{ fontSize: 34, fontWeight: 800, margin: 0, color: '#3b82f6', letterSpacing: 1 }}>AI Assistant</h2>
                     <p style={{ color: '#ea580c', fontSize: 18, margin: 0, marginTop: 6, maxWidth: 700 }}>
-                      Use natural language to generate and apply network configurations. The agent will interpret your prompt, generate commands, create an Ansible playbook, and execute it on your devices.
+                      AI assistant for Steg networks.
                     </p>
                   </div>
                 </div>

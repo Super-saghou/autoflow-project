@@ -411,3 +411,15 @@
 [2025-09-04T00:25:15.817Z] [WARNING] High CPU load: 2.64 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.64","value":2.64}}
 [2025-09-04T00:25:15.853Z] [WARNING] High CPU load: 2.64 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.64","value":2.64}}
 [2025-09-04T00:25:15.866Z] [WARNING] High CPU load: 2.64 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 2.64","value":2.64}}
+[2025-09-12T17:30:01.679Z] [WARNING] High CPU load: 4.06 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.06","value":4.06}}
+[2025-09-12T17:30:01.728Z] [WARNING] High CPU load: 4.06 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.06","value":4.06}}
+[2025-09-12T17:30:01.791Z] [WARNING] High CPU load: 4.06 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.06","value":4.06}}
+[2025-09-12T17:30:01.807Z] [WARNING] High CPU load: 4.06 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.06","value":4.06}}
+[2025-09-12T17:35:14.480Z] [WARNING] High CPU load: 4.56 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.56","value":4.56}}
+[2025-09-12T17:35:14.528Z] [WARNING] High CPU load: 4.56 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.56","value":4.56}}
+[2025-09-12T17:35:14.629Z] [WARNING] High CPU load: 4.56 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.56","value":4.56}}
+[2025-09-12T17:35:14.668Z] [WARNING] High CPU load: 4.56 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.56","value":4.56}}
+[2025-09-12T17:37:22.348Z] [WARNING] High CPU load: 4.23 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.23","value":4.23}}
+[2025-09-12T17:37:22.402Z] [WARNING] High CPU load: 4.23 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.23","value":4.23}}
+[2025-09-12T17:37:22.454Z] [WARNING] High CPU load: 4.23 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.23","value":4.23}}
+[2025-09-12T17:37:22.469Z] [WARNING] High CPU load: 4.23 {"alert":{"type":"high_cpu","severity":"warning","message":"High CPU load: 4.23","value":4.23}}

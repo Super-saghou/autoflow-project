@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './ViewVlansModal.css';
 
 const ViewVlansModal = ({ open, onClose, switchType }) => {
@@ -6,13 +6,7 @@ const ViewVlansModal = ({ open, onClose, switchType }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (open) {
-      fetchVlans();
-    }
-  }, [open, switchType]);
-
-  const fetchVlans = async () => {
+  const fetchVlans = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/list-vlans', {
@@ -34,7 +28,13 @@ const ViewVlansModal = ({ open, onClose, switchType }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [switchType]);
+
+  useEffect(() => {
+    if (open) {
+      fetchVlans();
+    }
+  }, [open, fetchVlans]);
 
   const handleClose = () => {
     setVlans([]);
@@ -114,4 +114,4 @@ const ViewVlansModal = ({ open, onClose, switchType }) => {
   );
 };
 
-export default ViewVlansModal; 
+export default ViewVlansModal;
