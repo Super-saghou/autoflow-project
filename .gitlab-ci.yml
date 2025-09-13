@@ -40,7 +40,11 @@ sonarqube-scan:
   stage: security-scan
   image: alpine:latest
   before_script:
-    - apk add --no-cache openssh-client sonar-scanner
+    - apk add --no-cache openssh-client openjdk11-jre wget unzip
+    - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856.zip
+    - unzip sonar-scanner-cli-4.8.0.2856.zip
+    - mv sonar-scanner-4.8.0.2856 /opt/sonar-scanner
+    - export PATH=$PATH:/opt/sonar-scanner/bin
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | ssh-add -
     - mkdir -p ~/.ssh
@@ -50,7 +54,7 @@ sonarqube-scan:
     - ssh -N -L 9000:localhost:31334 root@192.168.111.201 -f
     - sleep 10
   script:
-    - sonar-scanner
+    - /opt/sonar-scanner/bin/sonar-scanner
       -Dsonar.projectKey=autoflow-project
       -Dsonar.sources=.
       -Dsonar.host.url=http://localhost:9000
