@@ -132,12 +132,23 @@ image-scan:
   services:
     - docker:24.0-dind
   before_script:
+    - echo "Installing Trivy for container vulnerability scanning"
+    - wget -qO - https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+    - trivy --version
     - echo "Logging into Docker"
     - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin
   script:
-    - echo "Container images built successfully"
-    - echo "Trivy Operator on Control VM will scan new pods automatically"
-    - echo "Images ready for deployment"
+    - echo "Scanning backend image for vulnerabilities"
+    - trivy image --format json --output backend-scan.json $SECURE_BACKEND_IMAGE
+    - echo "Scanning frontend image for vulnerabilities"
+    - trivy image --format json --output frontend-scan.json $FRONTEND_IMAGE
+    - echo "Container vulnerability scanning completed"
+    - echo "Trivy Operator on Control VM will scan new pods automatically after deployment"
+  artifacts:
+    paths:
+      - backend-scan.json
+      - frontend-scan.json
+    expire_in: 1 week
   only:
     - main
 
