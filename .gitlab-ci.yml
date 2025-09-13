@@ -53,6 +53,9 @@ sonarcloud-check:
       -Dsonar.sources=.
       -Dsonar.host.url=${SONAR_HOST_URL}
       -Dsonar.login=$SONAR_TOKEN
+      -Dsonar.c.file.suffixes=-
+      -Dsonar.cpp.file.suffixes=-
+      -Dsonar.objc.file.suffixes=-
   only:
     - merge_requests
     - master
